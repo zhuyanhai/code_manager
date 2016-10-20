@@ -1,0 +1,73 @@
+<?php
+$this->script()->appendScript('http://asset.bxshare.cn/technology_doc/js/modules/editormd/editormd.min.js');
+?>
+
+<div id="test-editormd" style="padding:0px;">
+    <textarea style="display:none;"><?php echo $this->mdContent?></textarea>
+</div>
+
+<div class="popover" id="popover473878" style="top: 3%; left: 45%; display: none;">
+    <div id="popoverContentId" class="popover-content">保存成功</div>
+</div>
+
+<script type="text/javascript">
+    function save(callback)
+    {
+        var markdownContent = editorHandle.getMarkdown();
+        $.post('/doc/save/', {sMdCon:markdownContent, sFilename:filename}, function(result){
+            if (parseInt(result.status) === 0) {
+                $('#popoverContentId').html('保存成功');
+                $('#popover473878').fadeIn(100).delay(1000).fadeOut(100);
+                $.delayExec(function(){
+                    if (callback != undefined) {
+                        callback.apply(this);
+                    }
+                }, 1000);
+            } else {
+                $('#popoverContentId').html(result.msg);
+                $('#popover473878').fadeIn(100).delay(2000).fadeOut(100);
+            }
+        }, 'json');
+    }
+    function saveToGit(callback)
+    {
+        var markdownContent = editorHandle.getMarkdown();
+        $.get('/doc/saveToGit/', function(result){
+            if (parseInt(result.status) === 0) {
+                $('#popoverContentId').html('已保存到Git');
+                $('#popover473878').fadeIn(100).delay(1000).fadeOut(100);
+            } else {
+                $('#popoverContentId').html(result.msg);
+                $('#popover473878').fadeIn(100).delay(2000).fadeOut(100);
+            }
+        }, 'json');
+    }
+    var editorHandle = null;
+    var filename = '<?php echo $this->filename?>';
+    __wait(function(){
+        editorHandle = editormd("test-editormd", {
+            width   : "99%",
+            height  : top.document.body.clientHeight - 108,
+            path    : "http://asset.bxshare.cn/technology_doc/js/modules/editormd/lib/",
+            codeFold: true,
+            htmlDecode : "style,script,iframe|on*",
+            emoji : false,
+            taskList : true,
+            tocm : true,
+            tex : true,
+            flowChart : true,
+            sequenceDiagram : true,
+            onload : function() {
+                var keyMap = {
+                    "Ctrl-S": function(cm) {//保存
+                        save();
+                    },
+                    "Ctrl-G": function(cm) {//保存
+                        saveToGit();
+                    }
+                };
+                this.addKeyMap(keyMap);
+            }
+        });
+    });
+</script>

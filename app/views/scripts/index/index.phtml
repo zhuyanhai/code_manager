@@ -1,0 +1,66 @@
+<?php 
+$this->headLink()->appendStylesheet('http://asset.bxshare.cn/technology_doc/css/pages/index.css');
+$this->script()->appendScript('http://asset.bxshare.cn/technology_doc/js/pages/index.js');
+?>
+
+<!-- 导航 -->
+<div id="navBoxId" class="navbar navbar-default">
+    <div class="navbar-inner">
+        <a class="brand pull-left" href="/">开放空间 - 文档馆</a>
+    </div>
+</div>
+
+<!-- 内容 -->
+<div id="conBoxId" class="row columns" style="margin:0px;padding:0px;margin-top:3px;height:90%">
+    
+    <!-- 目录树 -->
+    <div id="leftBoxId" class="col-xs-3 col-md-3">
+        <div class="htoolbar clearfix">
+            <a id="createDirBtnId" style="float: left;cursor: pointer;display: none;;margin-right: 5px;" ><i class="glyphicon glyphicon-folder-close"></i>创建目录</a>
+            <a id="createFileBtnId" style="float: left;cursor: pointer;display: none;" ><i class="glyphicon glyphicon-file"></i>创建文档</a>
+            <a id="treeOrderBtnId" style="float: right;cursor: pointer;display: inline-block;" >排序&nbsp;<i class="glyphicon glyphicon-eye-close"></i></a>
+            <a id="treeEditBtnId" style="float: right;cursor: pointer;display: inline-block;margin-right: 5px;" >编辑&nbsp;<i class="glyphicon glyphicon-eye-close"></i></a>
+        </div>
+        <?php echo $this->navTrees; ?>
+        <div style="width: 100%;height: 20px;display: block;padding: 3px;">&nbsp;</div>
+    </div>
+    
+    <!-- 文档内容 -->
+    <div id="rightBoxId" class="col-xs-9 col-md-9">
+        <article>
+            <!-- 文档快捷菜单 -->
+            <div id="opBoxId" style="border-bottom: 1px solid #000;display: none;">
+                <a id="editId" href="###" onclick="return false;">编辑</a>
+                <a id="viewId" href="###" onclick="return false;" style="margin-left: 10px">浏览</a>
+            </div>
+            <!-- 文档内容 -->
+            <div>
+                <iframe id="loadpageIframeId" name="loadpageIframe" src="about:block;" frameborder="0" scrolling="yes" marginheight="0" marginwidth="0" style="width:100%;min-height:500px;"></iframe>
+            </div>
+        </article>
+    </div>
+</div>
+
+<!-- 右键菜单中的按钮的功能弹层 -->
+<div class="modal fade" id="contextMenuModal" tabindex="-1" role="dialog" aria-labelledby="contextMenuModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="contextMenuModalLabel"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <span class="input-group-addon">名称:</span>
+                    <input type="text" class="form-control" placeholder="请输入名字" id="title">
+                    <input type="hidden" id="operation">
+                    <input type="hidden" id="index">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="contextMenuBtnId">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
