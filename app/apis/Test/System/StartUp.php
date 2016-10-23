@@ -4,11 +4,11 @@
  *
  * @author zhuyanhai
  */
-final class EAPI_System_StartUp extends F_Eapi_Abstract
+final class API_Test_System_StartUp extends F_Api_Abstract
 {
     public function startUp()
     {
-        die('eapi ok');
+        die('api ok');
         exit;
     }
 }

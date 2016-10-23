@@ -6,7 +6,7 @@
  * public function nav_100
  * 
  */
-abstract class F_Eapi_Abstract
+abstract class F_Api_Abstract
 {   
     /**
      * F_Application 对象

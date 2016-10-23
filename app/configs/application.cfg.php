@@ -57,8 +57,7 @@ return array(
         ),
         //autoload 命名空间配置
         'autoloaderNamespaces' => array(
-            'DAPI_' => APPLICATION_PATH . '/controllers/',
-            'MAPI_' => APPLICATION_PATH . '/controllers/',
+           
         ),
         //bootstrap 框架执行时的引导程序
         'bootstrap' => array(

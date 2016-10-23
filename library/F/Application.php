@@ -98,7 +98,7 @@ final class F_Application
             'Bll_' => APPLICATION_PATH . '/models/',
             'Dao_' => APPLICATION_PATH . '/models/',
             'Controller_' => APPLICATION_CONTROLLER_PATH . '/',
-            'EAPI_' => APPLICATION_PATH . '/eapis/',
+            'API_' => APPLICATION_PATH . '/apis/',
         );
         
         //初始化全局配置
@@ -153,7 +153,7 @@ final class F_Application
 
         // 自动组织类路径
         switch ($classArray[0]) {
-            case 'EAPI':
+            case 'API':
                 $classArray = explode('_', $class);
                 $namespace = $classArray[0];
                 unset($classArray[0]);

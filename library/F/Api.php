@@ -5,13 +5,13 @@
  * 所有外部可访问的API
  * 
  * @category F
- * @package F_Eapi
+ * @package F_Aapi
  * @author allen <allenifox@163.com>
  * 
  */
-final class F_Eapi
+final class F_Api
 {
-    const CLASS_NAME_PREFIX = 'EAPI';
+    const CLASS_NAME_PREFIX = 'API';
 
     /**
      * 开始解析接口类

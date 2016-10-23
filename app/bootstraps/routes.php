@@ -4,14 +4,14 @@
  */
 
 //访问API接口
-F_Route::add('/eapi?sMethod=[a-zA-Z0-9\.]+', function(F_Controller_Request_Http $requestObj, $params) {
+F_Route::add('/api?sMethod=[a-zA-Z0-9\.]+', function(F_Controller_Request_Http $requestObj, $params) {
     //符合路由规则后的处理,定位到哪个 module/controller/action
     //print_r($params);
     
     //exit;
     
     $requestObj->setParams($params);
-    F_Eapi::run();
+    F_Api::run();
 })->opTermination();
 
 //F_Route::add('/aa/{id}/{name}', function($requestObj, $params) {
