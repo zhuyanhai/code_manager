@@ -1,0 +1,25 @@
+<!doctype html> 
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title><?php echo $this->headTitle('代码管理')?></title>
+        <?php 
+            echo $this->headMeta('代码管理', 'keywords')->headMeta('代码管理', 'description');
+            echo $this->headLink()->prependStylesheet($this->assetPath()->getCssOfModule('bootstrap/3.3.5/bootstrap.min.css,jquery/ui/base.min.css'));
+            echo $this->initPageNecessary();
+        ?>
+    </head>
+    <body>
+        <div class="container-fluid fluid-height wrapper">
+            <?php echo $scriptContent ?>
+        </div>
+        <?php
+        echo $this->script()->outputScript($this->assetPath()->getJsOfModule('lab/2.0.3/lab.js,jquery/1.11.1/jquery.min.js,bootstrap/3.3.5/bootstrap.min.js,jquery/ui/base.min.js,jquery/plugin/equalHeight/jquery.equalHeight.js,utility.js'))->lastWait(function() {
+            //页面中所有JS加载完毕后才开始执行的
+            return '__wait(false, true);';
+        });
+        ?>        
+    </body>
+</html>

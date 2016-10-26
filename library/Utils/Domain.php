@@ -20,4 +20,21 @@ final class Utils_Domain
         $domainConfigs = F_Config::get('application.domain');
         return (isset($domainConfigs[$domainFlag]))?$protol.'://'.$domainConfigs[$domainFlag]:null;
     }
+    
+    /**
+     * 获取本次请求的主机头
+     * 
+     * @return string
+     */
+    public static function getCurrentRequest()
+    {
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $protol = 'http';
+            if (preg_match('%HTTPS%i', $_SERVER['SERVER_PROTOCOL'])) {
+                $protol = 'https';
+            }
+            return $protol . '://' . $_SERVER['HTTP_HOST'];
+        }
+        return null;
+    }
 }

@@ -1,0 +1,52 @@
+<?php 
+$this->headLink()->appendStylesheet($this->assetPath()->getCssOfPage('auth_login'));
+?>
+<div class="login-box">
+    <h3 class="center-block text-center">登录你的账号</h3>
+    <form action="/auth/login/" method="post" class="form-horizontal">
+
+            <div class="form-group">
+                <label for="accountId" class="col-sm-2 control-label">账号</label>
+                <div class="col-sm-9">
+                  <input type="text" class="PROGRAM-txt form-control" name="account" id="accountId" placeholder="请输入你的登录账号">
+                </div>
+            </div>
+        
+            <div class="form-group">
+                <label for="passwdId" class="col-sm-2 control-label">密码</label>
+                <div class="col-sm-9">
+                  <input type="password" class="PROGRAM-txt form-control" name="passwd" id="passwdId" placeholder="请输入你的登录密码">
+                </div>
+            </div>
+        
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-6">
+                    <div class="text-left">
+                    <?php if(!empty($this->error)):?>
+                    <div id="errorBoxId" class="alert alert-danger alert-dismissible fade in" role="alert">
+                        <?php echo $this->error?>
+                    </div>
+                    <?php endif?>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="checkbox text-right">
+                        <label><input type="checkbox" name="remember" value="1"> 记住我</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-success">Sign in</button>
+                </div>
+            </div>
+    </form>
+</div>
+<script>
+__wait(function(){
+    $('.PROGRAM-txt').on('focus', function(){
+        $('#errorBoxId').alert('close');
+    });
+});
+</script>

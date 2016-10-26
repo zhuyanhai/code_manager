@@ -1,140 +1,58 @@
-<!doctype html>
-<html lang="en">
-<head>
-	<meta charset="utf-8"/>
-	<?php echo $this->headTitle('人鱼线实体店后台系统')?>
-    <?php echo $this->headerMeta($this->keywords?:'人鱼线,实体店','keywords') ?>
-	<link rel="stylesheet" href="http://m.store.renyuxian.utan.com/static/app_renyuxian_store/css/base/admin/layout.css" type="text/css" media="screen" />
-	<!--[if lt IE 9]>
-	<link rel="stylesheet" href="http://m.store.renyuxian.utan.com/static/app_renyuxian_store/css/base/admin/ie.css" type="text/css" media="screen" />
-	<script src="http://m.store.renyuxian.utan.com/static/app_renyuxian_store/js/plugin/html5.js"></script>
-	<![endif]-->
-    
-    <?php echo $this->headLink()?>
-    
-    <script type="text/javascript">
-        <?php echo $this->initLoadJavascript('app_renyuxian_store');?>
-    </script>
-</head>
-<body>
-    
-    <!-- 头部导航条 第一部分 -->
-	<header id="header">
-		<hgroup>
-			<h1 class="site_title"><a href="/admin/">人鱼线 - 线下店</a></h1>
-            <h2 class="section_title">管理后台</h2>
-<!--			<div class="btn_view_site"><a href="http://www.medialoot.com">View Site</a></div>-->
-		</hgroup>
-	</header> <!-- end of header bar -->
-	
-    <!-- 头部导航条 第二部分 -->
-	<section id="secondary_bar">
-		<div class="user">
-            <p><?php echo $this->user['realname']?></p>
-		</div>
-		<div class="breadcrumbs_container">
-            <?php echo $this->breadcrumbs()?>
-		</div>
-	</section><!-- end of secondary bar -->
-	
-    <!-- 左侧菜单部分 -->
-	<aside id="sidebar" class="column">
-<!--		<form class="quick_search">
-			<input type="text" value="Quick Search" onfocus="if(!this._haschanged){this.value=''};this._haschanged=true;">
-		</form>
-		<hr/>-->
-        <?php echo $this->getMenuListByUser($this->user)?>
-		<footer>
-			<hr />
-			<p><strong>Copyright &copy; 2011 Website Admin</strong></p>
-			<p>Theme by <a href="http://www.medialoot.com">MediaLoot</a></p>
-		</footer>
-	</aside><!-- end of sidebar -->
-	
-    <!-- 右侧主体部分 -->
-	<section id="main" class="column" style="position: relative;">
-		<?php echo $this->layout()->content ?>
-	</section>
-
-<script type="text/javascript">
-wait(function(){
-    //页面table表格排序
-    $(".tablesorter").tablesorter();
-
-    //当dom树加载完时
-	$(".tab_content").hide(); //隐藏所有内容
-	$("ul.tabs li:first").addClass("active").show(); //激活第一个tab
-	$(".tab_content:first").show(); //显示第一个tab内容
-
-	//控制tab标签的切换显示
-	$("ul.tabs li").click(function()
-    {
-		$("ul.tabs li").removeClass("active"); //移除所有tab上的激活状态
-		$(this).addClass("active"); //为当前选中的tab添加激活状态
-		$(".tab_content").hide(); //隐藏所有tab内容
-
-		var activeTab = $(this).find("a").attr("href"); //获取tabID
-		$(activeTab).fadeIn(); //显示找到的tab内容
-		return false;
-	});
-    
-    //操作所有拥有此class的元素等高
-    $('.column').equalHeight(document.body.clientHeight - 36 - 55);
-    
-    // choose text for the show/hide link - can contain HTML (e.g. an image)
-    var showText='Show';
-    var hideText='Hide';
-
-    // initialise the visibility check
-    var is_visible = false;
-
-    // append show/hide links to the element directly preceding the element with a class of "toggle"
-    $('.toggle').prev().append(' <a href="#" class="toggleLink">'+hideText+'</a>');
-
-    // hide all of the elements with a class of 'toggle'
-    $('.toggle').show();
-
-    // capture clicks on the toggle links
-    $('a.toggleLink').click(function() {
-
-        // switch visibility
-        is_visible = !is_visible;
-
-        // change the link text depending on whether the element is shown or hidden
-        if ($(this).text()==showText) {
-        $(this).text(hideText);
-        $(this).parent().next('.toggle').slideDown('slow');
-        }
-        else {
-        $(this).text(showText);
-        $(this).parent().next('.toggle').slideUp('slow');
-        }
-
-        // return false so any link destination is not followed
-        return false;
-
-    });
-});
-</script>
-<?php
-$scriptList = array(
-    '/module/lab/2.0.3/lab.js',
-    '/module/jquery/1.11.1/jquery.js',
-    '/module/jquery_plugin/tmpl/jquery.tmpl.js',
-    '/module/utility.js',
-    '/module/jquery_plugin/tablesorter/jquery.tablesorter.min.js',
-    '/module/jquery_plugin/equalHeight/jquery.equalHeight.js',
-);
-$scriptStr = implode(',', $scriptList);
-$this->script()->outputScript('http://m.store.renyuxian.utan.com/static/app_renyuxian_store/js/' . '??' . $scriptStr);
-echo $this->script()
-        ->lastWait(function() {
-            return <<<JS
+<!doctype html> 
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title><?php echo $this->headTitle('代码管理')?></title>
+        <?php 
+            echo $this->headMeta('代码管理', 'keywords')->headMeta('代码管理', 'description');
+            echo $this->headLink()->prependStylesheet($this->assetPath()->getCssOfModule('bootstrap/3.3.5/bootstrap.min.css,jquery/ui/base.min.css,frame.css'));
+            echo $this->initPageNecessary();
+        ?>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-my navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+                <div class="row headerBox">
+                    <div class="col-sm-3 col-md-2">
+                        <h2>代码管理</h2>
+                    </div>
+                    <div class="col-sm-9 col-md-10 sectionTitle">
+                        <h2>管理后台</h2>
+                    </div>
+                </div>
+                <div class="row navtoolbarBox">
+                    <div class="col-sm-3 col-md-2 user">
+                        <p>超级管理员</p>
+                    </div>
+                    <div class="col-sm-9 col-md-10 breadcrumbs_container">
+                        <article class="breadcrumbs"><a class="current">首页</a></article>		
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3 col-md-2 sidebar hcolumn">
+                    dfs
+                </div>
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 mainBox hcolumn">
+                    <?php echo $scriptContent ?>
+                </div>
+            </div>
+        </div>
+        <script>
+            __wait(function(){
+                //操作所有拥有此class的元素等高
+                $('.hcolumn').equalHeight(document.body.clientHeight - 36 - 55);
+            });
+        </script>
+        <?php
+        echo $this->script()->outputScript($this->assetPath()->getJsOfModule('lab/2.0.3/lab.js,jquery/1.11.1/jquery.min.js,bootstrap/3.3.5/bootstrap.min.js,jquery/ui/base.min.js,jquery/plugin/equalHeight/jquery.equalHeight.js,utility.js'))->lastWait(function() {
             //页面中所有JS加载完毕后才开始执行的
-            wait(false, true);
-JS;
-        })
-        ->output();
-?>
-</body>
+            return '__wait(false, true);';
+        });
+        ?>        
+    </body>
 </html>

@@ -65,7 +65,7 @@ return array(
             'class' => "Bootstrap",
         ),
         'domain' => array(//域名标识与域名的map
-            'doc' => 'doc.bxshare.cn'
+            'code' => 'code.utan.com'
         ),
         'asset' => array(
             'isDedicatedDomain' => 'off',

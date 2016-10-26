@@ -14,12 +14,12 @@ return array(
         'user' => array(
             'servers' => array(
                 0 => array(
-                    'host' => '127.0.0.1',
-                    'post' => 11211,
+                    'host'   => 'mm3.int.utan.com',
+                    'post'   => 11311,
                     'weight' => 1,
-                    'automatic_serialization' => true,
                 ),
             ),
+            'lifetime' => 3600,
         ),
     ),
 );

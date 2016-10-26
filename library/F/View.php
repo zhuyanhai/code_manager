@@ -17,13 +17,6 @@ final class F_View
     private static $_instance = null;
     
     /**
-     * action 构造出的视图使用的数据对象
-     * 
-     * @var array 
-     */
-    private $_datas = array();
-    
-    /**
      * 布局路径
      * 
      * @var string
@@ -152,7 +145,7 @@ final class F_View
         $action     = $requestObject->getAction();
         
         $filename = $this->_configs['scriptPath'];
-        if ($module !== 'Index') {
+        if (strtolower($module) !== 'index') {
             $filename .= lcfirst($module) . '/';
         }
         $filename .= lcfirst($controller) . '/' . lcfirst($action) . '.phtml';
@@ -177,17 +170,31 @@ final class F_View
     }
     
     /**
-     * 获取在视图中构造好的数据
-     * 
-     * @param string $name
-     * @return <mixed, F_View_Helper>
+     * 获取未定义的成员
+     *
+     * @param  string $key
+     * @return null
      */
     public function __get($name)
     {
-        if (isset($this->_datas[$name])) {
-            return $this->_datas[$name];
+        return null;
+    }
+
+    /**
+     * 检测成员是否存在
+     * 
+     * 当未定义的变量调用 empty 或 isset
+     *
+     * @param  string $name
+     * @return boolean
+     */
+    public function __isset($name)
+    {
+        if ('_' != substr($name, 0, 1)) {
+            return isset($this->$name);
         }
-        return NULL;
+
+        return false;
     }
     
     /**
@@ -196,10 +203,29 @@ final class F_View
      * @param string $name
      * @param mixed $value
      * @return void
+     * @throws F_View_Exception
      */
     public function __set($name, $value)
     {
-        $this->_datas[$name] = $value;
+        if ('_' != substr($name, 0, 1)) {
+            $this->$name = $value;
+            return;
+        }
+        
+        throw new F_View_Exception('不允许设置私有和受保护的View类成员');
+    }
+    
+    /**
+     * Allows unset() on object properties to work
+     *
+     * @param string $name
+     * @return void
+     */
+    public function __unset($name)
+    {
+        if ('_' != substr($name, 0, 1) && isset($this->$name)) {
+            unset($this->$name);
+        }
     }
     
     /**
@@ -212,21 +238,26 @@ final class F_View
     {
         static $helpers = array();
 
-        $class = 'F_View_Helper_' . ucfirst($name);
+        $class = 'C_View_Helper_' . ucfirst($name);
+        $checkTier = 2;
         do {
             $isWhileCall = false;
             if(!isset($helpers[$class])){
                 try {
+                    $checkTier--;
                     $helpers[$class] = new $class();
                 } catch(F_Application_Exception $e) {
+                    if ($checkTier <=0 ) {
+                        throw new F_Application_Exception($e->getMessage(), $e->getCode());
+                    }
                     if (5555 === intval($e->getCode())) {
                         $isWhileCall = true;
-                        $class = 'C_View_Helper_' . ucfirst($name);
+                        $class = 'F_View_Helper_' . ucfirst($name);
                     }
                 }
             }
         } while ($isWhileCall);
-
+        
         if(!method_exists($helpers[$class], $name)){
             throw new F_Exception('view helper “'.$class.'” method “'.$name.'” not found');
         }

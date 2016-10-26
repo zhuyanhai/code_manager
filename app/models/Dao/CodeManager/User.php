@@ -5,15 +5,15 @@
  * 每个数据表必须有,没有就好报错
  * 
  */
-final class Dao_User_User_Config
+final class Dao_CodeManager_User_Config
 {   
     public static $configs = array(
         //数据行类名
-        'rowClassName' => 'Dao_User_User',
+        'rowClassName' => 'Dao_CodeManager_User',
         //完整表名
         'tableName'    => 'tbl_user',
         //数据库缩略名,对应 db.cfg.php 配置文件
-        'dbShortName'  => 'user',
+        'dbShortName'  => 'code_manager',
         //数据表主键字段名
         'primaryKey'   => 'userid',
     );
@@ -22,13 +22,13 @@ final class Dao_User_User_Config
 /**
  * tbl_user 数据表类
  * 
- * 用户信息 － 基本信息
+ * 用户信息
  * 
  * @package Dao
- * @subpackage Dao_Sop
+ * @subpackage Dao_CodeManager
  * @author allen <allenifox@163.com>
  */
-class Dao_User_User extends Dao_Abstract
+class Dao_CodeManager_User extends Dao_Abstract
 {
     /**
      * 判断用户是否被锁定

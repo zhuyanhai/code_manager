@@ -14,20 +14,7 @@ final class C_View_Helper_InitPageNecessary
 {
     public function initPageNecessary()
     {
-        $localDomain = $_SERVER['HTTP_HOST'];
-        $localDomain = explode('.', $localDomain);
-        if(count($localDomain) > 3){
-            $localDomainLength = count($localDomain);
-            if(in_array($localDomain[$localDomainLength-1], array('com','cn','net')) && in_array($localDomain[$localDomainLength-2], array('com','cn','net'))){
-                $cookieDomain = $localDomain[$localDomainLength-3].'.'.$localDomain[$localDomainLength-2].'.'.$localDomain[$localDomainLength-1];
-            } else {
-                $cookieDomain = $localDomain[$localDomainLength-2].'.'.$localDomain[$localDomainLength-1];
-            }
-        } else if(count($localDomain) == 3){
-            $cookieDomain = $localDomain[1].'.'.$localDomain[2];
-        } else {
-            $cookieDomain = $localDomain[0].'.'.$localDomain[1];
-        }
+        $cookieDomain = F_Application::getInstance()->getCookieDomain();
 
         return <<<EOF
         <script>

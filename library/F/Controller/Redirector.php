@@ -148,6 +148,19 @@ class F_Controller_Redirector
     {
         // prevent header injections
         $url = str_replace(array("\n", "\r"), '', $url);
+        
+        $parseArray = parse_url($url);
+        if (!$parseArray) {//url 解析失败
+            throw new F_Exception('setGotoUrl 解析URL失败，url不符合规范');
+        }
+        
+        if (!isset($parseArray['host'])) {
+            $host = Utils_Domain::getCurrentRequest();
+            if (is_null($host)) {
+                throw new F_Exception('setGotoUrl 找不到主机头');
+            }
+            $url = $host . '/' . ltrim($url, '/');
+        }
 
         if (null !== $options) {
             if (isset($options['code'])) {

@@ -1,0 +1,48 @@
+<!doctype html> 
+<html> 
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <script type="text/javascript">
+            var domain = 'utan.com';
+            document.domain = domain;
+            var urlParam   = window.location.search;
+            var paraString = urlParam.substring(urlParam.indexOf("?")+1,urlParam.length).split("&");
+            var params     = '';
+            var callback   = '';
+            var action     = '';
+            var cookies    = '';
+            for (i=0; j=paraString[i]; i++){
+                var k = j.substring(0,j.indexOf("=")).toLowerCase();
+                var v = decodeURIComponent(j.substring(j.indexOf("=")+1,j.length));
+                switch(k){
+                    case 'action':
+                        action = v;
+                        break;
+                    case 'cookies':
+                        cookies = v;
+                        break;
+                    case 'callback':
+                        callback = v;
+                        break;
+                    default:
+                        if(params === ''){
+                            params += v;
+                        } else {
+                            params += ",'"+v+"'";
+                        }
+                        break;
+                }
+            }
+            if(action == 'cross_open'){
+                document.cookie="CROSSOPEN_PARAMS="+escape(cookies)+";path=/;domain="+domain;
+                top.window.close();
+            } else if(action == 'upload'){
+                eval("parent.parent."+callback+"("+params+");");
+            } else {
+                eval("top."+callback+"("+params+");");
+            }
+        </script>
+    </body>
+</html>

@@ -25,9 +25,9 @@ final class F_Route_Adapter_Default extends F_Route_Adapter_Abstract
             throw new F_Route_Exception('When routing uri is empty');
         }
 
-        $module     = 'Index';
-        $controller = 'Index';
-        $action     = 'Index';
+        $module     = 'index';
+        $controller = 'index';
+        $action     = 'index';
 
         // 判断请求URI中除了参数就是根[/]
         $isOnlyRoot = FALSE; 
@@ -95,7 +95,7 @@ final class F_Route_Adapter_Default extends F_Route_Adapter_Abstract
         if (!empty($this->_params)) {
             $requestObj->setParams($this->_params);
         }
-            
+
         $requestObj->setModule($module)->setController($controller)->setAction($action);
     }
 }

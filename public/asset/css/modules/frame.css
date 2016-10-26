@@ -1,0 +1,168 @@
+.container-fluid{
+    padding:0px;
+    margin:0px;
+}
+.row{
+   margin:0px; 
+}
+
+/*-- header begin --*/
+.navbar-my {
+    background: #222222 url(/asset/img/admin/header_bg.png) repeat-x;
+    border-radius: 0px;
+    margin-bottom: 0px;
+    border:transparent;
+}
+.headerBox {
+    height: 50px;
+    width: 100%;
+}
+.headerBox h2{
+    font-size: 22px;
+    font-weight: normal;
+    color: #fff;
+    text-shadow: 0 -1px 0 #000;
+    text-align: left;
+    text-indent: 1.8%;
+    padding:0px;
+    margin:0px;
+    height: 50px;
+    line-height: 50px;
+}
+
+.headerBox .sectionTitle {
+    background: url(http://m.store.renyuxian.utan.com/static/app_renyuxian_store/image/admin/header_shadow.png) no-repeat left top;
+}
+
+/*-- header end --*/
+
+/*-- breadcrumbs begin --*/
+
+.navtoolbarBox {
+    background: #F1F1F4 url(/asset/img/admin/secondary_bar.png) repeat-x;
+    height: 35px;
+}
+
+.navtoolbarBox .user p {
+    margin: 0;
+    padding: 0;
+    color: #666666;
+    font-weight: bold;
+    display: block;
+    float: left;
+    width: 85%;
+    height: 35px;
+    line-height: 35px;
+    text-indent: 25px;
+    text-shadow: 0 1px 0 #fff;
+    background: url(/asset/img/admin/icn_user.png) no-repeat center left;
+    margin-left: 6%;
+}
+
+.navtoolbarBox .breadcrumbs_container {
+    background: url(/asset/img/admin/secondary_bar_shadow.png) no-repeat left top;
+    background-position-x: 0.1rem;
+}
+
+.navtoolbarBox article.breadcrumbs {
+    float: left;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 1px 0 #fff;
+    -moz-box-shadow: 0 1px 0 #fff;
+    box-shadow: 0 1px 0 #fff;
+    height: 23px;
+    margin: 4px 3%;
+}
+
+.navtoolbarBox .breadcrumbs a {
+    display: inline-block;
+    float: left;
+    height: 24px;
+    line-height: 23px;
+    text-decoration: none;
+}
+
+.navtoolbarBox .breadcrumbs a.current, .breadcrumbs a.current:hover {
+    color: #9E9E9E;
+    font-weight: bold;
+    text-shadow: 0 1px 0 #fff;
+    text-decoration: none;
+}
+
+.navtoolbarBox .breadcrumbs a:link, .breadcrumbs a:visited {
+    color: #44474F;
+    text-decoration: none;
+    text-shadow: 0 1px 0 #fff;
+    font-weight: bold;
+}
+
+.navtoolbarBox .breadcrumbs a:hover {
+    color: #222222;
+}
+
+.navtoolbarBox .breadcrumb_divider {
+    display: inline-block;
+    width: 12px;
+    height: 24px;
+    background: url(/asset/img/admin/secondary_bar_shadow.png) no-repeat;
+    float: left;
+    margin: 0 5px;
+}
+
+/*-- breadcrumbs end --*/
+
+/*-- menubox begin --*/
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.sidebar {
+  display: none;
+}
+@media (min-width: 768px) {
+    .sidebar {
+        background: #E0E0E3 url(/asset/img/admin/sidebar.png) repeat;
+        position: fixed;
+        top: 85px;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        display: block;
+        padding: 20px;
+        overflow-x: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+        background-color: #f5f5f5;
+    }
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+  margin-left: -20px;
+}
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+  color: #fff;
+  background-color: #428bca;
+}
+/*-- menubox end --*/
+
+/*-- mainBox begin --*/
+.mainBox{
+    padding: 20px;
+    min-height: 500px;
+    background: url(/asset/img/admin/sidebar_shadow.png) repeat-y left top;
+    margin-top:85px;
+}
+/*-- mainBox end --*/

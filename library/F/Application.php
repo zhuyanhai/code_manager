@@ -125,9 +125,9 @@ final class F_Application
         } else {
             $this->_configs['cookie']['domain'] = '';
         }
-        
+
     }
-    
+
     /**
      * spl_autoload 处理类的自动加载
      * 
@@ -141,10 +141,9 @@ final class F_Application
 			return false;
 		}
         
+        $classArray = explode('_', $class);
         if (preg_match('%Controller$%', $class)) {//controller
             $classArray = array('Controller');
-        } else {
-            $classArray = explode('_', $class);
         }
 
         if (!isset(self::$_autoloadNamespaces[$classArray[0].'_'])) {
@@ -171,6 +170,16 @@ final class F_Application
 			require $file;
 		}
     }
+    
+    /**
+     * 获取 cookie 根域
+     * @return string
+     */
+    public function getCookieDomain()
+    {
+        return $this->_configs['cookie']['domain'];
+    }
+
     
     /**
      * 获取错误调试类对象
@@ -271,6 +280,6 @@ final class F_Application
         } else {
             $cookeDomain = $domainArray[0].'.'.$domainArray[1];
         }
-        return '.' . $cookeDomain;
+        return $cookeDomain;
     }
 }

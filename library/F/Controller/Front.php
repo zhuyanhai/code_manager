@@ -56,7 +56,7 @@ class F_Controller_Front
                 $controller = $requestObj->getController();
                 $action     = $requestObj->getAction();
 
-                if ('Index' === $module) {
+                if ('index' === strtolower($module)) {
                     $controllerClass = ucfirst($controller) . 'Controller';
                 } else {
                     $moduleArray = explode('_', $module);

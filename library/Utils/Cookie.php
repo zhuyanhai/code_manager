@@ -53,8 +53,9 @@ final class Utils_Cookie
 			$expire = time() + $time * $expire;
 		}
         if(is_null($domain)){
-            $domain = '.' . COOKIE_DOMAIN;
+            $domain = '.' . F_Application::getInstance()->getCookieDomain();
         }
+
 		setcookie($name, $value, $expire, '/', $domain, false, $httponly);
     }
     
@@ -82,7 +83,7 @@ final class Utils_Cookie
 	public static function del($name, $domain = null)
     {
 	    if(is_null($domain)){
-            $domain = '.' . COOKIE_DOMAIN;
+            $domain = '.' . F_Application::getInstance()->getCookieDomain();
         }
 		setcookie($name, '', (time() - 3600) , '/', $domain);
 	}
