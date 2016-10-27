@@ -75,7 +75,7 @@ final class F_Db_Table_Select
         //参数总量
         $argsTotal = count($args);
         //提取表达式中的变量
-        preg_match_all('%(:[a-zA-Z0-9]+)%i', $columnExpression, $matches);
+        preg_match_all('%(:[a-zA-Z0-9_]+)%i', $columnExpression, $matches);
         if (empty($matches) || empty($matches[0])) {
             throw new F_Db_Exception('columnExpression failed : '.$columnExpression);
         }
@@ -156,8 +156,9 @@ final class F_Db_Table_Select
                     array_push($rowList, new $rowClassName($row));
                 }
                 return new F_Db_Table_RowSet($rowList);
+            } else {
+                return new F_Db_Table_RowSet(array());
             }
-            return $rows;
         }
     }
     

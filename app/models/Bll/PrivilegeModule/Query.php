@@ -53,14 +53,17 @@ final class Bll_PrivilegeModule_Query
     }
     
     /**
+     * 根据用户ID获取用户的菜单
      * 
+     * @param int $userid 用户ID
+     * @return array
      */
     public function getListOfByUserid($userid)
     {
         if ($this->isSuperAdminByUserid($userid)) {//超级管理员
-            return RyxStore_Logic_Admin_Menu_BuildAll::build();
+            return Bll_PrivilegeModule_Internal_BuildMenu::getInstance()->getAll();
         } else {
-            return RyxStore_Logic_Admin_Menu_BuildUser::build($adminUserid);
+            return Bll_PrivilegeModule_Internal_BuildMenu::getInstance()->getByUserid($userid);
         }
     }
 }

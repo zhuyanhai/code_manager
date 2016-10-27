@@ -22,7 +22,7 @@ final class F_Cache_Memcache extends F_Cache_Abstract
         static $instances = array();
         
         if (!isset($instances[$serviceName])) {
-            $instances[$serviceName] = new self();
+            $instances[$serviceName] = new self($serviceName);
         }
         
         return $instances[$serviceName];
@@ -34,12 +34,12 @@ final class F_Cache_Memcache extends F_Cache_Abstract
      * @var array
      */
     protected $_options = array(
-        'servers' => array(array(
-            'host'   => self::DEFAULT_HOST,
-            'port'   => self::DEFAULT_PORT,
-            'weight' => self::DEFAULT_WEIGHT,
+        'servers'  => array(array(
+            'host'   => '127.0.0.1',
+            'port'   => 11211,
+            'weight' => 100,
         )),
-        'client' => array(),
+        'client'   => array(),
         'lifetime' => 3600,
     );
     
@@ -50,10 +50,17 @@ final class F_Cache_Memcache extends F_Cache_Abstract
      */
     protected $_memcache = null;
     
-    public function __construct(array $options = array())
+    public function __construct($serviceName)
     {
+        static $options = array();
+        
         if (!extension_loaded('memcached')) {
             throw new F_Cache_Exception('memcached 扩展无法加载');
+        }
+        
+        if (empty($options)) {
+            F_Config::load('/configs/memcache.cfg.php');
+            $options = F_Config::get('memcache.'.$serviceName);
         }
 
         // override default client options
@@ -98,15 +105,9 @@ final class F_Cache_Memcache extends F_Cache_Abstract
         // setup memcached servers
         $servers = array();
         foreach ($this->_options['servers'] as $server) {
-            if (!array_key_exists('port', $server)) {
-                $server['port'] = self::DEFAULT_PORT;
-            }
-            if (!array_key_exists('weight', $server)) {
-                $server['weight'] = self::DEFAULT_WEIGHT;
-            }
-
             $servers[] = array($server['host'], $server['port'], $server['weight']);
         }
+
         $this->_memcache->addServers($servers);
     }
     
@@ -156,7 +157,6 @@ final class F_Cache_Memcache extends F_Cache_Abstract
     public function save($data, $id, $specificLifetime = false)
     {
         $lifetime = $this->_getLifetime($specificLifetime);
-
         $result = @$this->_memcache->set($id, $data, $lifetime);
         if ($result === false) {
             $rsCode = $this->_memcache->getResultCode();
@@ -275,6 +275,9 @@ final class F_Cache_Memcache extends F_Cache_Abstract
     {
         if ($specificLifetime === false) {
             return $this->_options['lifetime'];
+        }
+        if (is_null($specificLifetime)) {
+            return 0;
         }
         return $specificLifetime;
     }

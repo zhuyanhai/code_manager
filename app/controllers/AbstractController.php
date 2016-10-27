@@ -35,6 +35,7 @@ abstract class AbstractController extends F_Controller_ActionAbstract
         }
         
         $this->view->loginUserInfo = $this->loginUserInfo = $checkResult->getResult();
+
     }
     
     /**

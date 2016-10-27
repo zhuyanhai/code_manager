@@ -8,7 +8,7 @@
  * @package Dao
  */
 Abstract class Dao_Abstract extends F_Db_Table_Row
-{
+{   
     /**
      * 获取 select 操作对象
      * 

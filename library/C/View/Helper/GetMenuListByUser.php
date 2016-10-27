@@ -2,7 +2,7 @@
 /**
  * 获取登陆用户的菜单权限，并构建显示
  */
-class C_View_Helper_GetMenuListByUser extends Zend_View_Helper_Abstract 
+final class C_View_Helper_GetMenuListByUser
 {
     /**
      * 获取后台用户菜单列表 - 根据用户
@@ -12,7 +12,7 @@ class C_View_Helper_GetMenuListByUser extends Zend_View_Helper_Abstract
      */
     public function getMenuListByUser($user)
     {
-        $list = Bll_PrivilegeModule_Query::getInstance()->getListOfByUserid($user['userid'], $user['is_super_administrator']);
+        $list = Bll_PrivilegeModule_Query::getInstance()->getListOfByUserid($user['userid']);
         if (empty($list) || !is_array($list)) {
             return '';
         }
@@ -35,7 +35,7 @@ class C_View_Helper_GetMenuListByUser extends Zend_View_Helper_Abstract
                 if ($v['childCount'] > 0) {
                     $menuStr .= '<ul class="toggle">';
                     $menuStr .= $this->_build($v['childData']);
-                    $menuStr .= '</ul>';
+                    $menuStr .= '</ul><hr/>';
                 }
             } else {
                 $menuStr .= '<li><a href="'.$v['data']['url'].'">'.$v['data']['name'].'</a></li>';

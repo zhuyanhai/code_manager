@@ -9,82 +9,87 @@
  */
 final class F_Git
 {
+    /**
+     * git 可执行文件
+     * 
+     * @var string
+     */
     private static $_bin = '/usr/bin/git';
     
     /**
-     * git add命令主要用于把我们要提交的文件的信息添加到索引库中
+     * 设置 git 的可执行文件
      * 
-     * @param string $path *=添加所有 | 如果是指定多个文件,使用空格分隔,例如 a.txt b.txt
-     * @param string $option A=表示把$path中所有tracked文件中被修改过或已删除文件和所有untracted的文件信息添加到索引库
-     * @return void
+     * @param string $binPath 设置git的可执行文件
      */
-    public static function add($path = '*', $option = 'A')
+    public static function setBin($binPath)
     {
-        $command = self::$_bin . ' add -' . $option .' '. $path;
-        self::_run($command);
+        self::$_bin = $binPath;
     }
     
     /**
-     * git commit 
+     * 获取 git 的可执行文件
      * 
-     * @param string $message
-     * @param string $option A=表示把$path中所有tracked文件中被修改过或已删除文件和所有untracted的文件信息添加到索引库
-     * @return void
-     */
-    public static function commit($message = '', $option = 'am')
-    {
-        $command = self::$_bin . ' commit -' . $option .' "'. $message.'"';
-        self::_run($command);
-    }
-    
-    /**
-     * git push 
-     * 
-     * @return void
-     */
-    public static function push()
-    {
-        $command = self::$_bin . ' push';
-        self::_run($command);
-    }
-    
-    /**
-     * 运行构造好的git命令
-     * 
-     * @param string $command
      * @return string
      */
-    private static function _run($command)
+    public static function getBin()
     {
-        $descriptorspec = array(
-			1 => array('pipe', 'w'),
-			2 => array('pipe', 'w'),
-		);
-        
-		$pipes = array();
-        
-        $cwd = '/data/docs/';
-		$resource = proc_open($command, $descriptorspec, $pipes, $cwd, $_ENV);
-        
-        if (is_resource($resource)) {
-
-            $stdout = stream_get_contents($pipes[1]);
-            $stderr = stream_get_contents($pipes[2]);
-
-            foreach ($pipes as $pipe) {
-                fclose($pipe);
-            }
-
-            $status = trim(proc_close($resource));
-            if ($status) {
-                throw new Exception($stderr);
-            }
-
-            return $stdout;
-        }
-		
-        return false;
+        return self::$_bin;
     }
     
+    /**
+	 * 创建一个Git创库
+	 *
+	 * @param   string  $repoPath 仓库路径
+	 * @param   string  $source 
+	 * @return  F_Git_Repo
+	 */
+	public static function &create($repoPath, $source = null)
+    {
+		return F_Git_Repo::createNew($repoPath, $source);
+	}
     
+    /**
+	 * Clones a remote repo into a directory and then returns a GitRepo object
+	 * for the newly created local repo
+	 *
+	 * Accepts a creation path and a remote to clone from
+	 *
+	 * @access  public
+	 * @param   string  repository path
+	 * @param   string  remote source
+	 * @param   string  reference path
+	 * @return  F_Git_Repo
+	 **/
+	public static function &cloneRemote($repoPath, $remote, $reference = null)
+    {
+		return F_Git_Repo::createNew($repoPath, $remote, true, $reference);
+	}
+
+	/**
+	 * Open an existing git repository
+	 *
+	 * Accepts a repository path
+	 *
+	 * @access  public
+	 * @param   string  repository path
+	 * @return  F_Git_Repo
+	 */
+	public static function open($repoPath)
+    {
+		return new F_Git_Repo($repoPath);
+	}
+
+	/**
+	 * Checks if a variable is an instance of GitRepo
+	 *
+	 * Accepts a variable
+	 *
+	 * @access  public
+	 * @param   mixed   variable
+	 * @return  bool
+	 */
+	public static function isRepo($var) 
+    {
+		return (get_class($var) == 'F_Git_Repo');
+	}
 }

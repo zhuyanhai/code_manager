@@ -54,10 +54,11 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
         } else {//需要动态构造，最多 3 级菜单
             $menuList = array();
             $parentIdsOfMenu = null;
+            $i = 0;
             do {
-                $parentIdsOfMenu = self::_buildMenuList($parentIdsOfMenu, $menuList);
+                $parentIdsOfMenu = $this->_buildMenuList($parentIdsOfMenu, $menuList);
             } while(!empty($parentIdsOfMenu));
-            $memObj->save($menuList, $memKey, array(), null);
+            $memObj->save($menuList, $memKey);
             return $menuList;
         }
     }
@@ -69,33 +70,32 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
      * @param array $menuList 需要构建的菜单列表
      * @return array
      */
-    private static function _buildMenuList($parentIdsOfMenu = array(), &$menuList)
+    private function _buildMenuList($parentIdsOfMenu = array(), &$menuList)
     {
         //获取菜单列表
-        $selector = Utan_Model_RenyuxianStore_AdminMenu::getSelector(array('connect' => 'slave'));
+        $selector = Dao_CodeManager_Privilege::getSelect();
         if (is_array($parentIdsOfMenu) && !empty($parentIdsOfMenu)) {
-            $selector->where('parent_id in(?)', $parentIdsOfMenu);
+            $selector->where('parent_id in(:parent_id) and status=:status order by id asc', implode(',', $parentIdsOfMenu), 0);
         } else {
-            $selector->where('parent_id=?', 0);
+            $selector->where('parent_id=:parent_id and status=:status order by id asc', 0, 0);
         }
-        $list = $selector->where('status=?', 0)->order('id asc')->fetchAll();
+        $list = $selector->fetchAll();
         if ($list->count() <= 0) {
             return null;
         }
-        
-        $menuInstance = RyxStore_Logic_Admin_Menu::getInstance();
         //构造下级菜单的父元素菜单ID数组
-        $parentIdsOfMenu = Utan_Utils_Array::toFlat($list, 'id');
+        $parentIdsOfMenu = Utils_Array::toFlat($list, 'id');
         $tmpMenuList = array();
         foreach ($list as $v) {
             array_push($tmpMenuList, array(
                 'level'      => $v->level,
-                'data'       => $menuInstance->toArray($v),
+                'data'       => $v->toArray(),
                 'childCount' => 0,
                 'childData'  => array(),
             ));
         }
-        $tmpMenuList = Utan_Utils_Sort::getpao($tmpMenuList, 'level', 'desc');
+
+        $tmpMenuList = Utils_Sort::getpao($tmpMenuList, 'level', 'desc');
         if (!empty($menuList)) {
             foreach ($tmpMenuList as $tv) {
                 self::_buildLevelMenuList($tv, $menuList);

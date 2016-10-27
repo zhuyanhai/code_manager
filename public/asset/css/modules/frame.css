@@ -158,11 +158,99 @@
 }
 /*-- menubox end --*/
 
+/*-- menu begin --*/
+
+.sidebar{
+    padding:0px;
+}
+
+.sidebar h3 {
+    color: #1F1F20;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 #fff;
+    font-size: 13px;
+    font-weight:bold;
+    margin: 10px 0 10px 6%;
+    display: block;
+    float: left;
+    width: 90%;
+}
+
+.toggleLink {
+    color: #999999;
+    font-size: 10px;
+    text-decoration: none;
+    display: block;
+    float: right;
+    margin-right: 2%
+}
+
+.sidebar .toggleLink:hover {
+    color: #77BACE;
+    text-decoration: none;
+}
+
+.sidebar ul {
+    clear: both;
+    margin: 0; padding: 0;
+}
+
+.sidebar li {
+    list-style: none;
+    margin: 0 0 0 8%; 
+    padding: 0;
+}
+
+.sidebar li a {
+    font-size: 12px;
+    color: #666666;
+    padding-left: 25px;
+    text-decoration: none;
+    display: inline-block;
+    height: 17px;
+    line-height: 17px;
+    text-shadow: 0 1px 0 #fff;
+    margin: 2px 0;
+}
+
+.sidebar li a:hover {
+    color: #444444;
+}
+
+.sidebar p {
+    color: #666666;
+    padding-left: 6%;
+    text-shadow: 0 1px 0 #fff;
+    margin: 10px 0 0 0;
+}
+
+.sidebar a {
+color: #666666;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    text-decoration: underline;
+}
+
+
+.sidebar hr {
+    border: none;
+    outline: none;
+    background: url(/asset/img/admin/sidebar_divider.png) repeat-x;
+    display: block;
+    width: 100%;
+    height: 2px;
+}
+
+
+/*-- menu end --*/
+
 /*-- mainBox begin --*/
 .mainBox{
-    padding: 20px;
+    padding: 20px 10px 0px 10px;
     min-height: 500px;
     background: url(/asset/img/admin/sidebar_shadow.png) repeat-y left top;
-    margin-top:85px;
+    margin-top:65px;
 }
 /*-- mainBox end --*/

@@ -14,8 +14,8 @@ return array(
         'user' => array(
             'servers' => array(
                 0 => array(
-                    'host'   => 'mm3.int.utan.com',
-                    'post'   => 11311,
+                    'host'   => '192.168.1.71',
+                    'port'   => 11311,
                     'weight' => 1,
                 ),
             ),
