@@ -35,11 +35,25 @@ class Dao_CodeManager_User extends Dao_Abstract
      * 
      * @return boolean true=锁定用户 false=非锁定用户
      */
-   public function isLock()
+   public function ___isLock()
    {
        if (intval($this->status) === 10) {//用户被锁定
            return true;
        }
        return false;
    }
+   
+   /**
+     * 根据用户ID检查是否是超级管理员
+     * 
+     * @param int $userid 用户ID
+     * @return boolean true=是 false=不是
+     */
+    public function ___isSuperAdmin()
+    {
+        if (intval($this->userid) === 1001) {
+            return true;
+        }
+        return false;
+    }
 }

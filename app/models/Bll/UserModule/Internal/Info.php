@@ -47,8 +47,7 @@ final class Bll_UserModule_Internal_Info extends F_InternalAbstract
     {
         $userRow = Dao_CodeManager_User::getSelect()->where('userid=:userid', $userid)->fetchRow();
         if (!empty($userRow)) {
-            $formatResult = $this->_format(array($userRow));
-            return F_Result::build()->success($formatResult[0]);
+            return F_Result::build()->success($userRow->toArray());
         }
         return F_Result::build()->error('用户不存在');
     }
@@ -63,8 +62,7 @@ final class Bll_UserModule_Internal_Info extends F_InternalAbstract
     {
         $userRow = Dao_CodeManager_User::getSelect()->where('account=:account', $account)->fetchRow();
         if (!empty($userRow)) {
-            $formatResult = $this->_format(array($userRow));
-            return F_Result::build()->success($formatResult[0]);
+            return F_Result::build()->success($userRow->toArray());
         }
         return F_Result::build()->error('用户不存在');
     }
@@ -112,7 +110,7 @@ final class Bll_UserModule_Internal_Info extends F_InternalAbstract
      */
     public function setLoginCookie($userid, $passwd, $registerTime, $isRemember)
     {
-    	$token  = md5('@c=^s%(5+5)!-=+c,.7@'.md5('token'.$userid . $passwd) . $registerTime);
+    	$token  = $this->_createToken($userid, $passwd, $registerTime);
         $time   = microtime(true) * 10000 . '';
         $ticket = substr($time, 0, 5) . $userid . substr($time, 5);
         if (intval($isRemember) === 1) {//记住
@@ -122,6 +120,24 @@ final class Bll_UserModule_Internal_Info extends F_InternalAbstract
             Utils_Cookie::set('cm-token', $token);
             Utils_Cookie::set('cm-ticket', $ticket);
         }
+    }
+    
+    /**
+     * 检测token是否一致
+     * 
+     * @param int $userid
+     * @param string $passwd
+     * @param int $registerTime
+     * @param string $cookieToken
+     * @return ResultSet
+     */
+    public function checkToken($userid, $passwd, $registerTime, $cookieToken)
+    {
+        $token = $this->_createToken($userid, $passwd, $registerTime);
+        if ($token === $cookieToken) {
+            return F_Result::build()->success();
+        }
+        return F_Result::build()->error();
     }
     
     /**
@@ -138,18 +154,15 @@ final class Bll_UserModule_Internal_Info extends F_InternalAbstract
 //----- 私有方法
     
     /**
-     * 格式化用户基本信息
+     * 创建登录token
      * 
-     * @param Dao_User_User $userRowList
+     * @param int $userid
+     * @param string $passwd
+     * @param int $registerTime
+     * @return string
      */
-    private function _format($userRowList)
+    private function _createToken($userid, $passwd, $registerTime)
     {
-        $return = array();
-        foreach ($userRowList as $userRow) {
-            $tmp = $userRow->toArray();
-            $tmp['isLock'] = $userRow->isLock();
-            array_push($return, $tmp);
-        }
-        return $return;
+        return md5('@c=^s%(5+5)!-=+c,.7@'.md5('token'.$userid . $passwd) . $registerTime);
     }
 }

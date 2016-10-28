@@ -111,6 +111,7 @@ final class F_View
      * 在视图中继续渲染视图
      * 
      * @param string $path 首位不要有【/】，正确写法是：admin/a，尾部不需要后缀
+     * @return string
      */
     public function render($path)
     {
@@ -128,7 +129,7 @@ final class F_View
         ob_start();
         include $filename;
         $scriptContent = ob_get_clean();
-        echo $scriptContent;
+        return $scriptContent;
     }
     
     /**

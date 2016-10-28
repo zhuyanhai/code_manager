@@ -69,7 +69,7 @@ final class F_Config
             return $returnCfg;
         }
         
-        $recursion = function($i, &$returnCfg)use(&$chainList, $namespace)
+        $recursion = function($i, &$returnCfg)use(&$chainList, $namespace, $chainTotal)
         {
             $cfgIndex = $chainList[$i];
             

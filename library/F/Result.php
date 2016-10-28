@@ -51,7 +51,7 @@ final class F_Result
      * @return \ResultSet
      * @throws ResultException
      */
-    public function error($errorMsg, $statusCode = -1)
+    public function error($errorMsg = '', $statusCode = -1)
     {
         if (intval($statusCode) >= 0) {
             throw new ResultException('构建错误结果集失败，statusCode 错误');
@@ -185,6 +185,7 @@ final class ResultSet
         
         $this->_resultSet['status']   = $statusCode;
         $this->_resultSet['errorMsg'] = $errorMsg;
+        $this->_status = false;
         return $this;
     }
     

@@ -41,6 +41,7 @@ class AuthController extends AbstractController
             Utils_Session::set('login_refer', $refer);
             
             if ($this->isLogin()) {
+                exit;
                 $this->_redirectorObj->gotoUrlAndExit($refer);
             }
         }

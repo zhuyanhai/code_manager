@@ -1,0 +1,151 @@
+<?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '账号列表', 'url' => ''))?>
+
+<article class="module width_full">
+    <div class="searchs">
+        <form method="POST" id="searchForm" action="/account/">
+        <p>按条件搜索：
+            <select id="searchTypeId" name="searchType" onchange="schange(this);return false;">
+                <option value="account" <?php if($this->searchs['searchType'] === 'account'):?>selected<?php endif?>>登录账号</option>
+                <option value="realname" <?php if($this->searchs['searchType'] === 'realname'):?>selected<?php endif?>>用户名</option>
+            </select>
+            <input type="hidden" id="statusId" name="status" value="<?php echo $this->searchs['status']?>" />
+            <input type="hidden" id="searchValueId" name="searchValue" value="<?php echo $this->searchs['searchValue']?>" />
+        </p>
+        </form>
+        <p id="accountBoxId" class="PROGRAM-v" style="display: <?php if($this->searchs['searchType'] === 'account'):?>block<?php else:?>none<?php endif?>;">
+            登录账号&nbsp;：
+            <input type="text" id="accountId" class="input-w-500" value="<?php echo ($this->searchs['searchType'] === 'account')?$this->searchs['searchValue']:''?>" />
+        </p>
+        <p id="realnameBoxId" class="PROGRAM-v" style="display: <?php if($this->searchs['searchType'] === 'realname'):?>block<?php else:?>none<?php endif?>;">
+            用户名&nbsp;：
+            <input type="text" id="realnameId" class="input-w-500" value="<?php echo ($this->searchs['searchType'] === 'realname')?$this->searchs['searchValue']:''?>" />
+        </p>
+        <p>
+            状态&nbsp;：
+            <input id="status_all99" type="radio" name="statusShow" value="99" <?php echo (intval($this->searchs['status']) === 99) ? 'checked' : '' ?> /><label for="status_all99">全部</label>
+            <input id="status_all1" type="radio" name="statusShow" value="1" <?php echo (intval($this->searchs['status']) === 1) ? 'checked' : '' ?> /><label for="status_all1">正常</label>
+            <input id="status_all2" type="radio" name="statusShow" value="2" <?php echo (intval($this->searchs['status']) === 2) ? 'checked' : '' ?> /><label for="status_all2">锁定</label>
+        </p>
+        <p><input type="button" value="搜索" class="btn btn-w-100" onclick="query();">&nbsp;<input type="button" value="取消搜索" class="btn btn-w-100" onclick="cancelQuery();"></p>
+    </div>
+ </article>
+
+<article class="module width_full">
+    <header>
+        <h3 class="tabs_involved">账号列表</h3>
+        <a href="/account/add" class="btn btn-w-80 btn-r">添加账号</a>
+    </header>
+    <div class="tab_container">
+        <table class="tablesorter" cellspacing="0"> 
+            <thead> 
+                <tr> 
+                    <th class="header">用户ID</th>
+                    <th class="header">用户账号</th>
+                    <th class="header">用户姓名</th>
+                    <th class="header">用户电话</th>
+                    <th class="header">用户邮箱</th>
+                    <th class="header">用户状态</th>
+                    <th class="header">创建时间</th>
+                    <th class="header">操作</th> 
+                </tr> 
+            </thead> 
+            <tbody> 
+                <?php if($this->list->itemTotal() > 0):?>
+                    <?php foreach($this->list as $v):?>
+                        <tr id="item_<?php echo $v['userid']?>"> 
+                            <td><?php echo $v['userid']?></td> 
+                            <td><?php echo $v['account']?></td> 
+                            <td><?php echo $v['realname']?></td>
+                            <td><?php echo $v['contactPhone']?></td>
+                            <td><?php echo $v['contactEmail']?></td> 
+                            <td><?php echo (!$v['___isLock'])?'正常':'锁定'?></td> 
+                            <td><?php echo date('Y-m-d H:i:s', $v['createTime'])?></td> 
+                            <td>
+                                <?php if($v['___isSuperAdmin']):?>
+                                    <a href="/account/edit/userid/<?php echo $v['userid']?>">编辑</a>&nbsp;
+                                    <?php if(intval($this->searchs['status']) === 99):?>
+                                            <a href="###" id="lock_<?php echo $v['userid']?>" onclick="lock(<?php echo $v['userid']?>);return false;" style="display:<?php if(intval($v['status']) === 1):?>inline-block<?php else:?>none<?php endif?>;">锁定</a>
+                                            <a href="###" id="unlock_<?php echo $v['userid']?>" onclick="unlock(<?php echo $v['userid']?>);return false;" style="display:<?php if(intval($v['status']) === 2):?>inline-block<?php else:?>none<?php endif?>;">解锁</a>
+                                    <?php else:?>
+                                        <?php if(intval($v['status']) === 1):?>
+                                            <a href="###" onclick="lock(<?php echo $v['userid']?>);return false;">锁定</a>
+                                        <?php elseif(intval($v['status']) === 2):?>
+                                            <a href="###" onclick="unlock(<?php echo $v['userid']?>);return false;">解锁</a>
+                                        <?php endif?>
+                                    <?php endif?>
+                                <?php endif?>
+                            </td>
+                        </tr> 
+                    <?php endforeach?>
+                        <tr><td colspan="8"><?php echo $this->list?></td></tr>
+                <?php endif?>
+            </tbody> 
+        </table>
+    </div><!-- end of .tab_container -->
+</article>
+
+<script>
+function cancelQuery()
+{
+    window.location.href = "/account/";
+}
+function query() 
+{
+    var searchType = $('#searchTypeId').val();
+    switch (searchType) {
+        case 'account':
+            $('#searchValueId').val($.trim($("#accountId").val()));
+            break;
+        case 'realname':
+            var realname = $.trim($("#realnameId").val());
+            $('#searchValueId').val(realname);
+            break;
+    }
+    $('#statusId').val($.trim($("input[name=statusShow]:checked").val()));
+    $('#searchForm').submit();
+}
+function schange(self)
+{
+    var id = self.value;
+    $('.PROGRAM-v').hide();
+    $('#'+id+'BoxId').show();
+}
+function lock(userid) 
+{
+    if (window.confirm('确定要锁定吗？')) {
+        var divId = '#item_' + userid;
+        $.post('/account/lock/', {userid: userid}, function(result) {
+            if (parseInt(result.status) === 0) {
+                <?php if(intval($this->searchs['status']) === 99):?>
+                    $('#lock_'+userid).css('display', 'none');
+                    $('#unlock_'+userid).css('display', 'inline-block');
+                <?php else:?>
+                    $(divId).remove();
+                <?php endif?>
+                alert('锁定成功');
+            } else {
+                alert('锁定失败');
+            }
+        }, 'json');
+    }
+}
+function unlock(userid) 
+{
+    if (window.confirm('确定要解锁吗？')) {
+        var divId = '#item_' + userid;
+        $.post('/account/unlock/', {userid: userid}, function(result) {
+            if (parseInt(result.status) === 0) {
+                <?php if(intval($this->searchs['status']) === 99):?>
+                    $('#unlock_'+userid).css('display', 'none');
+                    $('#lock_'+userid).css('display', 'inline-block');
+                <?php else:?>
+                    $(divId).remove();
+                <?php endif?>
+                alert('解锁成功');
+            } else {
+                alert('解锁失败');
+            }
+        }, 'json');
+    }
+}
+</script>

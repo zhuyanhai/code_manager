@@ -24,10 +24,11 @@ final class F_Db_Table_Select
     
     private $_queryConditionsInit = array(
         'columns' => '*',
-        'where'   => array(
-            'expression' => '',
-            'bindParams' => array(),
-        ),
+        'where'   => array(),
+        'order'   => '',
+        'group'   => '',
+        'having'  => array(),
+        'limit'   => '',
     );
     
     /**
@@ -79,12 +80,97 @@ final class F_Db_Table_Select
         if (empty($matches) || empty($matches[0])) {
             throw new F_Db_Exception('columnExpression failed : '.$columnExpression);
         }
+        
+        $whereIndex = count($this->_queryConditions['where']);
+        $this->_queryConditions['where'][$whereIndex] = array(
+            'expression' => '',
+            'bindParams' => array(),
+        );
+        
         //依次处理,防止SQL注入
-        for ($i = $paramIndex; $i < $argsTotal; $i++) {
-            $this->_queryConditions['where']['bindParams'][$matches[1][$i-1]] = $args[$i].'';
+        if ($argsTotal > 0) {
+            for ($i = $paramIndex; $i < $argsTotal; $i++) {
+                $this->_queryConditions['where'][$whereIndex]['bindParams'][$matches[1][$i-1]] = $args[$i].'';
+            }
         }
         
-        $this->_queryConditions['where']['expression'] = $columnExpression;
+        $this->_queryConditions['where'][$whereIndex]['expression'] = $columnExpression;
+        return $this;
+    }
+    
+    /**
+     * 查询条件
+     * 
+     * @param string $columnExpression
+     * return \F_Db_Table_Select
+     */
+    public function having($columnExpression)
+    {
+        //获取函数的所有参数列表
+        $args = func_get_args();
+        //表达式所需要填充的变量的启始索引
+        $paramIndex = 1;
+        //参数总量
+        $argsTotal = count($args);
+        //提取表达式中的变量
+        preg_match_all('%(:[a-zA-Z0-9_]+)%i', $columnExpression, $matches);
+        if (empty($matches) || empty($matches[0])) {
+            throw new F_Db_Exception('columnExpression failed : '.$columnExpression);
+        }
+        
+        $whereIndex = count($this->_queryConditions['having']);
+        $this->_queryConditions['having'][$whereIndex] = array(
+            'expression' => '',
+            'bindParams' => array(),
+        );
+        
+        //依次处理,防止SQL注入
+        if ($argsTotal > 0) {
+            for ($i = $paramIndex; $i < $argsTotal; $i++) {
+                $this->_queryConditions['having'][$whereIndex]['bindParams'][$matches[1][$i-1]] = $args[$i].'';
+            }
+        }
+        
+        $this->_queryConditions['having'][$whereIndex]['expression'] = $columnExpression;
+        return $this;
+    }
+    
+    /**
+     * order by 表达式
+     * 
+     * 多个排序字段使用英文逗号隔开
+     * 
+     * @param string $expression
+     * return \F_Db_Table_Select
+     */
+    public function order($expression)
+    {
+        $this->_queryConditions['order'] = $expression;
+        return $this;
+    }
+    
+    /**
+     * group by 表达式
+     * 
+     * @param string $expression
+     * return \F_Db_Table_Select
+     */
+    public function group($expression)
+    {
+        $this->_queryConditions['group'] = $expression;
+        return $this;
+    }
+    
+    /**
+     * limit
+     * 
+     * @param int $offset
+     * @param int $count
+     * return \F_Db_Table_Select
+     */
+    public function limit($offset, $count)
+    {
+        $this->_queryConditions['limit'] = $offset.','.$count;
         return $this;
     }
     
@@ -111,6 +197,28 @@ final class F_Db_Table_Select
     }
     
     /**
+     * 查询【多行】记录 - 分页操作
+     * 
+     * @param int $page  第几页
+     * @param int $count 每页数量
+     * @param null|string $connectServer null=自动选择 master=主库 slave=从库
+     * @return F_Pagination
+     */
+    public function fetchAllOfPage($page, $count, $connectServer = null)
+    {
+        $offset     = ($page - 1) * $count;
+        $result     = $this->_find('fetchAll', $connectServer, true);
+        $itemTotal  = $result->itemTotal;
+        $this->limit($offset, $count);
+        $resultList =  $this->_find('fetchAll', $connectServer, false);
+        $pageDatas  = array();
+        if ($resultList->count() > 0) {
+            $pageDatas = $resultList->toArray();
+        }
+        return new F_Pagination($itemTotal, $page, $count, $pageDatas);
+    }
+    
+    /**
      * 查询(单行或多行)记录
      * 
      * 私有方法
@@ -118,27 +226,70 @@ final class F_Db_Table_Select
      * 
      * @param string $fetchMethod 查询使用手段 fetchRow 或 fetchAll
      * @param null|string $connectServer null=自动选择 master=主库 slave=从库
+     * @param int $page  第几页
+     * @param int $count 每页数量
      * @return mixed
      */
-    private function _find($fetchMethod, $connectServer)
+    private function _find($fetchMethod, $connectServer, $isPage = false)
     {
         $pdo = F_Db::getInstance()->changeConnectServer($connectServer);
         
         $rowClassName = $this->_tableConfigs['rowClassName'];
         $dbName       = $this->_tableConfigs['dbFullName'];
         $tableName    = $this->_tableConfigs['tableName'];
-
-        $sql = "SELECT {$this->_queryConditions['columns']} FROM {$dbName}.{$tableName}";
         
-        if (!empty($this->_queryConditions['where']['expression'])) {
-            $sql .= " WHERE {$this->_queryConditions['where']['expression']} ";
+        if ($isPage) {
+            $fetchMethod = 'fetchRow';
+            $sql = "SELECT count(*) as itemTotal FROM {$dbName}.{$tableName}";
+        } else {
+            $sql = "SELECT {$this->_queryConditions['columns']} FROM {$dbName}.{$tableName}";
+        }
+
+        if (!empty($this->_queryConditions['where'])) {
+            $sql .= " WHERE ";
+            foreach ($this->_queryConditions['where'] as $_where) {
+                $sql .= " {$_where['expression']} ";
+            }
+        }
+        
+        if (!empty($this->_queryConditions['order'])) {
+            $sql .= " ORDER BY " . $this->_queryConditions['order'];
+        }
+        
+        if (!empty($this->_queryConditions['group'])) {
+            $sql .= " GROUP BY " . $this->_queryConditions['group'];
+        }
+        
+        if (!empty($this->_queryConditions['having'])) {
+            $sql .= " HAVING ";
+            foreach ($this->_queryConditions['having'] as $_where) {
+                $sql .= " {$_where['expression']} ";
+            }
+        }
+        
+        if (!empty($this->_queryConditions['limit'])) {
+            $sql .= " limit " . $this->_queryConditions['limit'];
         }
 
         $pdo->prepare($sql);
-
-        if (!empty($this->_queryConditions['where']['bindParams'])) {
-            foreach ($this->_queryConditions['where']['bindParams'] as $wk => $wv) {
-                $pdo->bindParam($wk, $wv, PDO::PARAM_STR);
+        
+        if (!empty($this->_queryConditions['where'])) {
+            foreach ($this->_queryConditions['where'] as $_where) {
+                if(!empty($_where['bindParams'])) {
+                    foreach ($_where['bindParams'] as $wk => $wv) {
+                        $pdo->bindParam($wk, $wv, PDO::PARAM_STR);
+                    }
+                }
+            }
+        }
+        
+        if (!empty($this->_queryConditions['having'])) {
+            foreach ($this->_queryConditions['having'] as $_where) {
+                if(!empty($_where['bindParams'])) {
+                    foreach ($_where['bindParams'] as $wk => $wv) {
+                        $pdo->bindParam($wk, $wv, PDO::PARAM_STR);
+                    }
+                }
             }
         }
         

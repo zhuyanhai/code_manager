@@ -35,7 +35,7 @@ class Dao_CodeManager_Privilege extends Dao_Abstract
      * 
      * @return string
      */
-    public function showMenuType()
+    public function ___showMenuType()
     {
         if (!isset($this->menu_type)) {
             return '';
@@ -52,15 +52,4 @@ class Dao_CodeManager_Privilege extends Dao_Abstract
                 break;
         }
     }
-    
-    /**
-     * 格式化当前数据表内容
-     * 
-     * - 不允许调用任何业务模块和接口来格式化数据
-     * - 仅是根据数据本身来处理
-     */
-   public function format()
-   {
-
-   }
 }

@@ -58,12 +58,14 @@ final class Bll_UserModule_Login
         if ($userResultSet->isError()) {
             return $userResultSet;
         }
-        
-        if ($loginCookieResultSet->token != $token) {//检测token
-             return $userResultSet->resetError('用户');
-        }
 
-        if ($userResultSet->isLock) {//用户被锁定
+        $tokenMatchingResult = $userInfoInstance->checkToken($userResultSet->userid, $userResultSet->passwd, $userResultSet->create_time, $loginCookieResultSet->token);
+
+        if ($tokenMatchingResult->isError()) {//检测token
+            return $userResultSet->resetError('请先登录');
+        }
+        
+        if ($userResultSet->___isLock) {//用户被锁定
             return $userResultSet->resetError('用户被锁定');
         }
         

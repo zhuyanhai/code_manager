@@ -46,7 +46,7 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
     {
         $memKey = 'code_manager_menu_of_all';
         $memObj = F_Cache::createMemcache('user');
-
+        //$memObj->remove($memKey);
         //获取所有构造好的菜单
         $menuList = $memObj->load($memKey);
         if (!empty($menuList)) {

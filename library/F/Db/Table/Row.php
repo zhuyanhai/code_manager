@@ -112,23 +112,14 @@ class F_Db_Table_Row
    {
         $formatData = array();
         foreach ($this->_data as $fieldName=>$fieldVal) {
-            $isFun   = 'is'.ucfirst($fieldName);
-            $getFun  = 'get'.ucfirst($fieldName);
-            $showFun = 'show'.ucfirst($fieldName);
-            
-            if (method_exists($this, $isFun)) {
-                $formatData[$isFun] = $this->$isFun();
-            }
-            
-            if (method_exists($this, $getFun)) {
-                $formatData[$getFun] = $this->$getFun();
-            }
-            
-            if (method_exists($this, $showFun)) {
-                $formatData[$showFun] = $this->$showFun();
-            }
-
             $formatData[$fieldName] = $fieldVal;
+        }
+        
+        $methods = get_class_methods($this);
+        foreach ($methods as $m) {
+            if (strrpos($m, '_') === 2) {
+                $formatData[$m] = $this->$m();
+            }
         }
         
         return $formatData;

@@ -19,7 +19,7 @@ abstract class AbstractController extends F_Controller_ActionAbstract
         parent::__construct();
 
         //检测用户登录
-        $checkResult = Bll_UserModule_Login::check();
+        $checkResult = Bll_UserModule_Login::getInstance()->check();
         if ($checkResult->isError()) {//用户未登录，或用户被锁定等
             
             $controller = $this->_requestObj->getController();
@@ -45,7 +45,7 @@ abstract class AbstractController extends F_Controller_ActionAbstract
      */
     public function isLogin()
     {
-        if (empty($this->loginUserInfo) || $this->loginUserInfo['isLock']) {
+        if (empty($this->loginUserInfo) || $this->loginUserInfo['___isLock']) {
             return false;
         }
         return true;

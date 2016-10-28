@@ -1,0 +1,28 @@
+<?php $request = F_Controller_Request_Http::getInstance(); ?>
+<?php if ($this->pages->pageTotal > 0): ?>
+<div class="pages ac"> <span>共 <?php echo $this->pageCount; ?> 页</span>
+  <?php if (isset($this->pages->previous)): ?>
+  <a href="<?php echo array_merge($request->getQuery(), $request->getPost(), array('page' => $this->pages->first)); ?>" class="pageTxt">首页</a>
+  <?php endif; ?>
+  <?php if (isset($this->pages->previous)): ?>
+  <a href="<?php echo array_merge($request->getQuery(), $request->getPost(), array('page' => $this->pages->previous)); ?>" class="pageTxt">&laquo;上一页</a>
+  <?php endif ?>
+  <?php foreach ($this->pages->pagesInRange as $page): ?>
+  <?php if ($page == $this->pages->current): ?>
+  <strong><?php echo $page ?></strong>
+  <?php else: ?>
+  <a href="<?php echo array_merge($request->getQuery(), $request->getPost(), array('page' => $page)); ?>"><?php echo $page ?></a>
+  <?php endif ?>
+  <?php endforeach ?>
+  <?php if (isset($this->pages->next) && $page < $this->pages->last ): ?>
+  <a href="<?php echo array_merge($request->getQuery(), $request->getPost(), array('page' => $this->pages->last)); ?>" class="pageTxt"><?php echo $this->pages->last; ?></a>
+  <?php endif ?>
+  <?php if (isset($this->pages->next)): ?>
+  <a href="<?php echo array_merge($request->getQuery(), $request->getPost(), array('page' => $this->pages->next)); ?>" class="pageTxt">下一页&raquo;</a>
+  <?php endif ?>
+  <?php if (isset($this->pages->next)): ?>
+  <a href="<?php echo array_merge($request->getQuery(), $request->getPost(), array('page' => $this->pages->last)); ?>" class="pageTxt">末页</a>
+  <?php endif ?>
+</div>
+<!--pages end-->
+<?php endif ?>

@@ -5,6 +5,30 @@
  */
 class Utils_Array
 {
+    /**
+	 * 获得数组维数
+	 * @param array	$vDim	数组
+	 * @return int
+	 */
+	public static function getDim($vDim)
+    {
+		$dim = 0;
+		if (is_array($vDim)) {
+			$dim = 1;
+			for ($i=0;$i<=0;++$i) {
+				$vDim = array_shift($vDim);
+				if (is_array($vDim)) {
+					$i--;
+					$dim++;
+				} else {
+					break;
+				}
+			}
+		}
+		return $dim;
+	}
+
+    
    /**
      * 将数组或对象中的指定下标中的内容，提炼成一维数组
      * 
