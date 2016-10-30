@@ -57,7 +57,7 @@ final class F_Result
             throw new ResultException('构建错误结果集失败，statusCode 错误');
         }
 
-        return new ResultSet(array('status' => $statusCode, 'errorMsg' => $errorMsg));
+        return new ResultSet(array('status' => $statusCode, 'errorMsg' => $errorMsg, 'data' => null));
     }
 }
 

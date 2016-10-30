@@ -253,4 +253,25 @@ color: #666666;
     background: url(/asset/img/admin/sidebar_shadow.png) repeat-y left top;
     margin-top:65px;
 }
+
+.mainBox .width-rem-15{
+    width:15rem;
+}
+
+.mainBox .width-rem-40{
+    width:40rem;
+}
+
+.mainBox .width-rem-10{
+    width:10rem;
+}
+
+.mainBox .offsetLT-rem-4{
+    margin-left:4rem;
+    margin-top:1rem;
+}
+
+.mainBox .form-inline{
+    display: inline-table;
+}
 /*-- mainBox end --*/

@@ -1,34 +1,45 @@
 <?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '账号列表', 'url' => ''))?>
 
-<article class="module width_full">
-    <div class="searchs">
-        <form method="POST" id="searchForm" action="/account/">
-        <p>按条件搜索：
-            <select id="searchTypeId" name="searchType" onchange="schange(this);return false;">
-                <option value="account" <?php if($this->searchs['searchType'] === 'account'):?>selected<?php endif?>>登录账号</option>
-                <option value="realname" <?php if($this->searchs['searchType'] === 'realname'):?>selected<?php endif?>>用户名</option>
-            </select>
-            <input type="hidden" id="statusId" name="status" value="<?php echo $this->searchs['status']?>" />
-            <input type="hidden" id="searchValueId" name="searchValue" value="<?php echo $this->searchs['searchValue']?>" />
-        </p>
-        </form>
-        <p id="accountBoxId" class="PROGRAM-v" style="display: <?php if($this->searchs['searchType'] === 'account'):?>block<?php else:?>none<?php endif?>;">
-            登录账号&nbsp;：
-            <input type="text" id="accountId" class="input-w-500" value="<?php echo ($this->searchs['searchType'] === 'account')?$this->searchs['searchValue']:''?>" />
-        </p>
-        <p id="realnameBoxId" class="PROGRAM-v" style="display: <?php if($this->searchs['searchType'] === 'realname'):?>block<?php else:?>none<?php endif?>;">
-            用户名&nbsp;：
-            <input type="text" id="realnameId" class="input-w-500" value="<?php echo ($this->searchs['searchType'] === 'realname')?$this->searchs['searchValue']:''?>" />
-        </p>
-        <p>
-            状态&nbsp;：
-            <input id="status_all99" type="radio" name="statusShow" value="99" <?php echo (intval($this->searchs['status']) === 99) ? 'checked' : '' ?> /><label for="status_all99">全部</label>
-            <input id="status_all1" type="radio" name="statusShow" value="1" <?php echo (intval($this->searchs['status']) === 1) ? 'checked' : '' ?> /><label for="status_all1">正常</label>
-            <input id="status_all2" type="radio" name="statusShow" value="2" <?php echo (intval($this->searchs['status']) === 2) ? 'checked' : '' ?> /><label for="status_all2">锁定</label>
-        </p>
-        <p><input type="button" value="搜索" class="btn btn-w-100" onclick="query();">&nbsp;<input type="button" value="取消搜索" class="btn btn-w-100" onclick="cancelQuery();"></p>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">按条件搜索</h3>
     </div>
- </article>
+    <div class="panel-body">
+        <form method="POST" id="searchForm" action="/account/" class="form-horizontal" role="form">
+            <div class="form-group">
+                <label class="col-sm-2 control-label width-rem-10">筛选：</label>
+                <div class="col-sm-10">
+                    <select class="form-control form-inline width-rem-15" id="searchTypeId" name="searchType" onchange="schange(this);return false;">
+                        <option value="account" <?php if($this->searchs['searchType'] === 'account'):?>selected<?php endif?>>登录账号</option>
+                        <option value="realname" <?php if($this->searchs['searchType'] === 'realname'):?>selected<?php endif?>>用户名</option>
+                    </select>
+                    <input type="hidden" id="statusId" name="status" value="<?php echo $this->searchs['status']?>" />
+                    <input type="text" class="form-control form-inline width-rem-40" id="searchValue" placeholder="输入查询条件" value="<?php echo $this->searchs['searchValue']?>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label width-rem-10">状态：</label>
+                <div class="col-sm-10">
+                    <label class="radio-inline">
+                        <input type="radio" name="statusShow" id="inlineRadio1" value="99" <?php echo (intval($this->searchs['status']) === 99) ? 'checked' : '' ?>> 全部
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="statusShow" id="inlineRadio2" value="1" <?php echo (intval($this->searchs['status']) === 1) ? 'checked' : '' ?>> 正常
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="statusShow" id="inlineRadio3" value="2" <?php echo (intval($this->searchs['status']) === 2) ? 'checked' : '' ?>> 锁定
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="offsetLT-rem-4">
+                    <button type="button" class="btn btn-default" onclick="query();">开始搜索</button>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-default" onclick="cancelQuery();">取消搜索</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 <article class="module width_full">
     <header>
