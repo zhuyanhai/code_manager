@@ -107,8 +107,8 @@
 .navtoolbarBox .breadcrumb_divider {
     display: inline-block;
     width: 12px;
-    height: 24px;
-    background: url(/asset/img/admin/secondary_bar_shadow.png) no-repeat;
+    height: 22px;
+    background: url(/asset/img/admin/breadcrumb_divider.png) no-repeat;
     float: left;
     margin: 0 5px;
 }
