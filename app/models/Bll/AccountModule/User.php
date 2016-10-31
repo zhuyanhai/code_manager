@@ -6,13 +6,13 @@
  * 
  * 用户模块
  * 
- * 用户账号管理逻辑 - 处理接口
+ * 用户管理逻辑 - 处理接口
  * 
  * @package Bll
- * @subpackage Bll_UserModule
+ * @subpackage Bll_AccountModule
  * @author allen <allen@yuorngcorp.com>
  */
-final class Bll_UserModule_Account
+final class Bll_AccountModule_User
 {
     private function __construct()
     {
@@ -24,8 +24,8 @@ final class Bll_UserModule_Account
      * 
      * 获取类的对象实例
      * 
-     * @staticvar Bll_UserModule_Account $instance
-     * @return \Bll_UserModule_Account
+     * @staticvar Bll_AccountModule_User $instance
+     * @return \Bll_AccountModule_User
      */
     public static function getInstance()
     {

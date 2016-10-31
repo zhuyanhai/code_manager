@@ -9,10 +9,10 @@
  * 用户登录逻辑 - 处理接口
  * 
  * @package Bll
- * @subpackage Bll_UserModule
+ * @subpackage Bll_AccountModule
  * @author allen <allen@yuorngcorp.com>
  */
-final class Bll_UserModule_Login
+final class Bll_AccountModule_Login
 {
     private function __construct()
     {
@@ -24,8 +24,8 @@ final class Bll_UserModule_Login
      * 
      * 获取类的对象实例
      * 
-     * @staticvar Bll_UserModule_Login $instance
-     * @return \Bll_UserModule_Login
+     * @staticvar Bll_AccountModule_Login $instance
+     * @return \Bll_AccountModule_Login
      */
     public static function getInstance()
     {
@@ -45,7 +45,7 @@ final class Bll_UserModule_Login
      */
     public function check()
     {
-        $userInfoInstance = Bll_UserModule_Internal_Info::getInstance();
+        $userInfoInstance = Bll_AccountModule_Internal_Info::getInstance();
         
         //登陆cookie内容
         $loginCookieResultSet = $userInfoInstance->getLoginCookie();
@@ -88,7 +88,7 @@ final class Bll_UserModule_Login
             return F_Result::build()->error('密码不能为空');
         }
         
-        $userInfoInstance = Bll_UserModule_Internal_Info::getInstance();
+        $userInfoInstance = Bll_AccountModule_Internal_Info::getInstance();
         
         //用户信息
         $userResultSet = $userInfoInstance->getByAccount($account);

@@ -2,15 +2,15 @@
 /**
  * 内部API (其它模块不可访问)
  * 
- * 访问权限 - 仅 Bll/UserModule 目录中的任何程序
+ * 访问权限 - 仅 Bll/AccountModule 目录中的任何程序
  * 
  * 用户信息逻辑
  * 
  * @package Bll
- * @subpackage Bll_UserModule
+ * @subpackage Bll_AccountModule
  * @author allen <allen@yuorngcorp.com>
  */
-final class Bll_UserModule_Internal_Info extends F_InternalAbstract
+final class Bll_AccountModule_Internal_Info extends F_InternalAbstract
 {
     private function __construct()
     {
@@ -22,8 +22,8 @@ final class Bll_UserModule_Internal_Info extends F_InternalAbstract
      * 
      * 获取类的对象实例
      * 
-     * @staticvar Bll_UserModule_Internal_Info $instance
-     * @return \Bll_UserModule_Internal_Info
+     * @staticvar Bll_AccountModule_Internal_Info $instance
+     * @return \Bll_AccountModule_Internal_Info
      */
     public static function getInstance()
     {

@@ -34,10 +34,10 @@
         </nav>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-3 col-md-2 sidebar hcolumn">
+                <div id="menuId" class="col-sm-3 col-md-2 sidebar">
                     <?php echo $this->getMenuListByUser($this->loginUserInfo)?>
                 </div>
-                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 mainBox hcolumn">
+                <div id="mainId" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 mainBox">
                     <?php echo $scriptContent ?>
                 </div>
             </div>
@@ -45,7 +45,8 @@
         <script>
             __wait(function(){
                 //操作所有拥有此class的元素等高
-                $('.hcolumn').equalHeight(document.body.clientHeight - 85);
+                $('#menuId').equalHeight(document.body.clientHeight - 85);
+                $('#mainId').equalHeight($('#menuId').height() - 5);
                 
                 // choose text for the show/hide link - can contain HTML (e.g. an image)
                 var showText='Show';
@@ -80,10 +81,13 @@
                     return false;
 
                 });
+                
+                //页面table表格排序
+                $(".tablesorter").tablesorter();
             });
         </script>
         <?php
-        echo $this->script()->outputScript($this->assetPath()->getJsOfModule('lab/2.0.3/lab.js,jquery/1.11.1/jquery.min.js,bootstrap/3.3.5/bootstrap.min.js,jquery/ui/base.min.js,jquery/plugin/equalHeight/jquery.equalHeight.js,utility.js'))->lastWait(function() {
+        echo $this->script()->outputScript($this->assetPath()->getJsOfModule('lab/2.0.3/lab.js,jquery/1.11.1/jquery.min.js,bootstrap/3.3.5/bootstrap.min.js,jquery/ui/base.min.js,jquery/plugin/tablesorter/jquery.tablesorter.min.js,jquery/plugin/equalHeight/jquery.equalHeight.js,utility.js'))->lastWait(function() {
             //页面中所有JS加载完毕后才开始执行的
             return '__wait(false, true);';
         });

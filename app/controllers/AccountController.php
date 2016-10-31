@@ -21,6 +21,22 @@ class AccountController extends AbstractController
         $this->view->searchs['searchType']  = Utils_Validation::filter($this->_requestObj->getParam('searchType', 'account'))->removeStr()->removeHtml()->receive();
         $this->view->searchs['searchValue'] = Utils_Validation::filter($this->_requestObj->getParam('searchValue', ''))->removeStr()->removeHtml()->receive();
 
-        $this->view->list = Bll_UserModule_Account::getInstance()->getListOfAdmin($this->view->searchs, $page);
+        $this->view->list = Bll_AccountModule_User::getInstance()->getListOfAdmin($this->view->searchs, $page);
+    }
+    
+    /**
+     * 添加账号
+     */
+    public function addAction()
+    {
+        
+    }
+    
+    /**
+     * 编辑账号
+     */
+    public function editAction()
+    {
+        
     }
 }

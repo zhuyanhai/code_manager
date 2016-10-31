@@ -251,7 +251,11 @@ color: #666666;
     padding: 20px 10px 0px 10px;
     min-height: 500px;
     background: url(/asset/img/admin/sidebar_shadow.png) repeat-y left top;
-    margin-top:65px;
+    margin-top:70px;
+}
+
+.mainBox .resetPadding{
+    padding: 0px;
 }
 
 .mainBox .width-rem-15{
@@ -273,5 +277,24 @@ color: #666666;
 
 .mainBox .form-inline{
     display: inline-table;
+}
+
+.mainBox .panel-heading{
+    font-weight: bold;
+}
+
+.mainBox .panel-heading>a{
+    padding:0px 12px;
+}
+
+.mainBox .table-page{
+    border-top: 1px solid #ddd;
+    display: block;
+    text-align: center;
+    padding:5px;
+}
+
+.mainBox .tablesorter thead tr {
+    cursor: pointer;
 }
 /*-- mainBox end --*/

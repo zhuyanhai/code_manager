@@ -1,0 +1,119 @@
+<?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '后天账号列表', 'url' => '/admin/user/'), array('title' => '编辑后台账号', 'url' => ''))?>
+
+<script type="text/javascript">
+var isClick = 0;
+function edit()
+{
+    if (isClick === 1) {
+        return false;
+    }
+    isClick = 1;
+    
+    var post = {};
+    
+    post['account'] = $.trim($("#account").val());
+    if (post['account'].length <= 0) {
+        alert("请输入登陆账号");
+        isClick = 0;
+        return false;
+    }
+
+    post['password'] = $.trim($("#passwd").val());
+    if (post['password'].length > 20) {
+        alert("登陆密码最多20个字符");
+        isClick = 0;
+        return false;
+    }
+    
+    post['realname'] = $.trim($("#realname").val());
+    if (post['realname'].length <= 0) {
+        alert("请输入真实姓名");
+        isClick = 0;
+        return false;
+    }
+    
+    post['roleList'] = [];
+    $('input[name=role]').each(function(){
+        if (this.checked) {
+            post['roleList'].push(this.value);
+        }
+    });
+    
+    post['phone'] = $.trim($("#phone").val());
+    post['email'] = $.trim($("#email").val());
+    
+    post['userid'] = <?php echo $this->adminUser['userid']?>;
+            
+    $.post('/admin/user/edit', post, function(result){
+        if (parseInt(result.status) === 0) {
+            alert('编辑成功');
+            window.location.href = '/admin/user/';
+        } else {
+            isClick = 0;
+            alert(result.msg);
+        }
+    }, 'json');
+}
+</script>
+
+<article class="module width_full">
+    
+    <div class="add_data">
+        <span class="add_spanLeft">登陆账号:</span>
+        <span class="add_spanC">
+            <input type="text" id="account" class="add_ltxt" value="<?php echo $this->adminUser['account']?>" />
+        </span>
+        <span style="color:red;">*</span>
+    </div>
+
+    <div class="add_data">
+        <span class="add_spanLeft">登陆密码:</span>
+        <span class="add_spanC">
+            <input type="text" id="passwd" class="add_ltxt" value="" />
+        </span>
+        <span style="color:red;">*</span>
+    </div>
+
+    <div class="add_data">
+        <span class="add_spanLeft">真实姓名:</span>
+        <span class="add_spanC">
+            <input type="text" id="realname" class="add_ltxt" value="<?php echo $this->adminUser['realname']?>" />
+        </span>
+        <span style="color:red;">*</span>
+    </div>
+
+    <div class="add_data">
+        <span class="add_spanLeft">联系电话:</span>
+        <span class="add_spanC">
+            <input type="text" id="phone" class="add_ltxt" value="<?php echo $this->adminUser['phone']?>" />
+        </span>
+        <span style="color:red;"></span>
+    </div>
+    
+    <div class="add_data">
+        <span class="add_spanLeft">联系邮箱:</span>
+        <span class="add_spanC">
+            <input type="text" id="email" class="add_ltxt" value="<?php echo $this->adminUser['email']?>" />
+        </span>
+        <span style="color:red;"></span>
+    </div>
+    
+    <div class="add_data">
+        <span class="add_spanLeft">用户角色:</span>
+        <span class="add_spanC">
+            <?php if(count($this->roleList) > 0):?>
+            <?php foreach($this->roleList as $r):?>
+            <input type="checkbox" id="r_<?php echo $r['id']?>" name="role" value="<?php echo $r['id']?>" <?php if(in_array($r['id'], $this->adminUser['get_role_list'])):?>checked<?php endif?> /><label for="r_<?php echo $r['id']?>"><?php echo $r['name']?></label>
+            <?php endforeach?>
+            <?php endif?>
+        </span>
+        <span style="color:red;"></span>
+    </div>
+
+    <div class="add_data">
+        <span class="add_spanLeft"></span>
+        <span class="add_spanC">
+            <input type="button" onclick="edit()" value="提交" class="inputButton" />
+        </span>
+    </div>
+</article>

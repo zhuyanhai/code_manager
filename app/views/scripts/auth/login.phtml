@@ -2,51 +2,43 @@
 $this->headLink()->appendStylesheet($this->assetPath()->getCssOfPage('auth_login'));
 ?>
 <div class="login-box">
-    <h3 class="center-block text-center">登录你的账号</h3>
+    <h3 class="center-block text-center" style="margin:0px;border-bottom: #D8D8D8 1px dashed;margin-bottom: 2.5rem;padding:1rem;">登录你的账号</h3>
     <form action="/auth/login/" method="post" class="form-horizontal">
+        <div class="form-group has-feedback">
+            <label class="control-label" id="errorBoxId" style="position: absolute;top:-2.5rem;left:7.5rem;color:#a94442">
+                <?php if(!empty($this->error)):?><?php echo $this->error?><?php endif?>
+            </label>
+            <label for="accountId" class="col-sm-2 control-label" style="padding:7px 0px 0px 0px;">账号</label>
+            <div class="col-sm-9">
+                <input type="text" class="PROGRAM-txt form-control" name="account" id="accountId" placeholder="请输入你的登录账号">
+            </div>
+        </div>
 
-            <div class="form-group">
-                <label for="accountId" class="col-sm-2 control-label">账号</label>
-                <div class="col-sm-9">
-                  <input type="text" class="PROGRAM-txt form-control" name="account" id="accountId" placeholder="请输入你的登录账号">
-                </div>
+        <div class="form-group">
+            <label for="passwdId" class="col-sm-2 control-label" style="padding:7px 0px 0px 0px;">密码</label>
+            <div class="col-sm-9">
+              <input type="password" class="PROGRAM-txt form-control" name="passwd" id="passwdId" placeholder="请输入你的登录密码">
             </div>
-        
-            <div class="form-group">
-                <label for="passwdId" class="col-sm-2 control-label">密码</label>
-                <div class="col-sm-9">
-                  <input type="password" class="PROGRAM-txt form-control" name="passwd" id="passwdId" placeholder="请输入你的登录密码">
-                </div>
-            </div>
-        
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-6">
-                    <div class="text-left">
-                    <?php if(!empty($this->error)):?>
-                    <div id="errorBoxId" class="alert alert-danger alert-dismissible fade in" role="alert">
-                        <?php echo $this->error?>
-                    </div>
-                    <?php endif?>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="checkbox text-right">
-                        <label><input type="checkbox" name="remember" value="1"> 记住我</label>
-                    </div>
-                </div>
-            </div>
+        </div>
 
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-success">Sign in</button>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-6">
+                <div class="checkbox text-left">
+                    <label><input type="checkbox" name="remember" value="1"> 记住我</label>
                 </div>
             </div>
+            <div class="col-sm-3">
+                <div class="text-right">
+                    <button type="submit" class="btn btn-success" style='padding:5px 12px'>Sign in</button>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
 <script>
 __wait(function(){
     $('.PROGRAM-txt').on('focus', function(){
-        $('#errorBoxId').alert('close');
+        $('#errorBoxId').fadeOut(500);
     });
 });
 </script>

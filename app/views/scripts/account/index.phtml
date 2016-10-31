@@ -1,9 +1,7 @@
 <?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '账号列表', 'url' => ''))?>
 
 <div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">按条件搜索</h3>
-    </div>
+    <div class="panel-heading">按条件搜索</div>
     <div class="panel-body">
         <form method="POST" id="searchForm" action="/account/" class="form-horizontal" role="form">
             <div class="form-group">
@@ -41,59 +39,59 @@
     </div>
 </div>
 
-<article class="module width_full">
-    <header>
-        <h3 class="tabs_involved">账号列表</h3>
-        <a href="/account/add" class="btn btn-w-80 btn-r">添加账号</a>
-    </header>
-    <div class="tab_container">
-        <table class="tablesorter" cellspacing="0"> 
-            <thead> 
-                <tr> 
-                    <th class="header">用户ID</th>
-                    <th class="header">用户账号</th>
-                    <th class="header">用户姓名</th>
-                    <th class="header">用户电话</th>
-                    <th class="header">用户邮箱</th>
-                    <th class="header">用户状态</th>
-                    <th class="header">创建时间</th>
-                    <th class="header">操作</th> 
-                </tr> 
-            </thead> 
-            <tbody> 
-                <?php if($this->list->itemTotal() > 0):?>
-                    <?php foreach($this->list as $v):?>
-                        <tr id="item_<?php echo $v['userid']?>"> 
-                            <td><?php echo $v['userid']?></td> 
-                            <td><?php echo $v['account']?></td> 
-                            <td><?php echo $v['realname']?></td>
-                            <td><?php echo $v['contactPhone']?></td>
-                            <td><?php echo $v['contactEmail']?></td> 
-                            <td><?php echo (!$v['___isLock'])?'正常':'锁定'?></td> 
-                            <td><?php echo date('Y-m-d H:i:s', $v['createTime'])?></td> 
-                            <td>
-                                <?php if($v['___isSuperAdmin']):?>
-                                    <a href="/account/edit/userid/<?php echo $v['userid']?>">编辑</a>&nbsp;
-                                    <?php if(intval($this->searchs['status']) === 99):?>
-                                            <a href="###" id="lock_<?php echo $v['userid']?>" onclick="lock(<?php echo $v['userid']?>);return false;" style="display:<?php if(intval($v['status']) === 1):?>inline-block<?php else:?>none<?php endif?>;">锁定</a>
-                                            <a href="###" id="unlock_<?php echo $v['userid']?>" onclick="unlock(<?php echo $v['userid']?>);return false;" style="display:<?php if(intval($v['status']) === 2):?>inline-block<?php else:?>none<?php endif?>;">解锁</a>
-                                    <?php else:?>
-                                        <?php if(intval($v['status']) === 1):?>
-                                            <a href="###" onclick="lock(<?php echo $v['userid']?>);return false;">锁定</a>
-                                        <?php elseif(intval($v['status']) === 2):?>
-                                            <a href="###" onclick="unlock(<?php echo $v['userid']?>);return false;">解锁</a>
-                                        <?php endif?>
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+    <div class="panel-heading">账号列表<a href="/account/add" class="btn btn-default pull-right">添加账号</a></div>
+
+    <!-- Table -->
+    <table class="table tablesorter">
+        <thead>
+          <tr>
+            <th>用户ID</th>
+            <th>账号</th>
+            <th>姓名</th>
+            <th>电话</th>
+            <th>邮箱</th>
+            <th>状态</th>
+            <th>创建时间</th>
+            <th>操作</th> 
+          </tr>
+        </thead>
+        <tbody>
+            <?php if($this->list->itemTotal() > 0):?>
+                <?php foreach($this->list as $v):?>
+                    <tr id="item_<?php echo $v['userid']?>"> 
+                        <td><?php echo $v['userid']?></td> 
+                        <td><?php echo $v['account']?></td> 
+                        <td><?php echo $v['realname']?></td>
+                        <td><?php echo $v['contactPhone']?></td>
+                        <td><?php echo $v['contactEmail']?></td> 
+                        <td><?php echo (!$v['___isLock'])?'正常':'锁定'?></td> 
+                        <td><?php echo date('Y-m-d H:i:s', $v['createTime'])?></td> 
+                        <td>
+                            <?php if($v['___isSuperAdmin']):?>
+                                <a href="/account/edit/userid/<?php echo $v['userid']?>">编辑</a>&nbsp;
+                                <?php if(intval($this->searchs['status']) === 99):?>
+                                        <a href="###" id="lock_<?php echo $v['userid']?>" onclick="lock(<?php echo $v['userid']?>);return false;" style="display:<?php if(intval($v['status']) === 1):?>inline-block<?php else:?>none<?php endif?>;">锁定</a>
+                                        <a href="###" id="unlock_<?php echo $v['userid']?>" onclick="unlock(<?php echo $v['userid']?>);return false;" style="display:<?php if(intval($v['status']) === 2):?>inline-block<?php else:?>none<?php endif?>;">解锁</a>
+                                <?php else:?>
+                                    <?php if(intval($v['status']) === 1):?>
+                                        <a href="###" onclick="lock(<?php echo $v['userid']?>);return false;">锁定</a>
+                                    <?php elseif(intval($v['status']) === 2):?>
+                                        <a href="###" onclick="unlock(<?php echo $v['userid']?>);return false;">解锁</a>
                                     <?php endif?>
                                 <?php endif?>
-                            </td>
-                        </tr> 
-                    <?php endforeach?>
-                        <tr><td colspan="8"><?php echo $this->list?></td></tr>
-                <?php endif?>
-            </tbody> 
-        </table>
-    </div><!-- end of .tab_container -->
-</article>
+                            <?php endif?>
+                        </td>
+                    </tr> 
+                <?php endforeach?>
+            <?php endif?>
+        </tbody>
+    </table>
+    <?php if($this->list->itemTotal() > 0):?>
+        <div class="table-page"><?php echo $this->list?></div>
+    <?php endif?>
+</div>
 
 <script>
 function cancelQuery()

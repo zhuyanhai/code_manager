@@ -25,7 +25,7 @@ class AuthController extends AbstractController
             $account  = Utils_Validation::filter($this->_requestObj->getParam('account', ''))->removeStr()->removeHtml()->receive();
             $passwd   = Utils_Validation::filter($this->_requestObj->getParam('passwd', ''))->removeStr()->removeHtml()->receive();
             $remember = intval($this->_requestObj->getParam('remember', 0));
-            $userResult = Bll_UserModule_Login::getInstance()->process($account, $passwd, $remember);
+            $userResult = Bll_AccountModule_Login::getInstance()->process($account, $passwd, $remember);
             if ($userResult->isError()) {//错误
                 $this->view->error = $userResult->getErrorInfo();
             } else {
