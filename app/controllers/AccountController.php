@@ -29,7 +29,16 @@ class AccountController extends AbstractController
      */
     public function addAction()
     {
-        
+        if ($this->isAjax()) {
+            $post = $this->_requestObj->getPost();
+            $resultSet = Bll_AccountModule_User::getInstance()->add($post);
+            if ($resultSet->isError()) {
+                $this->error($resultSet->getErrorInfo())->response();
+            }
+            $this->response();
+        }
+                
+        $this->view->menus = Bll_PrivilegeModule_Query::getInstance()->getAllOfAdmin();
     }
     
     /**

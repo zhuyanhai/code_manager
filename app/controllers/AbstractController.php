@@ -18,23 +18,23 @@ abstract class AbstractController extends F_Controller_ActionAbstract
     {
         parent::__construct();
 
-        //检测用户登录
-        $checkResult = Bll_AccountModule_Login::getInstance()->check();
-        if ($checkResult->isError()) {//用户未登录，或用户被锁定等
-            
-            $controller = $this->_requestObj->getController();
-            $module     = $this->_requestObj->getModule();
-
-            if ($module == 'index' && !in_array($controller, array('auth', 'error'))) {//指定不予处理的module/controller
-                if ($this->_requestObj->isXmlHttpRequest()) {//是ajax请求
-                    $this->error('请先登陆', -110)->response();
-                } else {//非ajax
-                    $this->_redirectorObj->gotoUrlAndExit('/auth/login/');
-                }
-            }
-        }
-        
-        $this->view->loginUserInfo = $this->loginUserInfo = $checkResult->getResult();
+//        //检测用户登录
+//        $checkResult = Bll_AccountModule_Login::getInstance()->check();
+//        if ($checkResult->isError()) {//用户未登录，或用户被锁定等
+//            
+//            $controller = $this->_requestObj->getController();
+//            $module     = $this->_requestObj->getModule();
+//
+//            if ($module == 'index' && !in_array($controller, array('auth', 'error'))) {//指定不予处理的module/controller
+//                if ($this->_requestObj->isXmlHttpRequest()) {//是ajax请求
+//                    $this->error('请先登陆', -110)->response();
+//                } else {//非ajax
+//                    $this->_redirectorObj->gotoUrlAndExit('/auth/login/');
+//                }
+//            }
+//        }
+//        
+//        $this->view->loginUserInfo = $this->loginUserInfo = $checkResult->getResult();
 
     }
     

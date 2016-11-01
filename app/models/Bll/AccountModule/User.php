@@ -67,4 +67,41 @@ final class Bll_AccountModule_User
         return $list;
     }
     
+    /**
+     * 添加账号
+     * 
+     * @param array $post
+     * @return ResultSet
+     */
+    public function add($post)
+    {
+        try {
+            $post['sAccount'] = Utils_Validation::verify('sAccount', $post)->required()->receive();
+            $post['sAccount'] = Utils_Validation::filter($post['sAccount'])->removeHtml()->removeStr()->receive();
+            
+            $post['sPasswd'] = Utils_Validation::verify('sPasswd', $post)->required()->receive();
+            $post['sPasswd'] = Utils_Validation::filter($post['sPasswd'])->removeHtml()->removeStr()->receive();
+            
+            $post['sRealname'] = Utils_Validation::verify('sRealname', $post)->required()->receive();
+            $post['sRealname'] = Utils_Validation::filter($post['sRealname'])->removeHtml()->removeStr()->receive();
+            
+            $post['sContactPhone'] = Utils_Validation::filter($post['sContactPhone'])->removeHtml()->removeStr()->receive();
+            
+            $post['sContactEmail'] = Utils_Validation::filter($post['sContactEmail'])->removeHtml()->removeStr()->receive();
+            
+            print_r($post['aPrivilegeNodes']);
+            exit;
+        } catch(Utils_Validation_Exception $e) {
+            switch ($e->errorKey) {
+                case "sAccount":
+                    $msg = '请输入账号';
+                    break;
+                default:
+                    $msg = '添加失败';
+                    break;
+            }
+            return F_Result::build()->error($msg);
+        }
+    }
+    
 }

@@ -52,4 +52,20 @@ class Dao_CodeManager_Privilege extends Dao_Abstract
                 break;
         }
     }
+    
+    /**
+     * 是否是菜单权限
+     * 
+     * @return boolean true=菜单/权限  false=仅权限
+     */
+    public function ___isMenu()
+    {
+        if (!isset($this->type)) {
+            return false;
+        }
+        if (intval($this->type) === 1) {
+            return true;
+        }
+        return false;
+    }
 }

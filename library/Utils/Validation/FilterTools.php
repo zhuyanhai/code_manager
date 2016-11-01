@@ -148,76 +148,30 @@ final class Utils_Validation_FilterTools
     }
     
     /**
-     * 如果存在HTML标签，过滤掉有威胁的HTML标签【适用于所见即所得的BLOG等】
+     * xss
      * 
+     * @param Closure $config 操作配置的处理函数
      * @return \Utils_Validation_FilterTools
      */
-    public function filterHtml()
+    public function xss($config = null)
     {
-        if (gettype($this->_val) === 'string') {
-            $searchEncode = array (
-                "'(<|%3C)script([^>]|[^%3E])*?(>|%3E).*?(<|%3C)(/|%2F)script(>|%3E)'si",
-                "'(<|%3C)html([^>]|[^%3E])*?[>|%3E].*?[<|%3C]body([^>]|[^%3E])*?[>|%3E]'si",
-                "'(<|%3C)(/|%2F)body(>|%3E).*?(<|%3C)(/|%2F)html(>|%3E)'si",
-                "'(<|%3C)style([^>]|[^%3E])*?(>|%3E).*?(<|%3C)(/|%2F)style(>|%3E)'si",
-                "'(<|%3C)link([^>]|[^%3E])*?\s*(/|%2F)?(>|%3E)'si",
-                "'(<|%3C)iframe([^>]|[^%3E])*?(>|%3E).*?(<|%3C)(/|%2F)iframe(>|%3E)'si",
-                "'(<|%3C)form([^>]|[^%3E])*?(>|%3E).*?(<|%3C)(/|%2F)form(>|%3E)'si",
-                "'(<|%3C)textarea([^>]|[^%3E])*?>.*?(<|%3C)(/|%2F)textarea(>|%3E)'si",
-                "'(\s*|\+*)id(\s*|\+*)(=|%3D)(\s*|\+*)(\"|\'|%22|%27).*?(\"|\'|%22|%27)'si",
-                "'(\s*|\+*)clas(\s*|\+*)s(\s*|\+*)(=|%3D)(\s*|\+*)(\"|\'|%22|%27).*?(\"|\'|%22|%27)'si",
-                "'(<|%3C)(!|%21)--.*?--(>|%3E)'si",
-            );
-
-            $replace = array ("","","","","","","","","","","");
-
-            $this->_val = preg_replace($searchEncode, $replace, $this->_val);
-            //避免双重转义代码，所以需要过滤两次
-            $this->_val = preg_replace($searchEncode, $replace, $this->_val);
-
-            $searchEncode = array (
-                "'(<|%3C)script([^>]|[^%3E])*?(>|%3E)'si",
-                "'(<|%3C)iframe([^>]|[^%3E])*?(>|%3E)'si",
-            );
-
-            $this->_val = preg_replace($searchEncode, $replace, $this->_val);
-            //避免双重转义代码，所以需要过滤两次
-            $this->_val = preg_replace($searchEncode, $replace, $this->_val);
-
-            $trans = array(
-                '?' => '&#63;',
-            );
-
-            $this->_val = strtr($this->_val, $trans);
+        require_once(LIBRARY_PATH . '/T/HTMLPurifier/HTMLPurifier.auto.php');
+        
+        $configInstance = \HTMLPurifier_Config::create($config instanceof \Closure ? null : $config);
+        $configInstance->autoFinalize = false;
+        $purifier = \HTMLPurifier::instance($configInstance);
+        $purifier->config->set('Cache.SerializerPath', '/data/runtime');
+        
+        if ($config instanceof \Closure) {
+            call_user_func($config, $configInstance);
         }
+        
+        $configInstance->set('Core.Encoding', 'UTF-8');
+        //html标签禁用的属性
+        $configInstance->set('HTML.ForbiddenAttributes', array('class'));
+        
+        $this->_val = $purifier->purify($this->_val);
+        
         return $this;
-    }
-
-    /**
-     * xssA
-     * 
-     * @return \Utils_Validation_FilterTools
-     */
-    public function xssA()
-    {
-//        $this->filterHtml();
-//        require_once(ROOT_PATH . '/UtanGlobal/library/Third/htmlpurifier/library/HTMLPurifier.auto.php');
-//        //标签和属性白名单
-//        $simpleConfigStr = '
-//        a[href]
-//        ';
-//        $config = HTMLPurifier_Config::createDefault();
-//        $config->set('Core.Encoding', 'UTF-8'); // replace with your encoding
-//        $config->set('HTML.Doctype', 'XHTML 1.0 Transitional'); // replace with your doctype
-//        $config->set('HTML.Allowed', $simpleConfigStr);
-//        //添加连接的target属性
-//        $config->set('HTML.DefinitionID', 'enduser-customize.html tutorial');
-//        $config->set('HTML.DefinitionRev', 1);
-//        $config->set('Cache.DefinitionImpl', null); // remove this later!
-//        $def = $config->getHTMLDefinition(true);
-//        $def->addAttribute('a', 'target', 'Enum#_blank,_self,_target,_top');
-//        $purifier = new HTMLPurifier($config);
-//        $this->_val = $purifier->purify($this->_val);
-//        return $this;
     }
 }

@@ -6,10 +6,8 @@
            // find the tallest height in the collection
            // that was passed in (.column)
             tallest = (defaultTallest === undefined || defaultTallest === null || defaultTallest === '')?0:defaultTallest;
-            console.log(tallest);
             this.each(function(){
                 thisHeight = $(this).height();
-                console.log(thisHeight, tallest);
                 if( thisHeight > tallest)
                     tallest = thisHeight;
             });

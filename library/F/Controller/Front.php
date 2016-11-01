@@ -39,13 +39,16 @@ class F_Controller_Front
     }
     
     /**
-     * 开始处理分配 - 输入、路由、输出
+     * 开始处理分配 - 输入、过滤、路由、输出
      */
     public function dispatch()
     {
         try {
             $requestObj  = F_Controller_Request_Http::getInstance();
             $responseObj = F_Controller_Response_Http::getInstance();
+            
+            //过滤输入
+            $requestObj->filterInput();
 
             F_Route::run();
 

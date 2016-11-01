@@ -24,7 +24,8 @@
                 </div>
                 <div class="row navtoolbarBox">
                     <div class="col-sm-3 col-md-2 user">
-                        <p>超级管理员</p>
+                        <p class="lp">超级管理员</p>
+                        <p class="rp"><a href="/auth/logout/"><i class="glyphicon glyphicon-off"></i></a></p>
                     </div>
                     <div class="col-sm-9 col-md-10 breadcrumbs_container">
                         <?php echo $this->breadcrumbs()?>
@@ -87,7 +88,7 @@
             });
         </script>
         <?php
-        echo $this->script()->outputScript($this->assetPath()->getJsOfModule('lab/2.0.3/lab.js,jquery/1.11.1/jquery.min.js,bootstrap/3.3.5/bootstrap.min.js,jquery/ui/base.min.js,jquery/plugin/tablesorter/jquery.tablesorter.min.js,jquery/plugin/equalHeight/jquery.equalHeight.js,utility.js'))->lastWait(function() {
+        echo $this->script()->outputScript($this->assetPath()->getJsOfModule('lab/2.0.3/lab.js,jquery/1.11.1/jquery.min.js,bootstrap/3.3.5/bootstrap.min.js,jquery/ui/base.min.js,jquery/plugin/tablesorter/jquery.tablesorter.min.js,jquery/plugin/equalHeight/jquery.equalHeight.js,plugin/utility.js'))->lastWait(function() {
             //页面中所有JS加载完毕后才开始执行的
             return '__wait(false, true);';
         });

@@ -66,4 +66,34 @@ final class Bll_PrivilegeModule_Query
             return Bll_PrivilegeModule_Internal_BuildMenu::getInstance()->getByUserid($userid);
         }
     }
+    
+    /**
+     * 获取全部有效菜单
+     * 
+     * @param int $userid 用户ID，默认0=全部，>0=获取指定用户的全部权限
+     * @return array
+     */
+    public function getAllOfAdmin($userid = 0)
+    {
+        $return = array();
+        if ($userid === 0) {
+            $list = Dao_CodeManager_Privilege::getSelect()->fromColumns('id, parent_id as pid, name, type')->where('status=:status order by id asc', 0)->fetchAll()->toArray();
+        } else {
+            $userPrivilegeList = Dao_CodeManager_UserPrivilege::getSelect('privilege_id')->where('userid=:userid', $userid)->fetchAll()->toArray();
+            if (count($userPrivilegeList) > 0) {
+                $list = Dao_CodeManager_Privilege::getSelect()->fromColumns('id, parent_id as pid, name, type')->where('id in(:id) AND status=:status order by id asc', implode(',', $userPrivilegeList), 0)->fetchAll()->toArray();
+            }
+        }
+        if (count($list) > 0) {
+            foreach ($list as $v) {
+                array_push($return, array(
+                    'id'   => $v['id'],
+                    'name' => (($v['___isMenu'])?'[菜单] ':'[操作] ').$v['name'],
+                    'pId'  => $v['pid'],
+                ));
+            }
+        }
+        
+        return $return;
+    }
 }

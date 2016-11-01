@@ -142,6 +142,28 @@ class F_Controller_Request_Http
         $this->_requestUri = $requestUri;
         return $this;
     }
+    
+    /**
+     * Set GET values
+     *
+     * @param  string|array $spec
+     * @param  null|mixed $value
+     * @return Zend_Controller_Request_Http
+     */
+    public function setQuery($spec, $value = null)
+    {
+        if ((null === $value) && !is_array($spec)) {
+            throw new F_Controller_Request_Exception('Invalid value passed to setQuery(); must be either array of values or key/value pair');
+        }
+        if ((null === $value) && is_array($spec)) {
+            foreach ($spec as $key => $value) {
+                $this->setQuery($key, $value);
+            }
+            return $this;
+        }
+        $_GET[(string) $spec] = $value;
+        return $this;
+    }
 
     /**
      * 返回 REQUEST_URI
@@ -241,6 +263,16 @@ class F_Controller_Request_Http
         }
 
         return $default;
+    }
+    
+    /**
+     * 获取 $_POST 参数
+     * 
+     * @return mixed
+     */
+    public function getPost()
+    {
+         return $_POST;
     }
     
     /**
@@ -512,4 +544,52 @@ class F_Controller_Request_Http
         return $this->_dispatched;
     }
     
+    /**
+     * 过滤所有的输入 $_GET $_POST
+     */
+    public function filterInput()
+    {
+        $this->_filterProcess('GET', $_GET);
+        $this->_filterProcess('POST', $_POST);
+    }
+    
+    private function _filterProcess($requestType, $args)
+    {
+        static $prefix = array('s', 'i', 'f', 'h', 'a');
+        
+        if (is_array($args) && count($args) > 0) {
+            foreach ($args as $key=>&$val) {
+                if (!in_array($key[0], $prefix) || preg_match('%[a-z]%', $key[1])) {
+                    throw new F_Exception("$requestType 参数 “$key” 类型错误");
+                }
+                
+                switch ($key[0]) {
+                    case 's':
+                        $val = Utils_Validation::filter($val)->removeHtml()->removeStr()->receive();
+                        break;
+                    case 'i':
+                        if (!is_numeric($val)) {
+                            throw new F_Exception("$requestType 参数 “$key” 类型错误[i]");
+                        }
+                        $val = intval($val);
+                        break;
+                    case 'f':
+                        if (!preg_match('%^[0-9]*\.[0-9]+$%i', $val)) {
+                            throw new F_Exception("$requestType 参数 “$key” 类型错误[f]");
+                        }
+                        $val = floatval($val);
+                        break;
+                    case 'h':
+                        $val = Utils_Validation::filter($val)->removeStr()->receive();
+                        break;
+                    case 'a':
+                        
+                        break;
+                    default:
+                        throw new F_Exception("$requestType 参数 “$key” 类型错误");
+                        break;
+                }
+            }
+        }
+    }
 }

@@ -5,6 +5,9 @@
 .row{
    margin:0px; 
 }
+.PROGRAM-inputerror{
+    display: none;
+}
 
 /*-- header begin --*/
 .navbar-my {
@@ -43,20 +46,34 @@
     height: 35px;
 }
 
-.navtoolbarBox .user p {
+.navtoolbarBox .user .lp {
     margin: 0;
     padding: 0;
     color: #666666;
     font-weight: bold;
-    display: block;
+    display: inline-block;
     float: left;
-    width: 85%;
+    width: 50%;
     height: 35px;
     line-height: 35px;
     text-indent: 25px;
     text-shadow: 0 1px 0 #fff;
     background: url(/asset/img/admin/icn_user.png) no-repeat center left;
-    margin-left: 6%;
+}
+
+.navtoolbarBox .user .rp {
+    margin: 0;
+    padding: 0;
+    color: #666666;
+    font-weight: bold;
+    display: inline-block;
+    float: right;
+    width: 40%;
+    height: 35px;
+    line-height: 35px;
+    text-indent: 25px;
+    text-shadow: 0 1px 0 #fff;
+    text-align: right;
 }
 
 .navtoolbarBox .breadcrumbs_container {
@@ -256,6 +273,10 @@ color: #666666;
 
 .mainBox .resetPadding{
     padding: 0px;
+}
+
+.mainBox .padd-top-7{
+    padding-top: 7px;
 }
 
 .mainBox .width-rem-15{
