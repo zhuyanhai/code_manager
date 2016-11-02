@@ -140,7 +140,21 @@ final class F_Db_Table_Select
         //依次处理,防止SQL注入
         if ($argsTotal > 0) {
             for ($i = $paramIndex; $i < $argsTotal; $i++) {
-                $this->_queryConditions['having'][$whereIndex]['bindParams'][$matches[1][$i-1]] = $args[$i].'';
+                if (is_array($args[$i])) {
+                    $replaceColumnExpression = '';
+                    foreach ($args[$i] as $j=>$a) {
+                        $k = $matches[1][$i-1];
+                        if ($j > 0) {
+                            $k = $k.''.$j;
+                        }
+                        $replaceColumnExpression .= $k . ',';
+                        $this->_queryConditions['where'][$whereIndex]['bindParams'][$k] = $a.'';
+                    }
+                    $replaceColumnExpression = rtrim($replaceColumnExpression, ',');
+                    $columnExpression = preg_replace('%'.$matches[1][$i-1].'%i', $replaceColumnExpression, $columnExpression);
+                } else {
+                    $this->_queryConditions['where'][$whereIndex]['bindParams'][$matches[1][$i-1]] = $args[$i].'';
+                }
             }
         }
         

@@ -55,7 +55,21 @@ final class F_Db_Table_Update
         //依次处理,防止SQL注入
         if ($argsTotal > 0) {
             for ($i = $paramIndex; $i < $argsTotal; $i++) {
-                $whereBind[$matches[1][$i-1]] = $args[$i].'';
+                if (is_array($args[$i])) {
+                    $replaceWhereCondition = '';
+                    foreach ($args[$i] as $j=>$a) {
+                        $k = $matches[1][$i-1];
+                        if ($j > 0) {
+                            $k = $k.''.$j;
+                        }
+                        $replaceWhereCondition .= $k . ',';
+                        $whereBind[$k] = $a.'';
+                    }
+                    $replaceWhereCondition = rtrim($replaceWhereCondition, ',');
+                    $whereCondition = preg_replace('%'.$matches[1][$i-1].'%i', $replaceWhereCondition, $whereCondition);
+                } else {
+                    $whereBind[$matches[1][$i-1]] = $args[$i].'';
+                }
             }
         }
         
