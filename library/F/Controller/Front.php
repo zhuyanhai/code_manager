@@ -48,7 +48,7 @@ class F_Controller_Front
             $responseObj = F_Controller_Response_Http::getInstance();
             
             //过滤输入
-            $requestObj->filterInput();
+            $this->_filterInput($requestObj, $responseObj);
 
             F_Route::run();
 
@@ -105,5 +105,71 @@ class F_Controller_Front
         }
         
         $responseObj->sendResponse();
+    }
+    
+    /**
+     * 过滤所有的输入 $_GET $_POST
+     */
+    private function _filterInput($requestObj, $responseObj)
+    {
+        try { 
+            $this->_filterProcess('GET', $_GET);
+            $this->_filterProcess('POST', $_POST);
+        } catch(F_Exception $e) {
+            if ($requestObj->isXmlHttpRequest()) {//ajax
+                $response = array(
+                    'status'        => -1,
+                    'data'          => array(),
+                    'msg'           => $e->getMessage(),
+                );
+                $responseObj->setHeader('Content-Type', 'application/json', true);
+                $body = json_encode($response);
+                $responseObj->setBody($body);
+                $responseObj->sendResponseAndExit();
+            } else {
+                throw new F_Exception($e->getMessage(), $e->getCode());
+            }
+        }
+    }
+    
+    private function _filterProcess($requestType, $args)
+    {
+        static $prefix = array('s', 'i', 'f', 'h', 'a');
+        
+        if (is_array($args) && count($args) > 0) {
+            
+            foreach ($args as $key=>&$val) {
+                if (!in_array($key[0], $prefix) || preg_match('%[a-z]%', $key[1])) {
+                    throw new F_Exception("{$requestType} 参数 “{$key}” 类型错误");
+                }
+                
+                switch ($key[0]) {
+                    case 's':
+                        $val = Utils_Validation::filter($val)->removeHtml()->removeStr()->receive();
+                        break;
+                    case 'i':
+                        if (!is_numeric($val)) {
+                            throw new F_Exception("{$requestType} 参数 “{$key}” 类型错误[i]");
+                        }
+                        $val = intval($val);
+                        break;
+                    case 'f':
+                        if (!preg_match('%^[0-9]*\.[0-9]+$%i', $val)) {
+                            throw new F_Exception("{$requestType} 参数 “{$key}” 类型错误[f]");
+                        }
+                        $val = floatval($val);
+                        break;
+                    case 'h':
+                        $val = Utils_Validation::filter($val)->removeStr()->xss()->receive();
+                        break;
+                    case 'a':
+                        //todo
+                        break;
+                    default:
+                        throw new F_Exception("{$requestType} 参数 “{$key}” 类型错误");
+                        break;
+                }
+            }
+        }
     }
 }

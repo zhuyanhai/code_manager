@@ -30,6 +30,16 @@ Abstract class Dao_Abstract extends F_Db_Table_Row
     }
     
     /**
+     * 获取 multi insert 操作对象
+     * 
+     * @return \F_Db_Table_MultiInsert
+     */
+    public static function getMultiInsert()
+    {
+        return self::_getDb()->getMultiInsert();
+    }
+    
+    /**
      * 获取 update 操作对象
      * 
      * @return \F_Db_Table_Update
@@ -37,6 +47,16 @@ Abstract class Dao_Abstract extends F_Db_Table_Row
     public static function getUpdate()
     {
         return self::_getDb()->getUpdate();
+    }
+    
+    /**
+     * 获取 delete 操作对象
+     * 
+     * @return \F_Db_Table_Delete
+     */
+    public static function getDelete()
+    {
+        return self::_getDb()->getDelete();
     }
     
     /**

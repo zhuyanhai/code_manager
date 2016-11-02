@@ -102,6 +102,34 @@ final class F_Db_Pdo
     }
     
     /**
+     * 插入数据
+     * 
+     * @param array $dataList 需要插入的数据数组
+     * @param string $tableName 数据表名字[格式：db.table]
+     * @param boolean $ignore
+     * @return string
+     */
+    public function insertOfMulti($dataList, $tableName, $ignore)
+    {
+        $keys   = array_keys($dataList[0]);
+
+		$prepareSql  = "INSERT " .( $ignore ? 'IGNORE ' : '') . "INTO " . $tableName;
+		$prepareSql .= " (" . implode(',', $keys)." ) VALUES ";
+		$prepareSql .= implode(',', array_fill(0, count($dataList), "(". implode(',', array_fill(0, count($keys), '?') ) .") "));
+
+		$this->prepare($prepareSql);
+        
+        $inputParameters = array();
+		foreach($dataList as $rowData) {
+			foreach ($rowData as $v) {
+                array_push($inputParameters, $v);
+            }
+		}
+
+		return $this->execute($inputParameters);
+    }
+    
+    /**
      * 更新数据
      * 
      * @param array $rowData 需要更新的数据
@@ -117,18 +145,42 @@ final class F_Db_Pdo
         
         $sql = 'UPDATE ' . $tableName . ' SET ';
         foreach ($rowData as $rk => $rv) {
-            $sql .= $rk . '=:FIELD_' . $rk . ',';
+            $sql .= $rk . '=:' . $rk . ',';
         }
         $sql = rtrim($sql, ',');
         $sql .= ' WHERE ' . $whereCondition; 
         $this->prepare($sql);
         foreach ($rowData as $rk => $rv) {
-            $this->bindParam(':FIELD_'.$rk, $rv, PDO::PARAM_STR);
+            $this->bindParam(':'.$rk, $rv, PDO::PARAM_STR);
         }
         foreach ($whereBind as $wk => $wv) {
             $wkParam = ':'.$wk;
             if (!preg_match('%'.$wkParam.'%', $whereCondition)) {
                 throw new PDOException('Pdo update where bindParam ['.$wkParam.'] not exist');
+            }
+            $this->bindParam($wkParam, $wv, PDO::PARAM_STR);
+        }
+        return $this->execute()->_stmtHandel->rowCount();
+    }
+    
+    /**
+     * 删除数据
+     * 
+     * @param string $whereCondition 更新条件
+     * @param array $whereBind 更新条件绑定数据
+     * @param string $tableName 数据表名字[格式：db.table]
+     * @return int
+     * @throws PDOException
+     */
+    public function delete($whereCondition, $whereBind, $tableName)
+    {
+        $sql = 'DELETE FROM ' . $tableName;
+        $sql .= ' WHERE ' . $whereCondition; 
+        $this->prepare($sql);
+        foreach ($whereBind as $wk => $wv) {
+            $wkParam = $wk;
+            if (!preg_match('%'.$wkParam.'%', $whereCondition)) {
+                throw new PDOException('Pdo delete where bindParam ['.$wkParam.'] not exist');
             }
             $this->bindParam($wkParam, $wv, PDO::PARAM_STR);
         }
@@ -163,21 +215,22 @@ final class F_Db_Pdo
      * @param mixed $variable
      * @return \F_Db_Pdo
      */
-    public function bindParam($parameter , $variable = null)
+    public function bindParam($parameter , $variable = null, $dataType = PDO::PARAM_STR)
     {
-        $this->_stmtHandel->bindParam($parameter, $variable);
+        $this->_stmtHandel->bindParam($parameter, $variable, $dataType);
         return $this;
     }
     
     /**
      * 执行
      * 
+     * @param array|null $inputParameters
      * @return \F_Db_Pdo
      * @throws F_Db_Exception
      */
-    public function execute()
+    public function execute(array $inputParameters = null)
     {
-        if (!$this->_stmtHandel->execute()) {
+        if (!$this->_stmtHandel->execute($inputParameters)) {
             $error = $this->_stmtHandel->errorInfo();
             throw new F_Db_Exception('execute failed : '.$error[1].' '.$error[2]);
         }

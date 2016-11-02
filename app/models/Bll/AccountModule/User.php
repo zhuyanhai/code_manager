@@ -75,22 +75,24 @@ final class Bll_AccountModule_User
      */
     public function add($post)
     {
-        try {
-            $post['sAccount'] = Utils_Validation::verify('sAccount', $post)->required()->receive();
-            $post['sAccount'] = Utils_Validation::filter($post['sAccount'])->removeHtml()->removeStr()->receive();
+        try {            
+            $userResult = Bll_AccountModule_Internal_User::getInstance()->add(array(
+                'account'       => $post['sAccount'], 
+                'passwd'        => $post['sPasswd'], 
+                'realname'      => $post['sRealname'], 
+                'contact_phone' => $post['sContactPhone'], 
+                'contact_email' => $post['sContactEmail']
+            ));
+            if ($userResult->isError()) {
+                return $userResult;
+            }
             
-            $post['sPasswd'] = Utils_Validation::verify('sPasswd', $post)->required()->receive();
-            $post['sPasswd'] = Utils_Validation::filter($post['sPasswd'])->removeHtml()->removeStr()->receive();
+            //处理权限的添加
+            if (isset($post['aPrivilegeNodes']) && !empty($post['aPrivilegeNodes'])) {
+                Bll_PrivilegeModule_User::getInstance()->add($userResult->userid, $post['aPrivilegeNodes']);
+            }
             
-            $post['sRealname'] = Utils_Validation::verify('sRealname', $post)->required()->receive();
-            $post['sRealname'] = Utils_Validation::filter($post['sRealname'])->removeHtml()->removeStr()->receive();
-            
-            $post['sContactPhone'] = Utils_Validation::filter($post['sContactPhone'])->removeHtml()->removeStr()->receive();
-            
-            $post['sContactEmail'] = Utils_Validation::filter($post['sContactEmail'])->removeHtml()->removeStr()->receive();
-            
-            print_r($post['aPrivilegeNodes']);
-            exit;
+            return F_Result::build()->success();
         } catch(Utils_Validation_Exception $e) {
             switch ($e->errorKey) {
                 case "sAccount":

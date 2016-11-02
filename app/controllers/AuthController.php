@@ -22,9 +22,9 @@ class AuthController extends AbstractController
     {
         if ($this->_requestObj->isPost()) {
             $this->view->error = '';
-            $account  = Utils_Validation::filter($this->_requestObj->getParam('account', ''))->removeStr()->removeHtml()->receive();
-            $passwd   = Utils_Validation::filter($this->_requestObj->getParam('passwd', ''))->removeStr()->removeHtml()->receive();
-            $remember = intval($this->_requestObj->getParam('remember', 0));
+            $account  = $this->_requestObj->getParam('sAccount', '');
+            $passwd   = $this->_requestObj->getParam('sPasswd', '');
+            $remember = intval($this->_requestObj->getParam('iRemember', 0));
             $userResult = Bll_AccountModule_Login::getInstance()->process($account, $passwd, $remember);
             if ($userResult->isError()) {//错误
                 $this->view->error = $userResult->getErrorInfo();
@@ -52,6 +52,6 @@ class AuthController extends AbstractController
     public function logoutAction()
     {
         Bll_AccountModule_Logout::getInstance()->process();
-        $this->_redirectorObj->gotoUrlAndExit('/login/');
+        $this->_redirectorObj->gotoUrlAndExit('/auth/login/');
     }
 }

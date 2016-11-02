@@ -10,7 +10,7 @@
  * @subpackage Bll_AccountModule
  * @author allen <allen@yuorngcorp.com>
  */
-final class Bll_AccountModule_Internal_Info extends F_InternalAbstract
+final class Bll_AccountModule_Internal_User extends F_InternalAbstract
 {
     private function __construct()
     {
@@ -22,8 +22,8 @@ final class Bll_AccountModule_Internal_Info extends F_InternalAbstract
      * 
      * 获取类的对象实例
      * 
-     * @staticvar Bll_AccountModule_Internal_Info $instance
-     * @return \Bll_AccountModule_Internal_Info
+     * @staticvar Bll_AccountModule_Internal_User $instance
+     * @return \Bll_AccountModule_Internal_User
      */
     public static function getInstance()
     {
@@ -149,6 +149,29 @@ final class Bll_AccountModule_Internal_Info extends F_InternalAbstract
     {
     	Utils_Cookie::del('cm-token');
         Utils_Cookie::del('cm-ticket');
+    }
+    
+    /**
+     * 添加用户
+     * 
+     * @param array $userInfo
+     * @return F_Result
+     */
+    public function add($userInfo)
+    {
+        $time = time();
+        $userInfo['create_time'] = $time;
+        $userInfo['update_time'] = $time;
+        $userInfo['passwd']      = $this->buildPassword($userInfo['passwd'], $time);
+        try {
+            $userid = Dao_CodeManager_User::getInsert()->insert($userInfo);
+            return F_Result::build()->success(array('userid' => $userid));
+        } catch(Exception $e) {
+            $errorMsg = $e->getMessage();
+            if ($e->getCode() == 23000 && preg_match('%^SQLSTATE\[23000\]%i', $errorMsg)) {
+                return F_Result::build()->error('账户请勿重复');
+            }
+        }
     }
     
 //----- 私有方法

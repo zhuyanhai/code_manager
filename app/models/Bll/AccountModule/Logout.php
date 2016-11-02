@@ -45,6 +45,6 @@ final class Bll_AccountModule_Logout
      */
     public function process()
     {
-        Bll_AccountModule_Internal_Info::getInstance()->delLoginCookie();
+        Bll_AccountModule_Internal_User::getInstance()->delLoginCookie();
     }
 }

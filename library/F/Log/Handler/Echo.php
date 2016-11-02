@@ -12,8 +12,8 @@ class F_Log_Handler_Echo extends F_Log_Handler_Abstract
     public function __destruct()
     {
         $content = implode('<br/><hr/>', $this->_logMessages);
-        Utils_Http::outHeaderEncoding();
         $html = <<<EOF
+        <meta charset="utf-8">
         <div id="flGlobalOfDebugId" style="position:fixed;bottom:0px;left:0px;width:600px;height:500px;overflow:hidden;overflow-y:auto;background:#ccc";padding:0px;margin:0px;">
             <p style="border-bottom:1px solid #000;padding:0px;margin:0px;margin-top:5px;padding-bottom:5px;position:relative;">
                 &nbsp;打印的调试信息：

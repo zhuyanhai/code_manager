@@ -81,7 +81,7 @@ final class Bll_PrivilegeModule_Query
         } else {
             $userPrivilegeList = Dao_CodeManager_UserPrivilege::getSelect('privilege_id')->where('userid=:userid', $userid)->fetchAll()->toArray();
             if (count($userPrivilegeList) > 0) {
-                $list = Dao_CodeManager_Privilege::getSelect()->fromColumns('id, parent_id as pid, name, type')->where('id in(:id) AND status=:status order by id asc', implode(',', $userPrivilegeList), 0)->fetchAll()->toArray();
+                $list = Dao_CodeManager_Privilege::getSelect()->fromColumns('id, parent_id as pid, name, type')->where('id in(:id) AND status=:status order by id asc', $userPrivilegeList, 0)->fetchAll()->toArray();
             }
         }
         if (count($list) > 0) {

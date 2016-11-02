@@ -1,10 +1,10 @@
 <?php
 /**
- * DB update 类
+ * DB delete 类
  *
- * - 专门负责 update 的所有构造操作
+ * - 专门负责 delete 的所有构造操作
  */
-final class F_Db_Table_Update
+final class F_Db_Table_Delete
 {
     /**
      * 数据表配置
@@ -12,13 +12,12 @@ final class F_Db_Table_Update
      * @var array
      */
     private $_tableConfigs = array();
-
     
     /**
      * 获取类实例
      *
-     * @staticvar F_Db_Table_Update $instance
-     * @return \F_Db_Table_Update
+     * @staticvar F_Db_Table_Delete $instance
+     * @return \F_Db_Table_Delete
      */
     public static function getInstance()
     {
@@ -30,14 +29,12 @@ final class F_Db_Table_Update
     }
     
     /**
-     * 更新行记录
+     * 删除行记录
      * 
-     * @param array $rowData 更新行的内容
      * @param string $whereCondition 更新条件
-     * @param array $whereBind 更新条件绑定数据
      * @return $rowCount 影响行数
      */
-    public function update($rowData, $whereCondition, $whereBind)
+    public function delete($whereCondition)
     {
         //获取函数的所有参数列表
         $args = func_get_args();
@@ -62,7 +59,7 @@ final class F_Db_Table_Update
         $pdo       = F_Db::getInstance()->changeConnectServer('master');
         $dbName    = $this->_tableConfigs['dbFullName'];
         $tableName = $this->_tableConfigs['tableName'];
-        $rowCount  = $pdo->update($rowData, $whereCondition, $whereBind, $dbName.'.'.$tableName);
+        $rowCount  = $pdo->delete($whereCondition, $whereBind, $dbName.'.'.$tableName);
         return $rowCount;
     }
     

@@ -45,7 +45,7 @@ final class Bll_AccountModule_Login
      */
     public function check()
     {
-        $userInfoInstance = Bll_AccountModule_Internal_Info::getInstance();
+        $userInfoInstance = Bll_AccountModule_Internal_User::getInstance();
         
         //登陆cookie内容
         $loginCookieResultSet = $userInfoInstance->getLoginCookie();
@@ -88,7 +88,7 @@ final class Bll_AccountModule_Login
             return F_Result::build()->error('密码不能为空');
         }
         
-        $userInfoInstance = Bll_AccountModule_Internal_Info::getInstance();
+        $userInfoInstance = Bll_AccountModule_Internal_User::getInstance();
         
         //用户信息
         $userResultSet = $userInfoInstance->getByAccount($account);

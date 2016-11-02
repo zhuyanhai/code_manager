@@ -65,6 +65,19 @@ final class F_Db
     }
     
     /**
+     * 获取构造 multi insert 语句的对象
+     * 
+     * @return \F_Db_Table_MultiInsert
+     */
+    public function getMultiInsert()
+    {
+        $this->_initDbConfig($this->_tableConfigs['dbShortName']);
+        $dbName = $this->_dbConnectCfg[$this->_tableConfigs['dbShortName']]['dbName'];
+        $this->_tableConfigs['dbFullName'] = $dbName;
+        return F_Db_Table_MultiInsert::getInstance()->___initTableConfigs($this->_tableConfigs);
+    }
+    
+    /**
      * 获取构造 update 语句的对象
      * 
      * @return \F_Db_Table_Update
@@ -75,6 +88,19 @@ final class F_Db
         $dbName = $this->_dbConnectCfg[$this->_tableConfigs['dbShortName']]['dbName'];
         $this->_tableConfigs['dbFullName'] = $dbName;
         return F_Db_Table_Update::getInstance()->___initTableConfigs($this->_tableConfigs);
+    }
+    
+    /**
+     * 获取构造 delete 语句的对象
+     * 
+     * @return \F_Db_Table_Detele
+     */
+    public function getDelete()
+    {
+        $this->_initDbConfig($this->_tableConfigs['dbShortName']);
+        $dbName = $this->_dbConnectCfg[$this->_tableConfigs['dbShortName']]['dbName'];
+        $this->_tableConfigs['dbFullName'] = $dbName;
+        return F_Db_Table_Delete::getInstance()->___initTableConfigs($this->_tableConfigs);
     }
     
     /**

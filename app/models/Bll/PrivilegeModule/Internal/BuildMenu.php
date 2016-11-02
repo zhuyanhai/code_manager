@@ -54,11 +54,47 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
         } else {//需要动态构造，最多 3 级菜单
             $menuList = array();
             $parentIdsOfMenu = null;
-            $i = 0;
             do {
-                $parentIdsOfMenu = $this->_buildMenuList($parentIdsOfMenu, $menuList);
+                $parentIdsOfMenu = $this->_buildMenuListOfAll($parentIdsOfMenu, $menuList);
             } while(!empty($parentIdsOfMenu));
             $memObj->save($menuList, $memKey);
+            return $menuList;
+        }
+    }
+    
+    /**
+     * 构建出指定用户的有效的菜单列表
+     * 
+     * @param int $userid 用户ID
+     * @return array
+     */
+    public function getByUserid($userid)
+    {
+        $memKey = 'code_manager_menu_of_user_'.$userid;
+        $memObj = F_Cache::createMemcache('user');
+        $memObj->remove($memKey);
+        //获取所有构造好的菜单
+        $menuList = $memObj->load($memKey);
+        if (!empty($menuList)) {
+            return $menuList;
+        } else {//需要动态构造，最多 3 级菜单
+
+            //获取菜单列表
+            $list = Dao_CodeManager_UserPrivilege::getSelect()->fromColumns('privilege_id')->fetchAll()->toArray();
+            if (count($list) <= 0) {
+                return '';
+            }
+            $privilegeIds = Utils_Array::toFlat($list, 'privilege_id');
+
+            $list = Dao_CodeManager_Privilege::getSelect()->where('id in(:id) AND status=:status order by id asc', $privilegeIds, 0)->fetchAll()->toArray();
+            if (count($list) <= 0) {
+                return '';
+            }
+
+            $menuList = array();
+            $this->_buildMenuListOfUser(0, $menuList, $list);
+            $menuList = Utils_Sort::getpao($menuList, 'level', 'desc');
+            $memObj->save($menuList, $memKey, array(), null);
             return $menuList;
         }
     }
@@ -70,12 +106,12 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
      * @param array $menuList 需要构建的菜单列表
      * @return array
      */
-    private function _buildMenuList($parentIdsOfMenu = array(), &$menuList)
+    private function _buildMenuListOfAll($parentIdsOfMenu = array(), &$menuList)
     {
         //获取菜单列表
         $selector = Dao_CodeManager_Privilege::getSelect();
         if (is_array($parentIdsOfMenu) && !empty($parentIdsOfMenu)) {
-            $selector->where('parent_id in(:parent_id) and status=:status order by id asc', implode(',', $parentIdsOfMenu), 0);
+            $selector->where('parent_id in(:parent_id) and status=:status order by id asc', $parentIdsOfMenu, 0);
         } else {
             $selector->where('parent_id=:parent_id and status=:status order by id asc', 0, 0);
         }
@@ -98,7 +134,7 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
         $tmpMenuList = Utils_Sort::getpao($tmpMenuList, 'level', 'desc');
         if (!empty($menuList)) {
             foreach ($tmpMenuList as $tv) {
-                self::_buildLevelMenuList($tv, $menuList);
+                $this->_buildLevelMenuList($tv, $menuList);
             }
         } else {
             $menuList = $tmpMenuList;
@@ -113,15 +149,48 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
      * @param array $tv
      * @param array $menuList
      */
-    private static function _buildLevelMenuList($tv, &$menuList)
+    private function _buildLevelMenuList($tv, &$menuList)
     {
         foreach ($menuList as $k=>&$m) {
             if (!empty($m['childData'])) {
-                self::_buildLevelMenuList($tv, $m['childData']);
+                $this->_buildLevelMenuList($tv, $m['childData']);
             }
             if ($tv['data']['parent_id'] === $m['data']['id']) {
                 $menuList[$k]['childCount'] += 1;
                 array_push($m['childData'], $tv);
+            }
+        }
+    }
+    
+    /**
+     * 构建用户的菜单列表
+     * 
+     * @param array $parentIdsOfMenu 父元素菜单ID数组
+     * @param array $menuList 需要构建的菜单列表
+     * @return array
+     */
+    private function _buildMenuListOfUser($parentId, &$menuList, &$list)
+    {
+        foreach ($list as $v) {
+            if ($parentId == $v['parent_id']) {
+                if (isset($menuList['childData'])) {
+                    array_push($menuList['childData'], array(
+                        'level'      => $v['level'],
+                        'data'       => $v,
+                        'childCount' => 0,
+                        'childData'  => array(),
+                    ));
+                    $menuList['childCount'] += 1;
+                    $this->_buildMenuListOfUser($v['id'], $menuList['childData'][count($menuList['childData']) - 1], $list);
+                } else {
+                    array_push($menuList, array(
+                        'level'      => $v['level'],
+                        'data'       => $v,
+                        'childCount' => 0,
+                        'childData'  => array(),
+                    ));
+                    $this->_buildMenuListOfUser($v['id'], $menuList[count($menuList) - 1], $list);
+                }
             }
         }
     }
