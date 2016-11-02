@@ -6,7 +6,6 @@ class TestController extends AbstractController
 {
     public function indexAction()
     {
-        Dao_CodeManager_UserPrivilege::getDelete()->delete('privilege_id in(:privilege_id)', array(1,2,3));
         $var = '<b class="aa" style="fdfd"><script>alert("ok")</script>&#63;Bill Gates bb?？:&~!@#$%^&*()_+}|{":?><<b>';
         $var = Utils_Validation::filter($var)->xss(function($configInstance){
             //$configInstance->set('Attr.ForbiddenClasses','');
