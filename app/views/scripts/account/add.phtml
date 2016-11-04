@@ -123,6 +123,9 @@ __wait(function(){
         }
         if (post['sPasswd'].length > 20) {
             alert("登陆密码最多20个字符");
+            formObj['passwd'].parents('.form-group').addClass('has-error has-feedback');
+            formObj['passwd'].siblings('.PROGRAM-inputerror').show();
+            formObj['passwd'].focus();
             isClick = 0;
             return false;
         }

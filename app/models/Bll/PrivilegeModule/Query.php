@@ -60,7 +60,7 @@ final class Bll_PrivilegeModule_Query
      */
     public function getListOfByUserid($userid)
     {
-        if ($this->isSuperAdminByUserid($userid)) {//超级管理员
+        if ($this->isSuperAdminByUserid($userid) || $userid === 0) {//超级管理员
             return Bll_PrivilegeModule_Internal_BuildMenu::getInstance()->getAll();
         } else {
             return Bll_PrivilegeModule_Internal_BuildMenu::getInstance()->getByUserid($userid);
@@ -71,7 +71,7 @@ final class Bll_PrivilegeModule_Query
      * 获取全部有效菜单
      * 
      * @param int $userid 用户ID，默认0=全部，>0=获取指定用户的全部权限
-     * @return array
+     * @return ResultSet
      */
     public function getAllOfAdmin($userid = 0)
     {
@@ -90,10 +90,11 @@ final class Bll_PrivilegeModule_Query
                     'id'   => $v['id'],
                     'name' => (($v['___isMenu'])?'[菜单] ':'[操作] ').$v['name'],
                     'pId'  => $v['pid'],
+                    'checked' => false,
                 ));
             }
         }
         
-        return $return;
+        return F_Result::build()->success($return);
     }
 }

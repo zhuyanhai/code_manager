@@ -5,17 +5,17 @@
  * 每个数据表必须有,没有就好报错
  * 
  */
-final class Dao_CodeManager_User_Config
+final class Dao_CodeManager_Config_Config
 {   
     public static $configs = array(
         //数据行类名
-        'rowClassName' => 'Dao_CodeManager_User',
+        'rowClassName' => 'Dao_CodeManager_Config',
         //完整表名
-        'tableName'    => 'tbl_user',
+        'tableName'    => 'tbl_config',
         //数据库缩略名,对应 db.cfg.php 配置文件
         'dbShortName'  => 'code_manager',
         //主键
-        'primaryKey'   => 'userid',
+        'primaryKey'   => 'key',
         /**
          * key-value 形式缓存整个数据表 - 行数据
          *
@@ -28,58 +28,26 @@ final class Dao_CodeManager_User_Config
          *
          */
         'memcache' => array(
-            'userid' => array(
+            'key' => array(
                 'server'  => 'user',
-                'key'     => 'table_user_userid_1_%d',
-                'field'   => 'userid',
+                'key'     => 'kv_table_config_1_%d',
+                'field'   => 'key',
                 'expires' => null,
-            ),
-            'account' => array(
-                'server'    => 'user',
-                'key'       => 'table_user_account_1_%d',
-                'field'     => 'account',
-                'savefield' => array('userid'),
-                'expires'   => null,
             ),
         ),
     );
 }
 
 /**
- * tbl_user 数据表类
+ * tbl_config 数据表类
  * 
- * 用户信息
+ * 辅助程序的配置存储表
  * 
  * @package Dao
  * @subpackage Dao_CodeManager
  * @author allen <allenifox@163.com>
  */
-class Dao_CodeManager_User extends Dao_Abstract
+class Dao_CodeManager_Config extends Dao_Abstract
 {
-    /**
-     * 判断用户是否被锁定
-     * 
-     * @return boolean true=锁定用户 false=非锁定用户
-     */
-   public function ___isLock()
-   {
-       if (intval($this->status) === 10) {//用户被锁定
-           return true;
-       }
-       return false;
-   }
-   
-   /**
-     * 根据用户ID检查是否是超级管理员
-     * 
-     * @param int $userid 用户ID
-     * @return boolean true=是 false=不是
-     */
-    public function ___isSuperAdmin()
-    {
-        if (intval($this->userid) === 1001) {
-            return true;
-        }
-        return false;
-    }
+    
 }

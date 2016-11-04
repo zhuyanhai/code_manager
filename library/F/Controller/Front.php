@@ -140,7 +140,7 @@ class F_Controller_Front
             
             foreach ($args as $key=>&$val) {
                 if (!in_array($key[0], $prefix) || preg_match('%[a-z]%', $key[1])) {
-                    throw new F_Exception("{$requestType} 参数 “{$key}” 类型错误");
+                    throw new F_Exception("{$requestType} 参数 “{$key}” 类型错误，请指定类型前缀[s,i,f,h,a]，例如：i".ucfirst($key));
                 }
                 
                 switch ($key[0]) {

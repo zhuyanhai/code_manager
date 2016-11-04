@@ -142,23 +142,24 @@ final class F_Db_Pdo
     public function update($rowData, $whereCondition, $whereBind, $tableName)
     {
         $fields = array_keys($rowData);
-        
+
         $sql = 'UPDATE ' . $tableName . ' SET ';
         foreach ($rowData as $rk => $rv) {
             $sql .= $rk . '=:' . $rk . ',';
         }
         $sql = rtrim($sql, ',');
         $sql .= ' WHERE ' . $whereCondition; 
+
         $this->prepare($sql);
+        
         foreach ($rowData as $rk => $rv) {
             $this->bindParam(':'.$rk, $rv, PDO::PARAM_STR);
         }
         foreach ($whereBind as $wk => $wv) {
-            $wkParam = ':'.$wk;
-            if (!preg_match('%'.$wkParam.'%', $whereCondition)) {
-                throw new PDOException('Pdo update where bindParam ['.$wkParam.'] not exist');
+            if (!preg_match('%'.$wk.'%', $whereCondition)) {
+                throw new PDOException('Pdo update where bindParam ['.$wk.'] not exist');
             }
-            $this->bindParam($wkParam, $wv, PDO::PARAM_STR);
+            $this->bindParam($wk, $wv, PDO::PARAM_STR);
         }
         return $this->execute()->_stmtHandel->rowCount();
     }
@@ -178,11 +179,10 @@ final class F_Db_Pdo
         $sql .= ' WHERE ' . $whereCondition; 
         $this->prepare($sql);
         foreach ($whereBind as $wk => $wv) {
-            $wkParam = $wk;
-            if (!preg_match('%'.$wkParam.'%', $whereCondition)) {
-                throw new PDOException('Pdo delete where bindParam ['.$wkParam.'] not exist');
+            if (!preg_match('%'.$wk.'%', $whereCondition)) {
+                throw new PDOException('Pdo delete where bindParam ['.$wk.'] not exist');
             }
-            $this->bindParam($wkParam, $wv, PDO::PARAM_STR);
+            $this->bindParam($wk, $wv, PDO::PARAM_STR);
         }
         return $this->execute()->_stmtHandel->rowCount();
     }

@@ -93,7 +93,7 @@ final class F_Db_Table_Select
                 if (is_array($args[$i])) {
                     $replaceColumnExpression = '';
                     foreach ($args[$i] as $j=>$a) {
-                        $k = $matches[1][$i-1];
+                        $k = $matches[1][$i-$paramIndex];
                         if ($j > 0) {
                             $k = $k.''.$j;
                         }
@@ -101,9 +101,9 @@ final class F_Db_Table_Select
                         $this->_queryConditions['where'][$whereIndex]['bindParams'][$k] = $a.'';
                     }
                     $replaceColumnExpression = rtrim($replaceColumnExpression, ',');
-                    $columnExpression = preg_replace('%'.$matches[1][$i-1].'%i', $replaceColumnExpression, $columnExpression);
+                    $columnExpression = preg_replace('%'.$matches[1][$i-$paramIndex].'%i', $replaceColumnExpression, $columnExpression);
                 } else {
-                    $this->_queryConditions['where'][$whereIndex]['bindParams'][$matches[1][$i-1]] = $args[$i].'';
+                    $this->_queryConditions['where'][$whereIndex]['bindParams'][$matches[1][$i-$paramIndex]] = $args[$i].'';
                 }
             }
         }
@@ -143,7 +143,7 @@ final class F_Db_Table_Select
                 if (is_array($args[$i])) {
                     $replaceColumnExpression = '';
                     foreach ($args[$i] as $j=>$a) {
-                        $k = $matches[1][$i-1];
+                        $k = $matches[1][$i-$paramIndex];
                         if ($j > 0) {
                             $k = $k.''.$j;
                         }
@@ -151,9 +151,9 @@ final class F_Db_Table_Select
                         $this->_queryConditions['where'][$whereIndex]['bindParams'][$k] = $a.'';
                     }
                     $replaceColumnExpression = rtrim($replaceColumnExpression, ',');
-                    $columnExpression = preg_replace('%'.$matches[1][$i-1].'%i', $replaceColumnExpression, $columnExpression);
+                    $columnExpression = preg_replace('%'.$matches[1][$i-$paramIndex].'%i', $replaceColumnExpression, $columnExpression);
                 } else {
-                    $this->_queryConditions['where'][$whereIndex]['bindParams'][$matches[1][$i-1]] = $args[$i].'';
+                    $this->_queryConditions['where'][$whereIndex]['bindParams'][$matches[1][$i-$paramIndex]] = $args[$i].'';
                 }
             }
         }

@@ -1,119 +1,172 @@
-<?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '后天账号列表', 'url' => '/admin/user/'), array('title' => '编辑后台账号', 'url' => ''))?>
+<?php 
+$this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '账号列表', 'url' => '/account/'), array('title' => '编辑账号', 'url' => ''));
+$this->headLink()->appendStylesheet($this->assetPath()->getCssOfModule('jquery/plugin/ztree/ztree'));
+$this->script()->appendScript($this->assetPath()->getJsOfModule('jquery/plugin/ztree/ztree.min'));
+?>
 
-<script type="text/javascript">
-var isClick = 0;
-function edit()
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+    <div class="panel-heading">添加账号</div>
+    <div class="panel-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-7">
+                    <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="accountId" class="col-sm-2 control-label resetPadding padd-top-7">登陆账号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="PROGRAM-txt form-control" name="account" id="accountId" value="<?php echo $this->userInfo['account']?>" placeholder="请输入你的登陆账号">
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="passwdId" class="col-sm-2 control-label resetPadding padd-top-7">登陆密码</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="PROGRAM-txt form-control" name="passwd" id="passwdId" placeholder="请输入你的登陆密码">
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="realnameId" class="col-sm-2 control-label resetPadding padd-top-7">真实姓名</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="PROGRAM-txt form-control" name="realname" id="realnameId" value="<?php echo $this->userInfo['realname']?>" placeholder="请输入你的真实姓名">
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactPhoneId" class="col-sm-2 control-label resetPadding padd-top-7">联系电话</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="PROGRAM-txt form-control" name="contact_phone" id="contactPhoneId" value="<?php echo $this->userInfo['contact_phone']?>" placeholder="请输入你的联系电话">
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmailId" class="col-sm-2 control-label resetPadding padd-top-7">联系邮箱</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="PROGRAM-txt form-control" name="contact_email" id="contactEmailId" value="<?php echo $this->userInfo['contact_email']?>" placeholder="请输入你的联系邮箱">
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-10 col-sm-offset-2">
+                            <button type="button" class="btn btn-success" style='padding:5px 12px' id="subAddId">提交</button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+                <div class="col-sm-5">
+                    <ul id="privilegeTree" class="ztree"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var privilegeNodes = [];
+var code;
+function showCode(str) 
 {
-    if (isClick === 1) {
-        return false;
-    }
-    isClick = 1;
-    
-    var post = {};
-    
-    post['account'] = $.trim($("#account").val());
-    if (post['account'].length <= 0) {
-        alert("请输入登陆账号");
-        isClick = 0;
-        return false;
-    }
-
-    post['password'] = $.trim($("#passwd").val());
-    if (post['password'].length > 20) {
-        alert("登陆密码最多20个字符");
-        isClick = 0;
-        return false;
-    }
-    
-    post['realname'] = $.trim($("#realname").val());
-    if (post['realname'].length <= 0) {
-        alert("请输入真实姓名");
-        isClick = 0;
-        return false;
-    }
-    
-    post['roleList'] = [];
-    $('input[name=role]').each(function(){
-        if (this.checked) {
-            post['roleList'].push(this.value);
+    if (!code) code = $("#code");
+    code.empty();
+    code.append("<li>"+str+"</li>");
+}  
+function getCheckTreeNodes(nodes){
+    $.each(nodes, function(i,obj){
+        if(obj.checked){
+            privilegeNodes.push(obj.id);
+            if(obj.children){
+                getCheckTreeNodes(obj.children);
+            }
         }
     });
-    
-    post['phone'] = $.trim($("#phone").val());
-    post['email'] = $.trim($("#email").val());
-    
-    post['userid'] = <?php echo $this->adminUser['userid']?>;
-            
-    $.post('/admin/user/edit', post, function(result){
-        if (parseInt(result.status) === 0) {
-            alert('编辑成功');
-            window.location.href = '/admin/user/';
-        } else {
-            isClick = 0;
-            alert(result.msg);
-        }
-    }, 'json');
 }
+var isClick = 0;
+var formObj = {};
+var userid  = '<?php echo $this->userInfo['userid']?>';
+__wait(function(){
+    formObj = {
+        "account"       : $("#accountId"),
+        "passwd"        : $("#passwdId"),
+        "realname"      : $("#realnameId"),
+        "contact_phone" : $("#contactPhoneId"),
+        "contact_email" : $("#contactEmailId")
+    };
+    
+    $('#subAddId').on('click', function() {
+        if (isClick === 1) {
+            return false;
+        }
+        isClick = 1;
+        
+        $('.PROGRAM-txt').one('keypress keyup input', function(){
+            $('.form-group').removeClass('has-error').removeClass('has-feedback');
+            $('.PROGRAM-inputerror').hide();
+        });
+
+        var post = {};
+
+        post['sAccount'] = $.trim(formObj['account'].val());
+        if (post['sAccount'].length <= 0) {
+            formObj['account'].parents('.form-group').addClass('has-error').addClass('has-feedback');
+            formObj['account'].siblings('.PROGRAM-inputerror').show();
+            formObj['account'].focus();
+            isClick = 0;
+            return false;
+        }
+
+        var sPasswd = $.trim(formObj['passwd'].val());
+        if (sPasswd.length > 0) {
+            if (sPasswd.length > 20) {
+                alert("登陆密码最多20个字符");
+                formObj['passwd'].parents('.form-group').addClass('has-error has-feedback');
+                formObj['passwd'].siblings('.PROGRAM-inputerror').show();
+                formObj['passwd'].focus();
+                isClick = 0;
+                return false;
+            }
+            post['sPasswd'] = sPasswd;
+        } else {
+            post['sPasswd'] = '';
+        }
+
+        post['sRealname'] = $.trim(formObj['realname'].val());
+        if (post['sRealname'].length <= 0) {
+            formObj['realname'].parents('.form-group').addClass('has-error has-feedback');
+            formObj['realname'].siblings('.PROGRAM-inputerror').show();
+            formObj['realname'].focus();
+            isClick = 0;
+            return false;
+        }
+        
+        post['sContactPhone'] = $.trim(formObj['contact_phone'].val());
+        post['sContactEmail'] = $.trim(formObj['contact_email'].val());
+        
+        var zTree = $.fn.zTree.getZTreeObj("privilegeTree");
+        getCheckTreeNodes(zTree.getNodes());
+        if (privilegeNodes.length <= 0) {
+            privilegeNodes = [];
+        }
+        
+        post['aPrivilegeNodes'] = privilegeNodes;
+        post['iUserid'] = userid;
+        
+        $.post('/account/edit', post, function(result){
+            if (parseInt(result.status) === 0) {
+                alert('编辑成功');
+                window.location.reload(true);
+            } else {
+                isClick = 0;
+                alert(result.msg);
+            }
+        }, 'json');
+    });
+    
+    var zNodes = <?php echo json_encode($this->menus); ?>;
+    
+    $.fn.zTree.init($("#privilegeTree"), {check: {enable: true},data: {simpleData: {enable: true}}}, zNodes);
+    var zTree = $.fn.zTree.getZTreeObj("privilegeTree"),type = { "Y":'p' + 's', "N":'p' + 's'};
+    zTree.setting.check.chkboxType = type;
+    showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');            
+
+});    
 </script>
-
-<article class="module width_full">
-    
-    <div class="add_data">
-        <span class="add_spanLeft">登陆账号:</span>
-        <span class="add_spanC">
-            <input type="text" id="account" class="add_ltxt" value="<?php echo $this->adminUser['account']?>" />
-        </span>
-        <span style="color:red;">*</span>
-    </div>
-
-    <div class="add_data">
-        <span class="add_spanLeft">登陆密码:</span>
-        <span class="add_spanC">
-            <input type="text" id="passwd" class="add_ltxt" value="" />
-        </span>
-        <span style="color:red;">*</span>
-    </div>
-
-    <div class="add_data">
-        <span class="add_spanLeft">真实姓名:</span>
-        <span class="add_spanC">
-            <input type="text" id="realname" class="add_ltxt" value="<?php echo $this->adminUser['realname']?>" />
-        </span>
-        <span style="color:red;">*</span>
-    </div>
-
-    <div class="add_data">
-        <span class="add_spanLeft">联系电话:</span>
-        <span class="add_spanC">
-            <input type="text" id="phone" class="add_ltxt" value="<?php echo $this->adminUser['phone']?>" />
-        </span>
-        <span style="color:red;"></span>
-    </div>
-    
-    <div class="add_data">
-        <span class="add_spanLeft">联系邮箱:</span>
-        <span class="add_spanC">
-            <input type="text" id="email" class="add_ltxt" value="<?php echo $this->adminUser['email']?>" />
-        </span>
-        <span style="color:red;"></span>
-    </div>
-    
-    <div class="add_data">
-        <span class="add_spanLeft">用户角色:</span>
-        <span class="add_spanC">
-            <?php if(count($this->roleList) > 0):?>
-            <?php foreach($this->roleList as $r):?>
-            <input type="checkbox" id="r_<?php echo $r['id']?>" name="role" value="<?php echo $r['id']?>" <?php if(in_array($r['id'], $this->adminUser['get_role_list'])):?>checked<?php endif?> /><label for="r_<?php echo $r['id']?>"><?php echo $r['name']?></label>
-            <?php endforeach?>
-            <?php endif?>
-        </span>
-        <span style="color:red;"></span>
-    </div>
-
-    <div class="add_data">
-        <span class="add_spanLeft"></span>
-        <span class="add_spanC">
-            <input type="button" onclick="edit()" value="提交" class="inputButton" />
-        </span>
-    </div>
-</article>

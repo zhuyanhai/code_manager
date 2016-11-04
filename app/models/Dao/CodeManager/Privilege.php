@@ -14,8 +14,32 @@ final class Dao_CodeManager_Privilege_Config
         'tableName'    => 'tbl_privilege',
         //数据库缩略名,对应 db.cfg.php 配置文件
         'dbShortName'  => 'code_manager',
-        //数据表主键字段名
+        //主键
         'primaryKey'   => 'id',
+        /**
+         * 相关缓存钩子配置
+         * 
+         * 所有使用到表 tbl_privilege 的memcache业务类，都需要在此配置
+         * 便于每次有相关数据的修改时进行回调处理
+         * 
+         * @var array 
+         */
+        'memcacheHooks' => array(
+            array(
+                'triggers'   => array('insert', 'update', 'delete'),
+                'field'      => '*',
+                'hookClass'  => 'Bll_PrivilegeModule_Internal_BuildMenu',
+                'hookMethod' => 'getAll',
+                'hookParams' => array(true),
+            ),
+            array(
+                'triggers'   => array('insert', 'update', 'delete'),
+                'field'      => '*',
+                'hookClass'  => 'Bll_PrivilegeModule_Internal_BuildMenu',
+                'hookMethod' => 'getAll',
+                'hookParams' => array(true),
+            ),
+        ),
     );
 }
 

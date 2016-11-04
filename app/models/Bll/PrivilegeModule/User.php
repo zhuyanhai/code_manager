@@ -47,7 +47,7 @@ final class Bll_PrivilegeModule_User
      */
     public function add($userid, $privilegeIds)
     {
-        Dao_CodeManager_UserPrivilege::getDelete()->delete('userid=:userid', $userid);
+        Dao_CodeManager_UserPrivilege::getManager()->delete('userid=:userid', $userid);
         $dataList = array();
         foreach ($privilegeIds as $privilegeId) {
             array_push($dataList, array(
@@ -55,7 +55,22 @@ final class Bll_PrivilegeModule_User
                 'privilege_id' => $privilegeId,
             ));
         }
-        Dao_CodeManager_UserPrivilege::getMultiInsert()->insert($dataList, true);
+        Dao_CodeManager_UserPrivilege::getManager()->multiInsert($dataList, true);
     }
     
+    /**
+     * 获取用户的所有权限ID数组
+     * 
+     * @param int $userid 用户ID
+     * @return ResultSet
+     */
+    public function getIds($userid)
+    {
+        //获取菜单列表
+        $list = Dao_CodeManager_UserPrivilege::getSelect()->fromColumns('privilege_id')->where('userid=:userid', $userid)->fetchAll()->toArray();
+        if (count($list) <= 0) {
+            return F_Result::build()->success();
+        }
+        return F_Result::build()->success(Utils_Array::toFlat($list, 'privilege_id'));
+    }
 }

@@ -40,13 +40,16 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
     /**
      * 构建出所有有效的菜单列表
      * 
+     * @param boolean $resetCache true=重置缓存 false=正常流程
      * @return array
      */
-    public function getAll()
+    public function getAll($resetCache = false)
     {
         $memKey = 'code_manager_menu_of_all';
         $memObj = F_Cache::createMemcache('user');
-        //$memObj->remove($memKey);
+        if ($resetCache) {
+            $memObj->remove($memKey);
+        }
         //获取所有构造好的菜单
         $menuList = $memObj->load($memKey);
         if (!empty($menuList)) {
@@ -66,13 +69,16 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
      * 构建出指定用户的有效的菜单列表
      * 
      * @param int $userid 用户ID
+     * @param boolean $resetCache true=重置缓存 false=正常流程
      * @return array
      */
-    public function getByUserid($userid)
+    public function getByUserid($userid, $resetCache = false)
     {
         $memKey = 'code_manager_menu_of_user_'.$userid;
         $memObj = F_Cache::createMemcache('user');
-        $memObj->remove($memKey);
+        if ($resetCache) {
+            $memObj->remove($memKey);
+        }
         //获取所有构造好的菜单
         $menuList = $memObj->load($memKey);
         if (!empty($menuList)) {
@@ -80,11 +86,11 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
         } else {//需要动态构造，最多 3 级菜单
 
             //获取菜单列表
-            $list = Dao_CodeManager_UserPrivilege::getSelect()->fromColumns('privilege_id')->fetchAll()->toArray();
-            if (count($list) <= 0) {
+            $userPrivilegeIdsResultSet = Bll_PrivilegeModule_User::getInstance()->getIds($userid);
+            if ($userPrivilegeIdsResultSet->isError() || $userPrivilegeIdsResultSet->isEmpty()) {
                 return '';
             }
-            $privilegeIds = Utils_Array::toFlat($list, 'privilege_id');
+            $privilegeIds = $userPrivilegeIdsResultSet->getResult();
 
             $list = Dao_CodeManager_Privilege::getSelect()->where('id in(:id) AND status=:status order by id asc', $privilegeIds, 0)->fetchAll()->toArray();
             if (count($list) <= 0) {

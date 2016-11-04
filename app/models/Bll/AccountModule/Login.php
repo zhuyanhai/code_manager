@@ -54,7 +54,7 @@ final class Bll_AccountModule_Login
         }
 
         //用户信息
-        $userResultSet = $userInfoInstance->getByUserid($loginCookieResultSet->userid);
+        $userResultSet = Bll_AccountModule_User::getInstance()->getByUserid($loginCookieResultSet->userid);
         if ($userResultSet->isError()) {
             return $userResultSet;
         }
@@ -91,7 +91,7 @@ final class Bll_AccountModule_Login
         $userInfoInstance = Bll_AccountModule_Internal_User::getInstance();
         
         //用户信息
-        $userResultSet = $userInfoInstance->getByAccount($account);
+        $userResultSet = Bll_AccountModule_User::getInstance()->getByAccount($account);
         if ($userResultSet->isError()) {
             return F_Result::build()->error('账户或密码错误');
         }
@@ -99,6 +99,10 @@ final class Bll_AccountModule_Login
         $passwd = $userInfoInstance->buildPassword($passwd, $userResultSet->create_time);
         if ($userResultSet->passwd !== $passwd) {
             return F_Result::build()->error('账户或密码错误');
+        }
+        
+        if ($userResultSet->___isLock) {//用户被锁定
+            return $userResultSet->resetError('用户被锁定');
         }
         
         $userInfoInstance->setLoginCookie($userResultSet->userid, $userResultSet->passwd, $userResultSet->create_time, $isRemember);

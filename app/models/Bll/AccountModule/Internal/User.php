@@ -38,36 +38,6 @@ final class Bll_AccountModule_Internal_User extends F_InternalAbstract
     }
     
     /**
-     * 获取用户信息 - 根据用户ID
-     * 
-     * @param int $userid 用户ID
-     * @return ResultSet
-     */
-    public function getByUserid($userid)
-    {
-        $userRow = Dao_CodeManager_User::getSelect()->where('userid=:userid', $userid)->fetchRow();
-        if (!empty($userRow)) {
-            return F_Result::build()->success($userRow->toArray());
-        }
-        return F_Result::build()->error('用户不存在');
-    }
-    
-    /**
-     * 获取用户信息 - 根据用户登录账号
-     * 
-     * @param string $account 用户登录账号
-     * @return ResultSet
-     */
-    public function getByAccount($account)
-    {
-        $userRow = Dao_CodeManager_User::getSelect()->where('account=:account', $account)->fetchRow();
-        if (!empty($userRow)) {
-            return F_Result::build()->success($userRow->toArray());
-        }
-        return F_Result::build()->error('用户不存在');
-    }
-    
-    /**
      * 生成用户密码，加盐的
      * 
      * @param string $passwdOfClearText 密码明文
@@ -149,29 +119,6 @@ final class Bll_AccountModule_Internal_User extends F_InternalAbstract
     {
     	Utils_Cookie::del('cm-token');
         Utils_Cookie::del('cm-ticket');
-    }
-    
-    /**
-     * 添加用户
-     * 
-     * @param array $userInfo
-     * @return F_Result
-     */
-    public function add($userInfo)
-    {
-        $time = time();
-        $userInfo['create_time'] = $time;
-        $userInfo['update_time'] = $time;
-        $userInfo['passwd']      = $this->buildPassword($userInfo['passwd'], $time);
-        try {
-            $userid = Dao_CodeManager_User::getInsert()->insert($userInfo);
-            return F_Result::build()->success(array('userid' => $userid));
-        } catch(Exception $e) {
-            $errorMsg = $e->getMessage();
-            if ($e->getCode() == 23000 && preg_match('%^SQLSTATE\[23000\]%i', $errorMsg)) {
-                return F_Result::build()->error('账户请勿重复');
-            }
-        }
     }
     
 //----- 私有方法

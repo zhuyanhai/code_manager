@@ -150,6 +150,47 @@ final class ResultSet
     }
     
     /**
+     * 检测返回的数据是否为空
+     * 
+     * var_dump(empty(null), true);   = true
+     * var_dump(empty(0), true);      = true [$isReal=true 值为false]
+     * var_dump(empty('0'), true);    = true [$isReal=true 值为false]
+     * var_dump(empty(''), true);     = true
+     * var_dump(empty(array()), true);= true
+     * var_dump(empty(false), true);  = true
+     * 
+     * @param boolean $isReal 是否严格检测为空
+     * @return boolean true=为空 false=不为空
+     */
+    public function isEmpty($isReal = false)
+    {
+        if ($isReal) {
+            if (empty($this->_resultSet['data']) && !is_array($this->_resultSet['data'])) {
+                if ($this->_resultSet['data'] !== '0' && $this->_resultSet['data'] !== 0) {
+                    return true;
+                }
+            }
+        } else {
+            if (empty($this->_resultSet['data'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * 跳转到 refer[来源页]，如果没有来源，就跳转到指定的URL
+     * 
+     * @param string $url 如果没有来源，就跳转到指定的URL
+     * @return void
+     */
+    public function jumpToRefer($url)
+    {
+        $refer = Utils_Http::getReferer($url);
+        F_Controller_Redirector::getInstance()->gotoUrlAndExit($refer);
+    }
+    
+    /**
      * 如果正确 - 获取结果
      * 
      * @return mixed

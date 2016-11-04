@@ -8,7 +8,22 @@
  * @package Dao
  */
 Abstract class Dao_Abstract extends F_Db_Table_Row
-{   
+{ 
+    /**
+     * 获取 get 操作对象
+     * 
+     * 通过 主键或唯一键 来获取数据
+     * 并且如果配置的memcache缓存,将自动使用
+     * 
+     * @param string $val 字段值
+     * @param string $field 字段名字
+     * @return \F_Db_Table_Get
+     */
+    public static function get($val, $field)
+    {
+        return self::getManager()->get($val, $field);
+    }
+    
     /**
      * 获取 select 操作对象
      * 
@@ -16,58 +31,19 @@ Abstract class Dao_Abstract extends F_Db_Table_Row
      */
     public static function getSelect()
     {
-        return self::_getDb()->getSelect();
+        return self::getManager()->getSelect();
     }
     
     /**
-     * 获取 insert 操作对象
+     * 获取 db 操作类
      * 
-     * @return \F_Db_Table_Insert
+     * @return F_Db
      */
-    public static function getInsert()
-    {
-        return self::_getDb()->getInsert();
-    }
-    
-    /**
-     * 获取 multi insert 操作对象
-     * 
-     * @return \F_Db_Table_MultiInsert
-     */
-    public static function getMultiInsert()
-    {
-        return self::_getDb()->getMultiInsert();
-    }
-    
-    /**
-     * 获取 update 操作对象
-     * 
-     * @return \F_Db_Table_Update
-     */
-    public static function getUpdate()
-    {
-        return self::_getDb()->getUpdate();
-    }
-    
-    /**
-     * 获取 delete 操作对象
-     * 
-     * @return \F_Db_Table_Delete
-     */
-    public static function getDelete()
-    {
-        return self::_getDb()->getDelete();
-    }
-    
-    /**
-     * 获取数据库操作对象
-     * 
-     * @return \F_Db
-     */
-    private static function _getDb()
+    public static function getManager()
     {
         $configClassName = get_called_class() . '_Config';
-        return F_Db::getInstance()->___initTableConfigs($configClassName::$configs);
+        $tableConfig     = $configClassName::$configs;
+        return F_Db::getInstance()->___initTableConfigs($tableConfig);
     }
     
 }

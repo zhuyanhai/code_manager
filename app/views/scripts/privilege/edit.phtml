@@ -1,0 +1,168 @@
+<?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '菜单列表', 'url' => '/admin/menu/'), array('title' => '编辑菜单', 'url' => ''))?>
+
+<script type="text/javascript">
+var isClick = 0;
+function edit()
+{
+    if (isClick === 1) {
+        return false;
+    }
+    isClick = 1;
+    
+    var post = {};
+    
+    post['parentId'] = $.trim($("#parentId").val());
+    post['type'] = $.trim($("input[name=type]:checked").val());
+    
+    if (post['type'].length <= 0) {
+        alert("请选择菜单类型");
+        isClick = 0;
+        return false;
+    }
+    
+    post['name'] = $.trim($("#name").val());
+    if (post['name'].length <= 0) {
+        alert("请输入菜单名字");
+        isClick = 0;
+        return false;
+    }
+    
+    if (post['type'] == 3) {
+        post['url'] = $.trim($("#url").val());
+        if (post['url'].length <= 0) {
+            alert("请输入菜单链接");
+            isClick = 0;
+            return false;
+        }
+    } else {
+        post['url'] = '';
+    }
+    
+    post['desc'] = $.trim($("#desc").val());
+    post['id'] = <?php echo $this->menu['id']?>;
+    
+    $.post('/admin/menu/edit', post, function(result){
+        if (parseInt(result.status) === 0) {
+            alert('编辑成功');
+            window.location.href = '/admin/menu/';
+        } else {
+            isClick = 0;
+            alert(result.msg);
+        }
+    }, 'json');
+}
+</script>
+
+<article class="module width_full">
+    
+    <div class="add_data">
+        <span class="add_spanLeft">父级菜单:</span>
+        <span class="add_spanC">
+            <select id="parentId">
+                <option value="0" data-l="1" <?php if($this->menu['parent_id'] == 0):?>selected<?php endif?>>顶级目录</option>
+                <?php if(!empty($this->dirList)):?>
+                    <?php foreach($this->dirList as $v):?>
+                        <option value="<?php echo $v['data']['id']?>" data-l="2" <?php if($this->menu['parent_id'] == $v['data']['id']):?>selected<?php endif?>>--&nbsp;<?php echo $v['data']['name']?></option>
+                        <?php if($v['childCount'] > 0):?>
+                            <?php foreach($v['childData'] as $cv):?>
+                                <option value="<?php echo $cv['data']['id']?>" data-l="3" <?php if($this->menu['parent_id'] == $cv['data']['id']):?>selected<?php endif?>>------ <?php echo $cv['data']['name']?></option>
+                            <?php endforeach?>
+                        <?php endif?>
+                    <?php endforeach?>
+                <?php endif?>
+            </select>
+        </span>
+        <span style="color:red;">*</span>
+    </div>
+    
+    <div class="add_data">
+        <span class="add_spanLeft">菜单类型:</span>
+        <span class="add_spanC">
+            <input type="radio" id="type_2" name="type" value="2" <?php if($this->menu['type'] == 2):?>checked<?php endif?> /><label for="type_2">目录</label>
+            <input type="radio" id="type_3" name="type" value="3" <?php if($this->menu['type'] == 3):?>checked<?php endif?> /><label for="type_3">菜单</label>
+        </span>
+        <span style="color:red;">*</span>
+    </div>
+
+    <div class="add_data">
+        <span class="add_spanLeft">菜单名字:</span>
+        <span class="add_spanC">
+            <input type="text" id="name" class="add_ltxt" value="<?php echo $this->menu['name']?>" />
+        </span>
+        <span style="color:red;">*</span>
+    </div>
+
+    <div id="linkBoxId" class="add_data" style="display:<?php if($this->menu['type'] == 2):?>none<?php else:?>block<?php endif?>;">
+        <span class="add_spanLeft">菜单链接:</span>
+        <span class="add_spanC">
+            <input type="text" id="url" class="add_ltxt" value="<?php echo $this->menu['url']?>" />
+        </span>
+        <span style="color:red;">*</span>
+    </div>
+    
+    <div class="add_data">
+        <span class="add_spanLeft">菜单描述:</span>
+        <span class="add_spanC">
+            <textarea id="desc" cols="40" rows="5" style="resize:none"><?php echo $this->menu['desc']?></textarea>
+        </span>
+        <span style="color:red;"></span>
+    </div>
+
+    <div class="add_data">
+        <span class="add_spanLeft"></span>
+        <span class="add_spanC">
+            <input type="button" onclick="edit()" value="提交" class="inputButton" />
+        </span>
+    </div>
+</article>
+
+<script>
+var parentLevel = 1;
+wait(function(){
+    var selParentObj = $('#parentId').get(0);
+    parentLevel = $(selParentObj[selParentObj.selectedIndex]).data('l');
+    $('#parentId').on('change', function(){
+        var level = $(this[this.selectedIndex]).data('l');
+        if (parseInt(level) === 1) {//定位只能创建目录
+            $('#type_2').prop('checked', 'checked');
+            parentLevel = 1;
+            $('#linkBoxId').hide();
+        }
+        if (parseInt(level) === 2) {//定位能创建目录 或 菜单
+            $('#type_3').prop('checked', 'checked');
+            parentLevel = 2;
+            $('#linkBoxId').show();
+        }
+        if (parseInt(level) === 3) {//定位只能创建菜单
+            $('#type_3').prop('checked', 'checked');
+            parentLevel = 3;
+            $('#linkBoxId').show();
+        }
+    });
+    $('input[name=type]').on('click', function(){
+        if (parentLevel === 1) {
+            if (this.value == 3) {
+                this.checked = false;
+            }
+            $('#type_2').prop('checked', 'checked');
+            $('#linkBoxId').hide();
+        }
+        
+        if (parentLevel === 3) {
+            if (this.value == 2) {
+                this.checked = false;
+            }
+            $('#type_3').prop('checked', 'checked');
+            $('#linkBoxId').show();
+        }
+        
+        if (parentLevel === 2) {
+            if (this.value == 2) {
+                $('#linkBoxId').hide();
+            } else {
+                $('#linkBoxId').show();
+            }
+        }
+    });
+});
+</script>

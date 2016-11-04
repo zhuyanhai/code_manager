@@ -37,6 +37,7 @@ $this->headLink()->appendStylesheet($this->assetPath()->getCssOfPage('auth_login
 </div>
 <script>
 __wait(function(){
+    $('#accountId').focus();
     $('.PROGRAM-txt').on('focus', function(){
         $('#errorBoxId').fadeOut(500);
     });

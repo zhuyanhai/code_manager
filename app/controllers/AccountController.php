@@ -17,11 +17,16 @@ class AccountController extends AbstractController
         $page = intval($this->_requestObj->getParam('page', 1));
         
         $this->view->searchs = array();
-        $this->view->searchs['status']      = intval($this->_requestObj->getParam('status', 99));
-        $this->view->searchs['searchType']  = Utils_Validation::filter($this->_requestObj->getParam('searchType', 'account'))->removeStr()->removeHtml()->receive();
-        $this->view->searchs['searchValue'] = Utils_Validation::filter($this->_requestObj->getParam('searchValue', ''))->removeStr()->removeHtml()->receive();
+        $this->view->searchs['status']      = $this->_requestObj->getParam('iStatus', 99);
+        $this->view->searchs['searchType']  = $this->_requestObj->getParam('sSearchType', 'account');
+        $this->view->searchs['searchValue'] = $this->_requestObj->getParam('sSearchValue', '');
 
-        $this->view->list = Bll_AccountModule_User::getInstance()->getListOfAdmin($this->view->searchs, $page);
+        $resultSet = Bll_AccountModule_User::getInstance()->getListOfAdmin($this->view->searchs, $page);
+        if ($resultSet->isSuccess()) {
+            $this->view->list = $resultSet->getResult();
+        } else {
+            $this->view->list = null;
+        }
     }
     
     /**
@@ -38,7 +43,13 @@ class AccountController extends AbstractController
             $this->response();
         }
                 
-        $this->view->menus = Bll_PrivilegeModule_Query::getInstance()->getAllOfAdmin();
+        $menusResultSet = Bll_PrivilegeModule_Query::getInstance()->getAllOfAdmin();
+        if ($menusResultSet->isSuccess()) {
+            $this->view->menus = $menusResultSet->getResult();
+        } else {
+            $this->view->menus = array();
+        }
+        
     }
     
     /**
@@ -46,6 +57,80 @@ class AccountController extends AbstractController
      */
     public function editAction()
     {
+        if ($this->isAjax()) {
+            $post = $this->_requestObj->getPost();
+            $resultSet = Bll_AccountModule_User::getInstance()->edit($post);
+            if ($resultSet->isError()) {
+                $this->error($resultSet->getErrorInfo())->response();
+            }
+            $this->response();
+        }
         
+        try {
+            $userid = Utils_Validation::verify('iUserid', $this->_requestObj->getParam('iUserid', 0))->required()->receive();
+            $userResult = Bll_AccountModule_User::getInstance()->getByUserid($userid);
+            if ($userResult->isError()) {
+                $userResult->jumpToRefer('/account/');
+            }
+            $this->view->userInfo = $userResult->getResult();
+        } catch (Utils_Validation_Exception $e) {
+            $e->jumpToRefer('/account/');
+        }
+        
+        $menusResultSet = Bll_PrivilegeModule_Query::getInstance()->getAllOfAdmin();
+        if ($menusResultSet->isSuccess()) {
+            $this->view->menus = $menusResultSet->getResult();
+        } else {
+            $this->view->menus = array();
+        }
+        
+        //获取用户的权限ID数组
+        $userPrivilegeIdsResultSet = Bll_PrivilegeModule_User::getInstance()->getIds($userid);
+        if ($userPrivilegeIdsResultSet->isSuccess() && !$userPrivilegeIdsResultSet->isEmpty() && !$menusResultSet->isEmpty()) {
+            $userPrivilegeIds = $userPrivilegeIdsResultSet->getResult();
+            foreach ($this->view->menus as &$menu) {
+                if (in_array($menu['id'], $userPrivilegeIds)) {
+                    $menu['checked'] = true;
+                }
+            }
+        }
+    }
+    
+    /**
+     * 锁定账号
+     */
+    public function lockAction()
+    {
+        if ($this->isAjax()) {
+            try {
+                $userid = Utils_Validation::verify('iUserid', $this->_requestObj->getParam('iUserid', 0))->required()->int()->notZero()->receive();
+                $resultSet = Bll_AccountModule_User::getInstance()->lock($userid);
+                if ($resultSet->isError()) {
+                    $this->error($resultSet->getErrorInfo())->response();
+                }
+                $this->response();
+            } catch(Utils_Validation_Exception $e) {
+                $this->error('锁定失败')->response();
+            }
+        }
+    }
+    
+    /**
+     * 解锁账号
+     */
+    public function unlockAction()
+    {
+        if ($this->isAjax()) {
+            try {
+                $userid = Utils_Validation::verify('iUserid', $this->_requestObj->getParam('iUserid', 0))->required()->int()->notZero()->receive();
+                $resultSet = Bll_AccountModule_User::getInstance()->unlock($userid);
+                if ($resultSet->isError()) {
+                    $this->error($resultSet->getErrorInfo())->response();
+                }
+                $this->response();
+            } catch(Utils_Validation_Exception $e) {
+                $this->error('解锁失败')->response();
+            }
+        }
     }
 }

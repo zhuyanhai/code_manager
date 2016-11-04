@@ -21,5 +21,6 @@ return array(
             ),
             'lifetime' => 3600,
         ),
+        
     ),
 );
