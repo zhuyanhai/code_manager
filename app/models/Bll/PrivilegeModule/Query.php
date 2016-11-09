@@ -53,17 +53,33 @@ final class Bll_PrivilegeModule_Query
     }
     
     /**
+     * 获取权限 - 根据权限ID
+     * 
+     * @param int $id 权限ID
+     * @return ResultSet
+     */
+    public function getById($id)
+    {
+        $privilegeDao = Dao_CodeManager_Privilege::get($id, 'id');
+        if ($privilegeDao) {
+            return F_Result::build()->success($privilegeDao->toArray());
+        }
+        return F_Result::build()->error();
+    }
+    
+    /**
      * 根据用户ID获取用户的菜单
      * 
      * @param int $userid 用户ID
+     * @param boolean $resetCache
      * @return array
      */
-    public function getListOfByUserid($userid)
+    public function getListOfByUserid($userid, $resetCache = false)
     {
         if ($this->isSuperAdminByUserid($userid) || $userid === 0) {//超级管理员
-            return Bll_PrivilegeModule_Internal_BuildMenu::getInstance()->getAll();
+            return Bll_PrivilegeModule_Internal_BuildMenu::getInstance()->getAll($resetCache);
         } else {
-            return Bll_PrivilegeModule_Internal_BuildMenu::getInstance()->getByUserid($userid);
+            return Bll_PrivilegeModule_Internal_BuildMenu::getInstance()->getByUserid($userid, $resetCache);
         }
     }
     

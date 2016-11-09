@@ -33,33 +33,47 @@ class C_View_Helper_GetMenuListOfAll
         $menuStr = '';
         foreach ($list as $v) {
             $fstyle = '';
-            if ($v['childCount'] > 0) {
-                $l = '1';
-                $bgcolor = 'background-color:#eee;';
-                $paddingL = '';
-                if (intval($v['data']['status']) === 1) {
-                    $fstyle = 'color:#fff;';
+            if (($v['data']['___isMenu'])) {
+                if ($v['childCount'] > 0) {
+                    $l = '1';
+                    $bgcolor = 'background-color:#eee;';
+                    $paddingL = '';
+                    if (intval($v['data']['status']) === 1) {
+                        $fstyle = 'color:#fff;';
+                    }
+                } else {
+                    $l = '0';
+                    $bgcolor = 'background-color:#fff;';
+                    $paddingL = 'padding-left:40px';
+                    if (intval($v['data']['status']) === 1) {
+                        $fstyle = 'color:#eee;';
+                    }
                 }
             } else {
                 $l = '0';
-                $bgcolor = 'background-color:#fff;';
-                $paddingL = 'padding-left:40px';
+                $bgcolor = 'background-color:#8DC78B;';
+                $paddingL = '';
                 if (intval($v['data']['status']) === 1) {
-                    $fstyle = 'color:#eee;';
+                    $fstyle = 'color:#fff;';
                 }
             }
             
             $menuStr .= '<tr id="item_'.$v['data']['id'].'" style="'.$bgcolor.$fstyle.'" data-l="'.$l.'">'; 
             $menuStr .= '<td>'.$v['data']['id'].'</td>';
             $menuStr .= '<td>'.(($v['data']['___isMenu'])?'菜单/权限':'仅权限').'</td>';
-            $menuStr .= '<td style="'.$paddingL.'">'.$v['data']['___showMenuType'].'</td>';
+            $menuStr .= '<td style="'.$paddingL.'">'.(($v['data']['___isMenu'])?$v['data']['___showMenuType']:'').'</td>';
             $menuStr .= '<td style="'.$paddingL.'">'.$v['data']['name'].'</td>';
             $menuStr .= '<td>'.$v['data']['url'].'</td>';
-            if ($v['childCount'] > 0) {
-                $menuStr .= '<td>父级</td>';
+            if (($v['data']['___isMenu'])) {
+                if ($v['childCount'] > 0) {
+                    $menuStr .= '<td>父级</td>';
+                } else {
+                    $menuStr .= '<td style="'.$paddingL.'">子级</td>';
+                }
             } else {
-                $menuStr .= '<td style="'.$paddingL.'">子级</td>';
+                $menuStr .= '<td>无</td>';
             }
+            
             $menuStr .= '<td><a href="/privilege/edit?iId='.$v['data']['id'].'">编辑</a><b style="color:#000">&nbsp;|&nbsp;</b>';
             if (intval($v['data']['status']) === 1) {
                 $displayDel = 'none';

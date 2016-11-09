@@ -95,7 +95,6 @@ final class Bll_AccountModule_Login
         if ($userResultSet->isError()) {
             return F_Result::build()->error('账户或密码错误');
         }
-        
         $passwd = $userInfoInstance->buildPassword($passwd, $userResultSet->create_time);
         if ($userResultSet->passwd !== $passwd) {
             return F_Result::build()->error('账户或密码错误');

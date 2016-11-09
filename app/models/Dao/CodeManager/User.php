@@ -35,11 +35,11 @@ final class Dao_CodeManager_User_Config
                 'expires' => null,
             ),
             'account' => array(
-                'server'    => 'user',
-                'key'       => 'table_user_account_1_%d',
-                'field'     => 'account',
-                'savefield' => array('userid'),
-                'expires'   => null,
+                'server'     => 'user',
+                'key'        => 'table_user_account_1_%s',
+                'field'      => 'account',
+                'saveFields' => array('userid'),
+                'expires'    => null,
             ),
         ),
     );

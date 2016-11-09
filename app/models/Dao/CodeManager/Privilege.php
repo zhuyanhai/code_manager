@@ -27,17 +27,11 @@ final class Dao_CodeManager_Privilege_Config
         'memcacheHooks' => array(
             array(
                 'triggers'   => array('insert', 'update', 'delete'),
-                'field'      => '*',
-                'hookClass'  => 'Bll_PrivilegeModule_Internal_BuildMenu',
-                'hookMethod' => 'getAll',
-                'hookParams' => array(true),
-            ),
-            array(
-                'triggers'   => array('insert', 'update', 'delete'),
-                'field'      => '*',
-                'hookClass'  => 'Bll_PrivilegeModule_Internal_BuildMenu',
-                'hookMethod' => 'getAll',
-                'hookParams' => array(true),
+                'fields'     => '*',//判断更新了哪个字段需要处理钩子
+                'classUse'   => 'singleton',//static 、 singleton 、 new
+                'hookClass'  => 'Bll_PrivilegeModule_Query',
+                'hookMethod' => 'getListOfByUserid',
+                'hookParams' => array(0, true),
             ),
         ),
     );

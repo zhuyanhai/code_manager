@@ -131,6 +131,7 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
         foreach ($list as $v) {
             array_push($tmpMenuList, array(
                 'level'      => $v->level,
+                'type'       => $v->type,
                 'data'       => $v->toArray(),
                 'childCount' => 0,
                 'childData'  => array(),
@@ -182,6 +183,7 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
                 if (isset($menuList['childData'])) {
                     array_push($menuList['childData'], array(
                         'level'      => $v['level'],
+                        'type'       => $v['type'],
                         'data'       => $v,
                         'childCount' => 0,
                         'childData'  => array(),
@@ -191,6 +193,7 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
                 } else {
                     array_push($menuList, array(
                         'level'      => $v['level'],
+                        'type'       => $v['type'],
                         'data'       => $v,
                         'childCount' => 0,
                         'childData'  => array(),

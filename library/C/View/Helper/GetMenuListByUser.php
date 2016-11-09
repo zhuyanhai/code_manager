@@ -30,6 +30,9 @@ final class C_View_Helper_GetMenuListByUser
     {
         $menuStr = '';
         foreach ($list as $v) {
+            if (intval($v['type']) === 2) {
+                continue;
+            }
             if (empty($v['data']['url'])) {
                 $menuStr .= '<h3>'.$v['data']['name'].'</h3>';
                 if ($v['childCount'] > 0) {

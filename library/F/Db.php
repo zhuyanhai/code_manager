@@ -60,6 +60,8 @@ final class F_Db
         $this->_tableConfigs['dbTable']    = '`'.$this->_tableConfigs['dbFullName'].'`.`'.$this->_tableConfigs['tableName'].'`';
         if (isset($tableConfigs['memcache']) && is_array($tableConfigs['memcache'])) {
             $this->_cacheConfigs = $tableConfigs['memcache'];
+        } else {
+            $this->_cacheConfigs = array();
         }
         return $this;
     }
@@ -74,6 +76,7 @@ final class F_Db
     {
         $lastId = $this->changeConnectServer('master')->insert($rowData, $this->_tableConfigs['dbTable']);
         $this->_postInsert($lastId);
+        $this->_memcacheHooks('insert', array('primaryKey' => $lastId, 'rowData' => $rowData));
         return $lastId;
     }
 
@@ -147,6 +150,9 @@ final class F_Db
         if (!empty($valOfPrimaryKey)) {
             $this->_postUpdate($valOfPrimaryKey);
         }
+        
+        $this->_memcacheHooks('update', array('primaryKey' => $valOfPrimaryKey, 'rowData' => $rowData, 'whereBind' => $whereBind));
+        
         return $rowCount;
     }
     
@@ -207,6 +213,9 @@ final class F_Db
         if (!empty($valOfPrimaryKey)) {
             $this->_postDelete($valOfPrimaryKey);
         }
+        
+        $this->_memcacheHooks('delete', array('primaryKey' => $valOfPrimaryKey, 'whereBind' => $whereBind));
+        
         return $rowCount;
     }
     
@@ -398,9 +407,9 @@ final class F_Db
         $memkey   = $this->_getCacheKey($field, $result->$field);
         $data     = $result->toArray();
         
-        if(isset($fieldCfg['savefields']) && !empty($fieldCfg['savefields'])){//只保存指定字段
+        if(isset($fieldCfg['saveFields']) && !empty($fieldCfg['saveFields'])){//只保存指定字段
             $data = array();
-            foreach($fieldCfg['savefields'] as $v){
+            foreach($fieldCfg['saveFields'] as $v){
                 $data[$v] = $result->$v;
             }
         }
@@ -472,6 +481,38 @@ final class F_Db
                     self::_delCache($field, $row);
                 }
             } 
+        }
+    }
+    
+    /**
+     * memcache 钩子
+     * 
+     * @param string $operatorAction 动作
+     * @param array $data 根据动作，里面的数据不一样
+     */
+    private function _memcacheHooks($operatorAction, $data)
+    {
+        if (isset($this->_tableConfigs['memcacheHooks']) && is_array($this->_tableConfigs['memcacheHooks']) && !empty($this->_tableConfigs['memcacheHooks'])) {//如果有缓存处理钩子
+            foreach ($this->_tableConfigs['memcacheHooks'] as $hook) {
+                if (!in_array($operatorAction, $hook['triggers'])) {
+                    continue;
+                }
+                if (is_array($hook['fields'])) {
+                    //todo
+                }
+                switch ($hook['classUse']) {
+                    case 'static':
+                        $hookInstance = $hook['hookClass'];
+                        break;
+                    case 'new':
+                        $hookInstance = new $hook['hookClass']();
+                        break;
+                    case 'singleton':
+                        $hookInstance = $hook['hookClass']::getInstance();
+                        break;
+                }
+                call_user_func_array(array($hookInstance, $hook['hookMethod']), $hook['hookParams']);
+            }
         }
     }
 }
