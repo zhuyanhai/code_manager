@@ -7,7 +7,7 @@
  * -删除
  * 
  */
-class AccountController extends AbstractController
+class Admin_AccountController extends AbstractController
 {   
     /**
      * 账号列表
@@ -70,11 +70,11 @@ class AccountController extends AbstractController
             $userid = Utils_Validation::verify('iUserid', $this->_requestObj->getParam('iUserid', 0))->required()->receive();
             $userResult = Bll_AccountModule_User::getInstance()->getByUserid($userid);
             if ($userResult->isError()) {
-                $userResult->jumpToRefer('/account/');
+                $userResult->jumpToRefer('/admin/account/');
             }
             $this->view->userInfo = $userResult->getResult();
         } catch (Utils_Validation_Exception $e) {
-            $e->jumpToRefer('/account/');
+            $e->jumpToRefer('/admin/account/');
         }
         
         $menusResultSet = Bll_PrivilegeModule_Query::getInstance()->getAllOfAdmin();

@@ -1,5 +1,5 @@
 <?php 
-$this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '账号列表', 'url' => '/account/'), array('title' => '编辑账号', 'url' => ''));
+$this->breadcrumbs(array('title' => '平台管理', 'url' => ''), array('title' => '账号列表', 'url' => '/admin/account/'), array('title' => '编辑账号', 'url' => ''));
 $this->headLink()->appendStylesheet($this->assetPath()->getCssOfModule('jquery/plugin/ztree/ztree'));
 $this->script()->appendScript($this->assetPath()->getJsOfModule('jquery/plugin/ztree/ztree.min'));
 ?>
@@ -150,7 +150,7 @@ __wait(function(){
         post['aPrivilegeNodes'] = privilegeNodes;
         post['iUserid'] = userid;
         
-        $.post('/account/edit', post, function(result){
+        $.post('/admin/account/edit', post, function(result){
             if (parseInt(result.status) === 0) {
                 alert('编辑成功');
                 window.location.reload(true);

@@ -1,9 +1,9 @@
-<?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '账号列表', 'url' => ''))?>
+<?php echo $this->breadcrumbs(array('title' => '平台管理', 'url' => ''), array('title' => '账号列表', 'url' => ''))?>
 
 <div class="panel panel-default">
     <div class="panel-heading">按条件搜索</div>
     <div class="panel-body">
-        <form method="POST" id="searchForm" action="/account/" class="form-horizontal" role="form">
+        <form method="POST" id="searchForm" action="/admin/account/" class="form-horizontal" role="form">
             <div class="form-group">
                 <label class="col-sm-2 control-label width-rem-10">筛选：</label>
                 <div class="col-sm-10">
@@ -40,7 +40,7 @@
 
 <div class="panel panel-default">
     <!-- Default panel contents -->
-    <div class="panel-heading">账号列表<a href="/account/add" class="btn btn-default pull-right">添加账号</a></div>
+    <div class="panel-heading">账号列表<a href="/admin/account/add" class="btn btn-default pull-right">添加账号</a></div>
 
     <!-- Table -->
     <table class="table tablesorter">
@@ -69,7 +69,7 @@
                         <td><?php echo date('Y-m-d H:i:s', $v['createTime'])?></td> 
                         <td>
                             <?php if(empty($v['___isSuperAdmin'])):?>
-                                <a href="/account/edit/?iUserid=<?php echo $v['userid']?>">编辑</a>&nbsp;
+                                <a href="/admin/account/edit/?iUserid=<?php echo $v['userid']?>">编辑</a>&nbsp;
                                 <a href="###" id="lock_<?php echo $v['userid']?>" onclick="lock(<?php echo $v['userid']?>);return false;" style="display:<?php if(intval($v['status']) === 10):?>none<?php else:?>inline-block<?php endif?>;">锁定</a>
                                 <a href="###" id="unlock_<?php echo $v['userid']?>" onclick="unlock(<?php echo $v['userid']?>);return false;" style="display:<?php if(intval($v['status']) === 10):?>inline-block<?php else:?>none<?php endif?>;">解锁</a>
                             <?php endif?>
@@ -87,7 +87,7 @@
 <script>
 function cancelQuery()
 {
-    window.location.href = "/account/";
+    window.location.href = "/admin/account/";
 }
 function query() 
 {
@@ -97,7 +97,7 @@ function lock(userid)
 {
     if (window.confirm('确定要锁定吗？')) {
         var divId = '#item_' + userid;
-        $.post('/account/lock/', {iUserid: userid}, function(result) {
+        $.post('/admin/account/lock/', {iUserid: userid}, function(result) {
             if (parseInt(result.status) === 0) {
                 <?php if(intval($this->searchs['status']) === 99):?>
                     $('#lock_'+userid).css('display', 'none');
@@ -116,7 +116,7 @@ function unlock(userid)
 {
     if (window.confirm('确定要解锁吗？')) {
         var divId = '#item_' + userid;
-        $.post('/account/unlock/', {iUserid: userid}, function(result) {
+        $.post('/admin/account/unlock/', {iUserid: userid}, function(result) {
             if (parseInt(result.status) === 0) {
                 <?php if(intval($this->searchs['status']) === 99):?>
                     $('#unlock_'+userid).css('display', 'none');

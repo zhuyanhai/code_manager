@@ -1,0 +1,244 @@
+<?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '权限列表', 'url' => '/admin/privilege/'), array('title' => '添加权限', 'url' => ''))?>
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+    <div class="panel-heading">添加权限</div>
+    <div class="panel-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-7">
+                    <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="type1" class="col-sm-2 control-label resetPadding padd-top-7">权限类型</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="iType" id="type1" value="1" checked> 菜单+权限
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="iType" id="type2" value="2"> 仅权限
+                            </label>
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="PROGRAM-menu form-group">
+                        <label for="accountId" class="col-sm-2 control-label resetPadding padd-top-7">所属父级权限:</label>
+                        <div class="col-sm-10">
+                            <select id="parentId" class="form-control">
+                                <option value="0" data-l="1">无</option>
+                                <?php if(!empty($this->privilegeList)):?>
+                                    <?php foreach($this->privilegeList as $v):?>
+                                        <?php if($v['type'] == 1):?>
+                                            <option value="<?php echo $v['data']['id']?>" data-l="2">-- <?php echo $v['data']['name']?></option>
+                                        <?php endif?>
+                                    <?php endforeach?>
+                                <?php endif?>
+                            </select>
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="PROGRAM-menu form-group">
+                        <label for="menuType2" class="col-sm-2 control-label resetPadding padd-top-7">菜单类型</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="iMenuType" id="menuType2" value="2" checked> 目录
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="iMenuType" id="menuType3" value="3"> 菜单
+                            </label>
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nameId" class="col-sm-2 control-label resetPadding padd-top-7">权限名字</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="PROGRAM-txt form-control" name="sName" id="nameId" placeholder="请输入权限名字">
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="codeNameId" class="col-sm-2 control-label resetPadding padd-top-7">权限标识:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="PROGRAM-txt form-control" name="sCodeName" id="codeNameId" placeholder="请输入你的权限标识【module_module_controller_action】">
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div id="urlBoxId" class="form-group" style="display:none">
+                        <label for="urlId" class="col-sm-2 control-label resetPadding padd-top-7">文件路径:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="PROGRAM-txt form-control" name="sUrl" id="urlId" placeholder="请输入文件路径">
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-10 col-sm-offset-2">
+                            <button type="button" class="btn btn-success" style='padding:5px 12px' id="subAddId">提交</button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var parentLevel   = 1;
+var urlBoxDisplay = 'none';
+__wait(function(){
+    
+    //权限类型的选择
+    $('input[name=iType]').on('click', function()
+    {
+        if (this.value == 1) {//菜单+权限
+            $('.PROGRAM-menu').show();
+            if (urlBoxDisplay !== 'none') {
+                $('#urlBoxId').show();
+            }
+            $('#codeNameId').attr('placeholder', '请输入你的权限路径标识【module_module_controller_action】');
+        } else {
+            $('.PROGRAM-menu').hide();
+            $('#urlBoxId').hide();
+            $('#codeNameId').attr('placeholder', '请输入你的权限动作标识【module_action】');
+        }
+    });
+    
+    //所属父级选择
+    $('#parentId').on('change', function()
+    {
+        var level = $(this[this.selectedIndex]).data('l');
+        
+        if (parseInt(level) === 1) {//定位能创建目录 或 菜单
+            $('#menuType2').prop('checked', 'checked');
+            parentLevel = 1;
+            $('#urlBoxId').hide();
+            urlBoxDisplay = 'none';
+        }
+        
+        if (parseInt(level) === 2) {//定位能创建目录 或 菜单
+            $('#menuType3').prop('checked', 'checked');
+            parentLevel = 2;
+            $('#urlBoxId').show();
+            urlBoxDisplay = 'block';
+        }
+        
+//        if (parseInt(level) === 3) {//定位只能创建菜单
+//            $('#menuType3').prop('checked', 'checked');
+//            parentLevel = 3;
+//            $('#urlBoxId').show();
+//        }
+    });
+    
+    //菜单类型的选择
+    $('input[name=iMenuType]').on('click', function()
+    {
+        if (parentLevel === 1) {
+            if (this.value == 3) {
+                this.checked = false;
+            }
+            $('#menuType2').prop('checked', 'checked');
+            $('#urlBoxId').hide();
+            urlBoxDisplay = 'none';
+        }
+        
+//        if (parentLevel === 3) {
+//            if (this.value == 2) {
+//                this.checked = false;
+//            }
+//            $('#menuType3').prop('checked', 'checked');
+//            $('#urlBoxId').show();
+//        }
+        
+        if (parentLevel === 2) {
+            $('#menuType3').prop('checked', 'checked');
+            $('#urlBoxId').show();
+            urlBoxDisplay = 'block';
+        }
+    });
+    
+    var formObj = {
+        "parentId" : $("#parentId"),
+        "type"      : $("#type2"),
+        "menuType"  : $("#menuType3"),
+        "name"      : $("#nameId"),
+        "codeName"  : $("#codeNameId"),
+        "url"       : $("#urlId")
+    };
+    
+    //提交
+    var isClick = 0;
+    $('#subAddId').on('click', function()
+    {
+        if (isClick === 1) {
+            return false;
+        }
+        isClick = 1;
+        
+        $('.PROGRAM-txt').one('keypress keyup input', function(){
+            $('.form-group').removeClass('has-error').removeClass('has-feedback');
+            $('.PROGRAM-inputerror').hide();
+        });
+
+        var post = {};
+
+        post['iParentId'] = $.trim(formObj['parentId'].val());
+        post['iType']     = $.trim($("input[name=iType]:checked").val());
+        post['iMenuType'] = $.trim($("input[name=iMenuType]:checked").val());
+
+        if (post['iType'].length <= 0) {
+            formObj['type'].parents('.form-group').addClass('has-error').addClass('has-feedback');
+            formObj['type'].siblings('.PROGRAM-inputerror').show();
+            formObj['type'].focus();
+            isClick = 0;
+            return false;
+        }
+        
+        if (post['iMenuType'].length <= 0) {
+            formObj['menuType'].parents('.form-group').addClass('has-error').addClass('has-feedback');
+            formObj['menuType'].siblings('.PROGRAM-inputerror').show();
+            formObj['menuType'].focus();
+            isClick = 0;
+            return false;
+        }
+
+        post['sName'] = $.trim(formObj['name'].val());
+        if (post['sName'].length <= 0) {
+            formObj['name'].parents('.form-group').addClass('has-error').addClass('has-feedback');
+            formObj['name'].siblings('.PROGRAM-inputerror').show();
+            formObj['name'].focus();
+            isClick = 0;
+            return false;
+        }
+        
+        post['sCodeName'] = $.trim(formObj['codeName'].val());
+        if (post['sCodeName'].length <= 0) {
+            formObj['codeName'].parents('.form-group').addClass('has-error').addClass('has-feedback');
+            formObj['codeName'].siblings('.PROGRAM-inputerror').show();
+            formObj['codeName'].focus();
+            isClick = 0;
+            return false;
+        }
+
+        if (post['iMenuType'] == 3) {
+            post['sUrl'] = $.trim(formObj['url'].val());
+            if (post['sUrl'].length <= 0) {
+                formObj['url'].parents('.form-group').addClass('has-error').addClass('has-feedback');
+                formObj['url'].siblings('.PROGRAM-inputerror').show();
+                formObj['url'].focus();
+                isClick = 0;
+                return false;
+            }
+        } else {
+            post['sUrl'] = '';
+        }
+
+        $.post('/admin/privilege/add', post, function(result){
+            if (parseInt(result.status) === 0) {
+                alert('添加成功');
+                window.location.href = '/admin/privilege/';
+            } else {
+                isClick = 0;
+                alert(result.msg);
+            }
+        }, 'json');
+    });
+});
+</script>

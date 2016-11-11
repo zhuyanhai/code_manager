@@ -1,4 +1,4 @@
-<?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '权限列表', 'url' => '/privilege/'), array('title' => '添加权限', 'url' => ''))?>
+<?php echo $this->breadcrumbs(array('title' => '平台管理', 'url' => ''), array('title' => '权限列表', 'url' => '/admin/privilege/'), array('title' => '添加权限', 'url' => ''))?>
 <div class="panel panel-default">
     <!-- Default panel contents -->
     <div class="panel-heading">添加权限</div>
@@ -26,12 +26,9 @@
                                 <option value="0" data-l="1">无</option>
                                 <?php if(!empty($this->privilegeList)):?>
                                     <?php foreach($this->privilegeList as $v):?>
-                                        <option value="<?php echo $v['data']['id']?>" data-l="2">-- <?php echo $v['data']['name']?></option>
-                                        <?php //if($v['childCount'] > 0):?>
-                                            <?php //foreach($v['childData'] as $cv):?>
-                                                <!--<option value="<?php //echo $cv['data']['id']?>" data-l="3">----- <?php //echo $cv['data']['name']?></option>-->
-                                            <?php //endforeach?>
-                                        <?php //endif?>
+                                        <?php if($v['type'] == 1):?>
+                                            <option value="<?php echo $v['data']['id']?>" data-l="2">-- <?php echo $v['data']['name']?></option>
+                                        <?php endif?>
                                     <?php endforeach?>
                                 <?php endif?>
                             </select>
@@ -67,7 +64,7 @@
                     <div id="urlBoxId" class="form-group" style="display:none">
                         <label for="urlId" class="col-sm-2 control-label resetPadding padd-top-7">文件路径:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="PROGRAM-txt form-control" name="sUrl" id="urlId" placeholder="请输入你的联系电话">
+                            <input type="text" class="PROGRAM-txt form-control" name="sUrl" id="urlId" placeholder="请输入文件路径">
                             <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
                         </div>
                     </div>
@@ -233,10 +230,10 @@ __wait(function(){
             post['sUrl'] = '';
         }
 
-        $.post('/privilege/add', post, function(result){
+        $.post('/admin/privilege/add', post, function(result){
             if (parseInt(result.status) === 0) {
                 alert('添加成功');
-                window.location.href = '/privilege/';
+                window.location.href = '/admin/privilege/';
             } else {
                 isClick = 0;
                 alert(result.msg);

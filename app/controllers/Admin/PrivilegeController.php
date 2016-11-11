@@ -7,7 +7,7 @@
  * -删除
  * 
  */
-class PrivilegeController extends AbstractController
+class Admin_PrivilegeController extends AbstractController
 {   
     /**
      * 权限列表
@@ -50,11 +50,11 @@ class PrivilegeController extends AbstractController
         
         $id = $this->_requestObj->getParam('iId', 0);
         if (empty($id)) {
-            $this->_redirectorObj->gotoUrlAndExit('/privilege/');
+            $this->_redirectorObj->gotoUrlAndExit('/admin/privilege/');
         }
         $privilegeResultSet = Bll_PrivilegeModule_Query::getInstance()->getById($id);
         if ($privilegeResultSet->isError()) {
-            $this->_redirectorObj->gotoUrlAndExit('/privilege/');
+            $this->_redirectorObj->gotoUrlAndExit('/admin/privilege/');
         }
         
         $this->view->privilege = $privilegeResultSet->getResult();

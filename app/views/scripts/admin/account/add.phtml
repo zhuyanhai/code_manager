@@ -1,5 +1,5 @@
 <?php 
-$this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '账号列表', 'url' => '/account/'), array('title' => '添加账号', 'url' => ''));
+$this->breadcrumbs(array('title' => '平台管理', 'url' => ''), array('title' => '账号列表', 'url' => '/admin/account/'), array('title' => '添加账号', 'url' => ''));
 $this->headLink()->appendStylesheet($this->assetPath()->getCssOfModule('jquery/plugin/ztree/ztree'));
 $this->script()->appendScript($this->assetPath()->getJsOfModule('jquery/plugin/ztree/ztree.min'));
 ?>
@@ -150,10 +150,10 @@ __wait(function(){
         
         post['aPrivilegeNodes'] = privilegeNodes;
 
-        $.post('/account/add', post, function(result){
+        $.post('/admin/account/add', post, function(result){
             if (parseInt(result.status) === 0) {
                 alert('添加成功');
-                window.location.href = '/account/';
+                window.location.href = '/admin/account/';
             } else {
                 isClick = 0;
                 alert(result.msg);

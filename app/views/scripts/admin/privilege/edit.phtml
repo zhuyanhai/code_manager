@@ -1,4 +1,4 @@
-<?php echo $this->breadcrumbs(array('title' => '系统管理', 'url' => ''), array('title' => '权限列表', 'url' => '/privilege/'), array('title' => '编辑权限', 'url' => ''))?>
+<?php echo $this->breadcrumbs(array('title' => '平台管理', 'url' => ''), array('title' => '权限列表', 'url' => '/admin/privilege/'), array('title' => '编辑权限', 'url' => ''))?>
 <div class="panel panel-default">
     <!-- Default panel contents -->
     <div class="panel-heading">添加权限</div>
@@ -26,12 +26,9 @@
                                 <option value="0" data-l="1">无</option>
                                 <?php if(!empty($this->privilegeList)):?>
                                     <?php foreach($this->privilegeList as $v):?>
-                                        <option value="<?php echo $v['data']['id']?>" data-l="2" <?php echo (intval($this->privilege['parent_id']) === $v['data']['id'])?'selected':''?>>-- <?php echo $v['data']['name']?></option>
-                                        <?php //if($v['childCount'] > 0):?>
-                                            <?php //foreach($v['childData'] as $cv):?>
-                                                <!--<option value="<?php //echo $cv['data']['id']?>" data-l="3">----- <?php //echo $cv['data']['name']?></option>-->
-                                            <?php //endforeach?>
-                                        <?php //endif?>
+                                        <?php if($v['type'] == 1):?>
+                                            <option value="<?php echo $v['data']['id']?>" data-l="2" <?php echo (intval($this->privilege['parent_id']) === $v['data']['id'])?'selected':''?>>-- <?php echo $v['data']['name']?></option>
+                                        <?php endif?>
                                     <?php endforeach?>
                                 <?php endif?>
                             </select>
@@ -64,7 +61,7 @@
                             <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
                         </div>
                     </div>
-                    <div id="urlBoxId" class="form-group" <?php if(intval($this->privilege['type']) === 2):?>style="display:none;"<?php endif?>>
+                    <div id="urlBoxId" class="form-group" <?php if(intval($this->privilege['type']) === 2 || intval($this->privilege['menu_type']) === 2):?>style="display:none;"<?php endif?>>
                         <label for="urlId" class="col-sm-2 control-label resetPadding padd-top-7">文件路径:</label>
                         <div class="col-sm-10">
                             <input type="text" class="PROGRAM-txt form-control" name="sUrl" id="urlId" placeholder="请输入文件路径" value="<?php echo $this->privilege['url']?>">
@@ -235,7 +232,7 @@ __wait(function(){
         
         post['iId'] = '<?php echo $this->privilege['id']?>';
 
-        $.post('/privilege/edit', post, function(result){
+        $.post('/admin/privilege/edit', post, function(result){
             if (parseInt(result.status) === 0) {
                 alert('编辑成功');
                 window.location.reload(true);
