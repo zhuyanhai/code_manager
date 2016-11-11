@@ -74,7 +74,11 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
      */
     public function getByUserid($userid, $resetCache = false)
     {
-        $memKey = 'code_manager_menu_of_user_'.$userid;
+        $conditionResultSet = Bll_HelperModule_Config::getInstance()->get('privilege_of_user_memcache_update');
+        if ($conditionResultSet->isError()) {
+            $conditionResultSet->throwException();
+        }
+        $memKey = 'code_manager_menu_of_user_'.$conditionResultSet->getResult().'_'.$userid;
         $memObj = F_Cache::createMemcache('user');
         //if ($resetCache) {
             $memObj->remove($memKey);
@@ -100,10 +104,12 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
             $menuList = array();
             $this->_buildMenuListOfUser(0, $menuList, $list);
             $menuList = Utils_Sort::getpao($menuList, 'level', 'desc');
-            $memObj->save($menuList, $memKey, array(), null);
+            $memObj->save($menuList, $memKey, array(), 86400);
             return $menuList;
         }
     }
+    
+//--- 以下是私有方法
     
     /**
      * 构建菜单列表 - 根据指定的 $parentIdsOfMenu

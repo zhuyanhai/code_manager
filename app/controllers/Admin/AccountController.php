@@ -40,6 +40,11 @@ class Admin_AccountController extends AbstractController
             if ($resultSet->isError()) {
                 $this->error($resultSet->getErrorInfo())->response();
             }
+            //处理权限
+            if (isset($post['aPrivilegeNodes']) && !empty($post['aPrivilegeNodes'])) {
+                //给用户添加权限
+                Bll_PrivilegeModule_User::getInstance()->add($resultSet->userid, $post['aPrivilegeNodes']);
+            }
             $this->response();
         }
                 
@@ -62,6 +67,11 @@ class Admin_AccountController extends AbstractController
             $resultSet = Bll_AccountModule_User::getInstance()->edit($post);
             if ($resultSet->isError()) {
                 $this->error($resultSet->getErrorInfo())->response();
+            }
+            //处理权限
+            if (isset($post['aPrivilegeNodes']) && !empty($post['aPrivilegeNodes'])) {
+                //给用户添加权限
+                Bll_PrivilegeModule_User::getInstance()->add($resultSet->userid, $post['aPrivilegeNodes']);
             }
             $this->response();
         }

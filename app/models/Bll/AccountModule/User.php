@@ -133,12 +133,9 @@ final class Bll_AccountModule_User
                 return F_Result::build()->error('添加失败');
             }
 
-            //处理权限的添加
-            if (isset($post['aPrivilegeNodes']) && !empty($post['aPrivilegeNodes'])) {
-                Bll_PrivilegeModule_User::getInstance()->add($userid, $post['aPrivilegeNodes']);
-            }
             
-            return F_Result::build()->success();
+            
+            return F_Result::build()->success(array('userid' => $userid));
         } catch(Utils_Validation_Exception $e) {
             switch ($e->errorKey) {
                 case "sRealname":
@@ -200,12 +197,7 @@ final class Bll_AccountModule_User
                 return F_Result::build()->error('编辑失败');
             }
             
-            //处理权限的添加
-            if (isset($post['aPrivilegeNodes']) && !empty($post['aPrivilegeNodes'])) {
-                Bll_PrivilegeModule_User::getInstance()->add($userid, $post['aPrivilegeNodes']);
-            }
-            
-            return F_Result::build()->success();
+            return F_Result::build()->success(array('userid' => $userid));
         } catch(Utils_Validation_Exception $e) {
             echo $e->errorKey;
             switch ($e->errorKey) {
@@ -266,4 +258,5 @@ final class Bll_AccountModule_User
             return F_Result::build()->error('解锁失败');
         }
     }
+    
 }

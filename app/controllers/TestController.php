@@ -6,13 +6,8 @@ class TestController extends AbstractController
 {
     public function indexAction()
     {
-        var_dump(empty('null'), true);
-        var_dump(empty(null), true);
-        var_dump(empty(0), true);
-        var_dump(empty('0'), true);
-        var_dump(empty(''), true);
-        var_dump(empty(array()), true);
-        var_dump(empty(false), true);
+        json_decode('{"a":12}');
+        echo json_last_error();
         exit;
         $var = '<b class="aa" style="fdfd"><script>alert("ok")</script>&#63;Bill Gates bb?？:&~!@#$%^&*()_+}|{":?><<b>';
         $var = Utils_Validation::filter($var)->xss(function($configInstance){
