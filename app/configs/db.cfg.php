@@ -12,20 +12,20 @@ return array(
         
         'default' => array(
             'master' => array(
-                'host'     => 'db1.int.utan.com',
+                'host'     => 'localhost',
                 'port'     => '3306',
-                'socket'   => '',
-                'username' => 'dbuser',
-                'password' => 'gm9QROY55=IPVF-l',
+                'socket'   => '/data/mysqldb/mysql.sock',
+                'username' => 'root',
+                'password' => '19820111',
                 'charset'  => 'utf8mb4',
                 'collation' => 'utf8mb4_general_ci',
             ),
             'slave' => array(
-                'host'     => 'db1.int.utan.com',
+                'host'     => 'localhost',
                 'port'     => '3306',
-                'socket'   => '',
-                'username' => 'dbuser',
-                'password' => 'gm9QROY55=IPVF-l',
+                'socket'   => '/data/mysqldb/mysql.sock',
+                'username' => 'root',
+                'password' => '19820111',
                 'charset'  => 'utf8mb4',
                 'collation' => 'utf8mb4_general_ci',
             ),

@@ -49,5 +49,36 @@ final class Dao_CodeManager_Config_Config
  */
 class Dao_CodeManager_Config extends Dao_Abstract
 {
+    /**
+     * 根据解析模式获取值
+     * 
+     * @return mixed
+     */
+    public function getVal()
+    {
+        switch (intval($this->parse_mode)) {
+            case 1:
+                return intval($this->val);
+                break;
+            case 2:
+                return strval($this->val);
+                break;
+            case 3:
+                return json_decode($this->val, true);
+                break;
+        }
+    }
     
+    /**
+     * 记录状态是否有效
+     * 
+     * @return boolean true=有效 false=无效
+     */
+    public function isValid()
+    {
+        if (intval($this->status) === 0) { 
+            return true;
+        }
+        return false;
+    }
 }

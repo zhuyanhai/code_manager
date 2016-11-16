@@ -17,7 +17,7 @@ Abstract class Dao_Abstract extends F_Db_Table_Row
      * 
      * @param string $val 字段值
      * @param string $field 字段名字
-     * @return \F_Db_Table_Get
+     * @return \F_Db_Table_Row
      */
     public static function get($val, $field)
     {

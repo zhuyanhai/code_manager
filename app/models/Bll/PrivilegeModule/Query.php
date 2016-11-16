@@ -71,7 +71,11 @@ final class Bll_PrivilegeModule_Query
      * 根据用户ID获取用户的菜单
      * 
      * @param int $userid 用户ID
+<<<<<<< Updated upstream
      * @param boolean $resetCache
+=======
+     * @param boolean $resetCache true=重置缓存 false=正常流程
+>>>>>>> Stashed changes
      * @return array
      */
     public function getListOfByUserid($userid, $resetCache = false)

@@ -150,6 +150,14 @@ final class ResultSet
     }
     
     /**
+     * 向上抛异常
+     */
+    public function throwException()
+    {
+        throw new ResultException($this->_resultSet['errorMsg']);
+    }
+    
+    /**
      * 检测返回的数据是否为空
      * 
      * var_dump(empty(null), true);   = true
