@@ -21,7 +21,7 @@ final class C_View_Helper_GetMenuListByUser
     }
     
     /**
-     * 组件菜单html
+     * 组装菜单html
      * 
      * @param array $list
      * @return string
@@ -41,7 +41,7 @@ final class C_View_Helper_GetMenuListByUser
                     $menuStr .= '</ul><hr/>';
                 }
             } else {
-                $menuStr .= '<li><a href="'.$v['data']['url'].'">'.$v['data']['name'].'</a></li>';
+                $menuStr .= '<li><a href="'.$v['data']['url'].'" class="PROGRAM-menu_a">'.$v['data']['name'].'</a></li>';
             }
         }
         return $menuStr;

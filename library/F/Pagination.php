@@ -158,15 +158,6 @@ final class F_Pagination implements Countable, IteratorAggregate
      */
     public function getIterator()
     {
-        static $isConverUnderline = false;
-        if (!$isConverUnderline) {
-            $isConverUnderline = true;
-            if (Utils_Array::getDim($this->_datas) > 1) {
-                $this->_datas = Utils_Utility::convertUnderlineOfTwoDimArray($this->_datas);
-            } else {
-                $this->_datas = Utils_Utility::convertUnderline($this->_datas);
-            }
-        }      
         $items = new ArrayIterator($this->_datas);
         return $items;
     }

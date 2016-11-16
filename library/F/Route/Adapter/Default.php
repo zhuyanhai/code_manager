@@ -48,13 +48,13 @@ final class F_Route_Adapter_Default extends F_Route_Adapter_Abstract
                 throw new F_Route_Exception('format error');
             }
             
-            if ($pathArrayCount === 1) {
+            if ($pathArrayCount === 1 || $pathArrayCount === 2) {
                 $checkDirPath1 = APPLICATION_CONTROLLER_PATH . '/' . ucfirst($pathArray[0]);
             } else {
                 $checkDirPath1 = APPLICATION_CONTROLLER_PATH . '/' . ucfirst($pathArray[0]) . '/' . ucfirst($pathArray[1]);
                 $checkDirPath2 = APPLICATION_CONTROLLER_PATH . '/' . ucfirst($pathArray[0]);
             }
-
+            
             if ($pathArrayCount === 1) {// 请求示例 http://xx.xx.com/a
                 if (is_dir($checkDirPath1)) {//目录存在，代表 module
                     $module = $pathArray[0];
@@ -62,11 +62,12 @@ final class F_Route_Adapter_Default extends F_Route_Adapter_Abstract
                     $controller = $pathArray[0];
                 }
             } elseif ($pathArrayCount === 2) {//请求示例 http://xx.xx.com/a/b
-                if (is_dir($checkDirPath1)) {//目录存在，代表 module_module
-                    $module = $pathArray[0].'_'.$pathArray[1];
-                } elseif(is_dir($checkDirPath2)) {//代表 module_controller
+                if (is_dir($checkDirPath1)) {//目录存在，代表 module_controller
                     $module     = $pathArray[0];
                     $controller = $pathArray[1];
+                } else {//代表 controller_action
+                    $controller = $pathArray[0];
+                    $action     = $pathArray[1];
                 }
             }  elseif ($pathArrayCount === 3) {//请求示例 http://xx.xx.com/a/b/c
                 if (is_dir($checkDirPath1)) {//目录存在，代表 module_module_controller

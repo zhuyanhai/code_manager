@@ -162,7 +162,7 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
             if (!empty($m['childData'])) {
                 $this->_buildLevelMenuList($tv, $m['childData']);
             }
-            if ($tv['data']['parent_id'] === $m['data']['id']) {
+            if ($tv['data']['parentId'] === $m['data']['id']) {
                 $menuList[$k]['childCount'] += 1;
                 array_push($m['childData'], $tv);
             }
@@ -179,7 +179,7 @@ class Bll_PrivilegeModule_Internal_BuildMenu extends F_InternalAbstract
     private function _buildMenuListOfUser($parentId, &$menuList, &$list)
     {
         foreach ($list as $v) {
-            if ($parentId == $v['parent_id']) {
+            if ($parentId == $v['parentId']) {
                 if (isset($menuList['childData'])) {
                     array_push($menuList['childData'], array(
                         'level'      => $v['level'],

@@ -25,6 +25,7 @@ final class C_View_Helper_AssetPath
      */
     public function getCssOfPage($path)
     {
+        $path = ltrim($path, '/');
         return Utils_Domain::get('code') . '/asset/css/pages/'.$path.'.css';
     }
     
@@ -39,7 +40,7 @@ final class C_View_Helper_AssetPath
         $pathArray = explode(',', $path);
         if (count($pathArray) > 1) {
             foreach ($pathArray as &$p) {
-                $p = '/modules/' . $p;
+                $p = '/modules/' . ltrim($p, '/');
             }
             $path = implode(',', $pathArray);
             return Utils_Domain::get('code') . '/asset/css/??'.$path;
@@ -55,6 +56,7 @@ final class C_View_Helper_AssetPath
      */
     public function getJsOfPage($path)
     {
+        $path = ltrim($path, '/');
         return Utils_Domain::get('code') . '/asset/js/pages/'.$path.'.js';
     }
     
@@ -69,11 +71,23 @@ final class C_View_Helper_AssetPath
         $pathArray = explode(',', $path);
         if (count($pathArray) > 1) {
             foreach ($pathArray as &$p) {
-                $p = '/modules/' . $p;
+                $p = '/modules/' . ltrim($p, '/');
             }
             $path = implode(',', $pathArray);
             return Utils_Domain::get('code') . '/asset/js/??'.$path;
         }
         return Utils_Domain::get('code') . '/asset/js/modules/'.$path.'.js';
+    }
+    
+    /**
+     * 获取关于 img 静态文件域名与根目录
+     * 
+     * @param string $path 图片路径
+     * @return string
+     */
+    public function getImage($path)
+    {
+        $path = ltrim($path, '/');
+        return Utils_Domain::get('code') . '/asset/img/'.$path;
     }
 }

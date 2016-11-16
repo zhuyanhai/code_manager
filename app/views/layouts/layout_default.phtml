@@ -7,7 +7,7 @@
         <title><?php echo $this->headTitle('代码管理')?></title>
         <?php 
             echo $this->headMeta('代码管理', 'keywords')->headMeta('代码管理', 'description');
-            echo $this->headLink()->prependStylesheet($this->assetPath()->getCssOfModule('bootstrap/3.3.5/bootstrap.min.css,jquery/ui/base.min.css,frame.css'));
+            echo $this->headLink()->prependStylesheet($this->assetPath()->getCssOfModule('bootstrap/3.3.5/bootstrap.min.css,font-awesome.min.css,jquery/ui/base.min.css,frame.css'));
             echo $this->initPageNecessary();
         ?>
     </head>
@@ -37,6 +37,7 @@
             <div class="row">
                 <div id="menuId" class="col-sm-3 col-md-2 sidebar">
                     <?php echo $this->getMenuListByUser($this->loginUserInfo)?>
+                    <?php echo $this->getProjectListByUser()?>
                 </div>
                 <div id="mainId" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 mainBox">
                     <?php echo $scriptContent ?>
@@ -48,6 +49,18 @@
                 //操作所有拥有此class的元素等高
                 $('#menuId').equalHeight(document.body.clientHeight - 85);
                 $('#mainId').equalHeight($('#menuId').height() - 5);
+                
+                //菜单被选中
+                $('.PROGRAM-menu_a').on('click', function(){
+                    $.setCookie('menuc', this.href);
+                });
+                $('.PROGRAM-menu_a').each(function(){
+                    var url  = $.getCookie('menuc');
+                    var wurl = window.location.href;
+                    if (this.href == url || this.href == wurl) {
+                        $(this).parent().addClass('active');
+                    }
+                });
                 
                 // choose text for the show/hide link - can contain HTML (e.g. an image)
                 var showText='Show';

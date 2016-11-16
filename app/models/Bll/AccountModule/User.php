@@ -188,7 +188,7 @@ final class Bll_AccountModule_User
 
             //如果需要修改密码
             if (isset($userInfo['passwd']) && !empty($userInfo['passwd'])) {
-                $userInfo['passwd'] = $this->buildPassword($userInfo['passwd'], $userResultSet->create_time);
+                $userInfo['passwd'] = $this->buildPassword($userInfo['passwd'], $userResultSet->createTime);
             } else {
                 unset($userInfo['passwd']);
             }

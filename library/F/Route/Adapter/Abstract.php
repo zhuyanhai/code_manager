@@ -30,6 +30,9 @@ abstract class F_Route_Adapter_Abstract
      */
     protected function _buildParams($args, $isQuestionMark = false)
     {
+        if (empty($args)) {
+            return '';
+        }
         if ($isQuestionMark) {//URI问号后的参数
             $tmpParams = explode('&', $args);
             foreach ($tmpParams as $tp) {

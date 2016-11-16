@@ -1,0 +1,18 @@
+<?php $this->breadcrumbs(array('title' => '项目管理', 'url' => ''), array('title' => $this->projectInfo['name'], 'url' => $this->projectInfo['pageUrl']), array('title' => 'Dashbord', 'url' => ''))?>
+
+<!-- 导航 -->
+<?php echo $this->render('project/_slot/nav')?>
+
+<div class="row">
+    <div class="col-sm-8">
+        <!-- 任务列表 -->
+        <?php echo $this->render('project/index/_dashbord_task')?>
+
+        <!-- bug跟踪 -->
+        <?php echo $this->render('project/index/_dashbord_bug')?>
+    </div>
+    <div class="col-sm-4">
+        <!-- 待办事项 -->
+        <?php echo $this->render('project/index/_dashbord_schedule')?>
+    </div>
+</div>

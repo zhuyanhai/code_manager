@@ -23,15 +23,19 @@ class ErrorController extends F_Controller_ActionAbstract
         } else {
             switch (intval($error->getCode())) {
                 case 403://无权限
-                    
+                    $this->view->disableLayout();
+                    return $this->view->setRenderPath('error/403');
                     break;
                 case 404://找不到指定的
-                    
+                    $this->view->disableLayout();
+                    return $this->view->setRenderPath('error/404');
                     break;
                 case 500://系统错误
                     if (!Utils_EnvCheck::isProduction()) {//非正式环境
                         F_Application::getInstance()->getWhoops()->handleException($error);
                     }
+                    $this->view->disableLayout();
+                    return $this->view->setRenderPath('error/500');
                     break;
                 case 999://站点维护
                     

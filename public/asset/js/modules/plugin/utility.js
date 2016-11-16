@@ -670,7 +670,7 @@
 		},
         //设置COOKIE expire [+- 1/天]
 		setCookie : function (name, value, expire, domain, issecure){
-			if(domain==undefined || domain==null || domain=="")domain = getCookieDomain();
+			if(domain==undefined || domain==null || domain=="")domain = __ns.env['domain'];
 			var secure=(issecure==undefined || issecure==null || issecure=="")? true : false;
 			if(expire!=undefined && expire!=null && expire!=""){
 				var date = new Date ();

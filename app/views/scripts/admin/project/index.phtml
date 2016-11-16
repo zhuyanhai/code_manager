@@ -1,43 +1,106 @@
 <?php echo $this->breadcrumbs(array('title' => '平台管理', 'url' => ''), array('title' => '项目列表', 'url' => ''))?>
 
 <div class="panel panel-default">
+    <div class="panel-heading">按条件搜索</div>
+    <div class="panel-body">
+        <form method="POST" id="searchForm" action="/admin/project/" class="form-horizontal" role="form">
+            <div class="form-group">
+                <label class="col-sm-2 control-label width-rem-10">筛选：</label>
+                <div class="col-sm-10">
+                    <select class="form-control form-inline width-rem-15" id="searchTypeId" name="sSearchType">
+                        <option value="id" <?php if($this->searchs['searchType'] === 'id'):?>selected<?php endif?>>项目ID</option>
+                        <option value="name" <?php if($this->searchs['searchType'] === 'name'):?>selected<?php endif?>>项目名称</option>
+                    </select>
+                    <input type="text" class="form-control form-inline width-rem-40" id="searchValueId" name="sSearchValue" placeholder="输入查询条件" value="<?php echo $this->searchs['searchValue']?>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label width-rem-10">状态：</label>
+                <div class="col-sm-10">
+                    <label class="radio-inline">
+                        <input type="radio" name="iStatus" id="inlineRadio1" value="99" <?php echo (intval($this->searchs['status']) === 99) ? 'checked' : '' ?>> 全部
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="iStatus" id="inlineRadio2" value="0" <?php echo (intval($this->searchs['status']) === 0) ? 'checked' : '' ?>> 有效
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="iStatus" id="inlineRadio3" value="1" <?php echo (intval($this->searchs['status']) === 1) ? 'checked' : '' ?>> 无效
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="offsetLT-rem-4">
+                    <button type="button" class="btn btn-default" onclick="query();">开始搜索</button>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-default" onclick="cancelQuery();">取消搜索</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="panel panel-default">
     <!-- Default panel contents -->
-    <div class="panel-heading">项目列表<a href="/admin/project/add/" class="btn btn-default pull-right">添加项目</a></div>
+    <div class="panel-heading">项目列表<a href="/admin/project/add" class="btn btn-default pull-right">添加项目</a></div>
 
     <!-- Table -->
     <table class="table tablesorter">
         <thead>
           <tr>
-            <th class="header">项目ID</th>
-            <th class="header">权限类型</th>
-            <th class="header">菜单类型</th>
-            <th class="header">权限名字</th>
-            <th class="header">权限链接</th>
-            <th class="header">权限级别</th>
-            <th class="header">操作</th> 
+            <th>项目ID</th>
+            <th>项目名称</th>
+            <th>项目最后版本号</th>
+            <th>最后一次启动时间</th>
+            <th>最后一次完成时间</th>
+            <th>状态</th>
+            <th>操作</th> 
           </tr>
         </thead>
         <tbody>
-            <?php echo $this->getMenuListOfAll()?>
+            <?php if($this->list && $this->list->itemTotal() > 0):?>
+                <?php foreach($this->list as $v):?>
+                    <tr id="item_<?php echo $v['id']?>"> 
+                        <td><?php echo $v['id']?></td> 
+                        <td><?php echo $v['name']?></td> 
+                        <td><?php echo $v['lastVersion']?></td>
+                        <td><?php echo $v['___showLastBeginTime']?></td>
+                        <td><?php echo $v['___showLastEndTime']?></td> 
+                        <td><?php echo ($v['___isValid'])?'有效':'无效'?></td> 
+                        <td>
+                            <a href="/admin/project/edit/?iId=<?php echo $v['id']?>">编辑</a>&nbsp;
+                            <a href="###" id="del_<?php echo $v['id']?>" onclick="del(<?php echo $v['id']?>);return false;" style="display:<?php if(intval($v['status']) === 1):?>none<?php else:?>inline-block<?php endif?>;">删除</a>
+                            <a href="###" id="revert_<?php echo $v['id']?>" onclick="revert(<?php echo $v['id']?>);return false;" style="display:<?php if(intval($v['status']) === 1):?>inline-block<?php else:?>none<?php endif?>;">恢复</a>
+                        </td>
+                    </tr> 
+                <?php endforeach?>
+            <?php endif?>
         </tbody>
     </table>
+    <?php if($this->list && $this->list->itemTotal() > 0):?>
+        <div class="table-page"><?php echo $this->list?></div>
+    <?php endif?>
 </div>
 
 <script>
-function del(id)
+function cancelQuery()
+{
+    window.location.href = "/admin/account/";
+}
+function query() 
+{
+    $('#searchForm').submit();
+}
+function del(id) 
 {
     if (window.confirm('确定要删除吗？')) {
         var divId = '#item_' + id;
-        $.post('/admin/privilege/del/', {iId: id}, function(result) {
+        $.post('/admin/project/del/', {iId: id}, function(result) {
             if (parseInt(result.status) === 0) {
-                $('#opDel_'+id).css('display', 'none');
-                $('#opRevert_'+id).css('display', 'inline-block');
-                var level =  $(divId).data('l');
-                if (level == 1) {
-                    $(divId).css('color', '#fff');
-                } else {
-                    $(divId).css('color', '#eee');
-                }
+                <?php if(intval($this->searchs['status']) === 99):?>
+                    $('#del_'+id).css('display', 'none');
+                    $('#revert_'+id).css('display', 'inline-block');
+                <?php else:?>
+                    $(divId).remove();
+                <?php endif?>
                 alert('删除成功');
             } else {
                 alert('删除失败');
@@ -45,15 +108,18 @@ function del(id)
         }, 'json');
     }
 }
-function revert(id)
+function revert(id) 
 {
     if (window.confirm('确定要恢复吗？')) {
         var divId = '#item_' + id;
-        $.post('/admin/privilege/revert/', {iId: id}, function(result) {
+        $.post('/admin/project/revert/', {iId: id}, function(result) {
             if (parseInt(result.status) === 0) {
-                $('#opRevert_'+id).css('display', 'none');
-                $('#opDel_'+id).css('display', 'inline-block');
-                $(divId).css('color', '#333');
+                <?php if(intval($this->searchs['status']) === 99):?>
+                    $('#revert_'+id).css('display', 'none');
+                    $('#del_'+id).css('display', 'inline-block');
+                <?php else:?>
+                    $(divId).remove();
+                <?php endif?>
                 alert('恢复成功');
             } else {
                 alert('恢复失败');

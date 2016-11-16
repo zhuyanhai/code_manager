@@ -59,7 +59,7 @@ final class Bll_AccountModule_Login
             return $userResultSet;
         }
 
-        $tokenMatchingResult = $userInfoInstance->checkToken($userResultSet->userid, $userResultSet->passwd, $userResultSet->create_time, $loginCookieResultSet->token);
+        $tokenMatchingResult = $userInfoInstance->checkToken($userResultSet->userid, $userResultSet->passwd, $userResultSet->createTime, $loginCookieResultSet->token);
 
         if ($tokenMatchingResult->isError()) {//检测token
             return $userResultSet->resetError('请先登录');
@@ -95,7 +95,7 @@ final class Bll_AccountModule_Login
         if ($userResultSet->isError()) {
             return F_Result::build()->error('账户或密码错误');
         }
-        $passwd = $userInfoInstance->buildPassword($passwd, $userResultSet->create_time);
+        $passwd = $userInfoInstance->buildPassword($passwd, $userResultSet->createTime);
         if ($userResultSet->passwd !== $passwd) {
             return F_Result::build()->error('账户或密码错误');
         }
@@ -104,7 +104,7 @@ final class Bll_AccountModule_Login
             return $userResultSet->resetError('用户被锁定');
         }
         
-        $userInfoInstance->setLoginCookie($userResultSet->userid, $userResultSet->passwd, $userResultSet->create_time, $isRemember);
+        $userInfoInstance->setLoginCookie($userResultSet->userid, $userResultSet->passwd, $userResultSet->createTime, $isRemember);
         
         return $userResultSet;
     }

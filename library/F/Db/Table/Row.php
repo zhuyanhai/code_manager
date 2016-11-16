@@ -34,9 +34,6 @@ class F_Db_Table_Row
     {
         $columnName = $this->_transformColumn($columnName);
         if (!array_key_exists($columnName, $this->_data)) {
-            print_r($this);
-            debug_print_backtrace();
-            exit;
             throw new F_Db_Exception("指定的字段名 \"$columnName\" 不存在");
         }
         return $this->_data[$columnName];
@@ -124,6 +121,8 @@ class F_Db_Table_Row
                 $formatData[$m] = $this->$m();
             }
         }
+        
+        $formatData = Utils_Utility::convertUnderline($formatData);
         
         return $formatData;
    }

@@ -23,7 +23,7 @@ class C_View_Helper_GetMenuListOfAll
     }
     
     /**
-     * 组件菜单html
+     * 组装菜单html
      * 
      * @param array $list
      * @return string

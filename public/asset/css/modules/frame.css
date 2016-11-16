@@ -1,3 +1,9 @@
+.mb-10px{
+    margin-bottom: 10px;
+}
+.mr-5px{
+    margin-right: 5px;
+}
 .container-fluid{
     padding:0px;
     margin:0px;
@@ -53,7 +59,7 @@
     font-weight: bold;
     display: inline-block;
     float: left;
-    width: 50%;
+    width: 60%;
     height: 35px;
     line-height: 35px;
     text-indent: 25px;
@@ -214,13 +220,20 @@
 
 .sidebar li {
     list-style: none;
-    margin: 0 0 0 8%; 
+    margin: 2px 2% 2px 5%;
     padding: 0;
+}
+
+.sidebar li.active {
+    border: 1px solid rgba(0,0,0,.5);
+    outline:0;
+    -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.080),0 0 8px rgba(0,0,0,.6);
+    box-shadow:inset 0 1px 1px rgba(0,0,0,.080),0 0 8px rgba(0,0,0,.6)
 }
 
 .sidebar li a {
     font-size: 12px;
-    color: #666666;
+    color: #555555;
     padding-left: 25px;
     text-decoration: none;
     display: inline-block;
@@ -228,6 +241,7 @@
     line-height: 17px;
     text-shadow: 0 1px 0 #fff;
     margin: 2px 0;
+    width:100%;
 }
 
 .sidebar li a:hover {

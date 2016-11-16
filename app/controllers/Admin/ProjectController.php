@@ -10,7 +10,19 @@ class Admin_ProjectController extends AbstractController
      */
     public function indexAction()
     {
+        $page = intval($this->_requestObj->getParam('page', 1));
+        
+        $this->view->searchs = array();
+        $this->view->searchs['status']      = $this->_requestObj->getParam('iStatus', 99);
+        $this->view->searchs['searchType']  = $this->_requestObj->getParam('sSearchType', 'id');
+        $this->view->searchs['searchValue'] = $this->_requestObj->getParam('sSearchValue', '');
 
+        $resultSet = Bll_ProjectModule_Query::getInstance()->getListOfAdmin($this->view->searchs, $page);
+        if ($resultSet->isSuccess()) {
+            $this->view->list = $resultSet->getResult();
+        } else {
+            $this->view->list = null;
+        }
     }
     
     /**
@@ -20,14 +32,12 @@ class Admin_ProjectController extends AbstractController
     {
         if ($this->isAjax()) {
             $post = $this->_requestObj->getPost();
-            $resultSet = Bll_PrivilegeModule_Operation::getInstance()->add($post);
+            $resultSet = Bll_ProjectModule_Operation::getInstance()->add($post);
             if ($resultSet->isSuccess()) {
                 $this->response();
             }
             $this->error($resultSet->getErrorInfo())->response();
         }
-        
-        $this->view->privilegeList = Bll_PrivilegeModule_Query::getInstance()->getListOfByUserid(0);
     }
     
     /**
@@ -37,7 +47,7 @@ class Admin_ProjectController extends AbstractController
     {
         if ($this->isAjax()) {
             $post = $this->_requestObj->getPost();
-            $resultSet = Bll_PrivilegeModule_Operation::getInstance()->edit($post);
+            $resultSet = Bll_ProjectModule_Operation::getInstance()->edit($post);
             if ($resultSet->isSuccess()) {
                 $this->response();
             }
@@ -48,13 +58,12 @@ class Admin_ProjectController extends AbstractController
         if (empty($id)) {
             $this->_redirectorObj->gotoUrlAndExit('/admin/project/');
         }
-        $privilegeResultSet = Bll_PrivilegeModule_Query::getInstance()->getById($id);
-        if ($privilegeResultSet->isError()) {
+        $projectResultSet = Bll_ProjectModule_Query::getInstance()->getById($id);
+        if ($projectResultSet->isError()) {
             $this->_redirectorObj->gotoUrlAndExit('/admin/project/');
         }
         
-        $this->view->privilege = $privilegeResultSet->getResult();
-        $this->view->privilegeList = Bll_PrivilegeModule_Query::getInstance()->getListOfByUserid(0);
+        $this->view->project = $projectResultSet->getResult();
     }
     
     /**
@@ -64,7 +73,7 @@ class Admin_ProjectController extends AbstractController
     {
         if ($this->isAjax()) {
             $id = $this->_requestObj->getParam('iId', 0);
-            $resultSet = Bll_PrivilegeModule_Operation::getInstance()->del($id);
+            $resultSet = Bll_ProjectModule_Operation::getInstance()->del($id);
             if ($resultSet->isSuccess()) {
                 $this->response();
             }
@@ -79,7 +88,7 @@ class Admin_ProjectController extends AbstractController
     {
         if ($this->isAjax()) {
             $id = $this->_requestObj->getParam('iId', 0);
-            $resultSet = Bll_PrivilegeModule_Operation::getInstance()->revert($id);
+            $resultSet = Bll_ProjectModule_Operation::getInstance()->revert($id);
             if ($resultSet->isSuccess()) {
                 $this->response();
             }

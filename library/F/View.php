@@ -31,6 +31,13 @@ final class F_View
     protected $_isUseLayout = true;
     
     /**
+     * 渲染路径
+     * 
+     * @var string
+     */
+    protected $_renderPath = '';
+    
+    /**
      * 视图配置
      * 
      * @var array
@@ -108,6 +115,16 @@ final class F_View
     }
     
     /**
+     * 设置指定的渲染view路径名
+     *  
+     * @param string $filename 首位不要有【/】，正确写法是：admin/a，尾部不需要后缀
+     */
+    public function setRenderPath($filename)
+    {
+        $this->_renderPath = ltrim($filename, '/');
+    }
+    
+    /**
      * 在视图中继续渲染视图
      * 
      * @param string $path 首位不要有【/】，正确写法是：admin/a，尾部不需要后缀
@@ -116,7 +133,7 @@ final class F_View
     public function render($path)
     {
         $filename = $this->_configs['scriptPath'];
-        $filename .= $path . '.phtml';
+        $filename .= ltrim($path, '/') . '.phtml';
 
         if (!file_exists($filename)) {
             $filename = $this->_configs['layoutPath'];
@@ -135,22 +152,27 @@ final class F_View
     /**
      * 解析视图
      * 
-     * @param string $filename action对应的视图文件全路径，包括文件名
+     * @param string $path action对应的视图文件全路径，包括文件名
      */
     public function parse()
-    {         
-        $requestObject = F_Controller_Request_Http::getInstance();
-        
-        $module     = $requestObject->getModule();
-        $controller = $requestObject->getController();
-        $action     = $requestObject->getAction();
-        
+    {      
         $filename = $this->_configs['scriptPath'];
-        if (strtolower($module) !== 'index') {
-            $filename .= lcfirst($module) . '/';
-        }
-        $filename .= lcfirst($controller) . '/' . lcfirst($action) . '.phtml';
         
+        if (empty($this->_renderPath)) {
+            $requestObject = F_Controller_Request_Http::getInstance();
+        
+            $module     = $requestObject->getModule();
+            $controller = $requestObject->getController();
+            $action     = $requestObject->getAction();
+            
+            if (strtolower($module) !== 'index') {
+                $filename .= lcfirst($module) . '/';
+            }
+            $filename .= lcfirst($controller) . '/' . lcfirst($action) . '.phtml';
+        } else {
+            $filename .= $this->_renderPath . '.phtml';
+        }
+
         if (!file_exists($filename)) {
             throw new F_View_Exception('View ['. $filename .'] not found');
         }

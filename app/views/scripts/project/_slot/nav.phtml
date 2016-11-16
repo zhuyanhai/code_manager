@@ -1,0 +1,7 @@
+<ul class="nav nav-tabs mb-10px" role="tablist">
+    <li role="presentation" class="<?php echo $this->matchesMCA('project_index_index', 'active')?>"><a href="<?php echo $this->projectInfo['pageUrl']?>">Dashbord </a></li>
+    <li role="presentation" class="<?php echo $this->matchesMCA('project_prd_index', 'active')?>"><a href="/project/prd/?iProjectId=<?php echo $this->projectInfo['id']?>">产品需求</a></li>
+    <li role="presentation" class="<?php echo $this->matchesMCA('project_pid_index', 'active')?>"><a href="/project/pid/?iProjectId=<?php echo $this->projectInfo['id']?>">产品迭代</a></li>
+    <li role="presentation" class="<?php echo $this->matchesMCA('project_code_index', 'active')?>"><a href="/project/code/?iProjectId=<?php echo $this->projectInfo['id']?>">代码管理</a></li>
+    <li role="presentation" class="<?php echo $this->matchesMCA('project_bug_index', 'active')?>"><a href="/project/bug/?iProjectId=<?php echo $this->projectInfo['id']?>">Bug跟踪</a></li>
+</ul>
