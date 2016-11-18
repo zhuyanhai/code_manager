@@ -39,7 +39,6 @@ final class Bll_PrivilegeModule_Operation
     }
     
     /**
-<<<<<<< Updated upstream
      * 添加权限
      * 
      * @param array $post
@@ -99,7 +98,9 @@ final class Bll_PrivilegeModule_Operation
         ), 'id=:id', $privilegeDao->id);
         
         return F_Result::build()->success();
-=======
+    }
+    
+    /**
      * 更新权限缓存 - 关于全部权限
      */
     public function updateCacheOfAll()
@@ -113,7 +114,6 @@ final class Bll_PrivilegeModule_Operation
     public function updateCacheOfUser()
     {
         Bll_HelperModule_Config::getInstance()->set('privilege_of_user_memcache_update', time());
->>>>>>> Stashed changes
     }
     
     /**

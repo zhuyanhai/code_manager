@@ -8,11 +8,20 @@ class C_View_Helper_GetProjectListByUser
     /**
      * 获取登陆用户的项目列表
      * 
+     * @param array $user 用户信息数组
      * @return array
      */
-    public function getProjectListByUser()
+    public function getProjectListByUser($user)
     {
-        $list = Bll_ProjectModule_Query::getInstance()->getList();
+        if (Bll_PrivilegeModule_Query::getInstance()->isSuperAdminByUserid($user['userid'])) {//超级管理员
+            $list = Bll_ProjectModule_Query::getInstance()->getListOfAll();
+        } else {//指定用户
+            $projectIdsResultSet = Bll_ProjectModule_UserPrivilege::getInstance()->getProjectIdsByUserid($user['userid']);
+            if ($projectIdsResultSet->isError() || $projectIdsResultSet->isEmpty()) {
+                return '';
+            }
+            $list = Bll_ProjectModule_Query::getInstance()->getListByIds($projectIdsResultSet->projectIds);
+        }
 
         if ($list->isError() || $list->isEmpty()) {
             return '';

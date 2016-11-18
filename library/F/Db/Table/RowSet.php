@@ -23,7 +23,7 @@ class F_Db_Table_RowSet implements SeekableIterator, Countable, ArrayAccess
     /**
      * 构造函数
      * 
-     * @param array $data
+     * @param array $row
      */
     public function __construct($row)
     {

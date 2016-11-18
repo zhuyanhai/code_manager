@@ -87,9 +87,21 @@ final class Bll_ProjectModule_Query
      * 
      * @return ResultSet
      */
-    public function getList()
+    public function getListOfAll()
     {
         $list = Dao_CodeManager_Project::getSelect()->where('status=:status', 0)->order('orders desc')->fetchAll();
+        return F_Result::build()->success($list->toArray());
+    }
+    
+    /**
+     * 获取项目列表 - 根据项目ID数组
+     * 
+     * @param array $ids 项目ID数组
+     * @return ResultSet
+     */
+    public function getListByIds($ids)
+    {
+        $list = Dao_CodeManager_Project::getSelect()->where('id in(:id)', $ids)->where('status=:status', 0)->order('orders desc')->fetchAll();
         return F_Result::build()->success($list->toArray());
     }
 }

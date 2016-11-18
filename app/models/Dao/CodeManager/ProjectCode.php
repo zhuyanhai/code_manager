@@ -60,16 +60,16 @@ class Dao_CodeManager_ProjectCode extends Dao_Abstract
         
         switch (intval($this->type)) {
             case 1:
-                return '主分支';
+                return 'master';
                 break;
             case 2:
-                return '集成分支';
+                return 'integration';
                 break;
             case 3:
-                return '开发分支';
+                return 'develop';
                 break;
             case 4:
-                return 'bug分支';
+                return 'hotfix';
                 break;
         }
     }
@@ -117,16 +117,4 @@ class Dao_CodeManager_ProjectCode extends Dao_Abstract
         return date('Y-m-d H:i:s', $this->create_time);
     }
     
-    /**
-     * 格式化项目代码上线
-     * 
-     * @return string
-     */
-    public function ___showOnlinTime()
-    {
-        if (!isset($this->online_time) || empty($this->online_time)) {
-            return '';
-        }
-        return date('Y-m-d H:i:s', $this->online_time);
-    }
 }

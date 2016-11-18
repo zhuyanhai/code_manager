@@ -97,7 +97,10 @@ final class F_Pagination implements Countable, IteratorAggregate
         $this->_itemCount = $count;
         $this->_currentItemCount = count($datas);
         $this->_pageTotal = (integer) ceil($itemTotal / $count);
-        $this->_datas     = $datas;
+        foreach ($datas as &$data) {
+            $data = new F_Pagination_Data($data);
+        }
+        $this->_datas = $datas;
     }
     
     /**
@@ -292,4 +295,77 @@ final class F_Pagination implements Countable, IteratorAggregate
         return $pageNumber;
     }
 
+}
+
+class F_Pagination_Data implements ArrayAccess
+{
+    /**
+     * select 读取出来的数据行
+     * 
+     * @var array
+     */
+    private $_rows = array();
+    
+    /**
+     * 构造函数
+     * 
+     * @param array $row
+     */
+    public function __construct($row)
+    {
+        $this->_rows  = $row;
+    }
+    
+    /**
+     * Check if an offset exists
+     * Required by the ArrayAccess implementation
+     *
+     * @param string $offset
+     * @return boolean
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->_rows[$offset]);
+    }
+
+    /**
+     * Get the row for the given offset
+     * Required by the ArrayAccess implementation
+     *
+     * @param string $offset
+     * @return F_Db_Row
+     */
+    public function offsetGet($offset)
+    {
+        if (isset($this->_rows[$offset])) {
+            return $this->_rows[$offset];
+        }
+        
+        throw new F_Db_Exception("Illegal index $offset");
+    }
+
+    /**
+     * Does nothing
+     * Required by the ArrayAccess implementation
+     *
+     * @param string $offset
+     * @param mixed $value
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->_rows[$offset] = $value;
+    }
+
+    /**
+     * Does nothing
+     * Required by the ArrayAccess implementation
+     *
+     * @param string $offset
+     */
+    public function offsetUnset($offset)
+    {
+        if (isset($this->_rows[$offset])) {
+            unset($this->_rows[$offset]);
+        }
+    }
 }

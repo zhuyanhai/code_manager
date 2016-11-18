@@ -2,3 +2,42 @@
 
 <!-- 导航 -->
 <?php echo $this->render('project/_slot/nav')?>
+
+<!-- 可查阅分支 -->
+<div class="input-group-btn">
+    <button type="button" class="btn btn-noborder dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><?php echo $this->currentUseBranch?>&nbsp;<span class="caret"></span></button>
+    <ul class="dropdown-menu dropdown-theme-gray arrow-up" role="menu">
+      <?php foreach($this->branchList as $v):?>
+        <?php 
+            if($this->currentUseBranch == $v['___showType']) {
+                $active   = "active";
+                $iconShow = 'inline-block';
+            } else {
+                $active   = "";
+                $iconShow = 'none';
+            }
+        ?>
+        <li class="<?php echo $active?>">
+            <a href="#">
+                <?php echo $v['___showType']?>
+                <span class="ml-10px mr-10px"><?php echo $v['name']?></span><i class="glyphicon glyphicon-ok" style="display:<?php echo $iconShow?>"></i>
+            </a>
+        </li>
+      <?php endforeach?>
+    </ul>
+</div>
+
+<hr/>
+
+<!-- 分支的内容 -->
+<div class="row">
+  <div class="col-sm-3" id="commitListId">3</div>
+  <div class="col-sm-7" id="commitContentListId">7</div>
+</div>
+
+<script>
+__wait(function(){
+    $('#commitListId').equalHeight($('#menuId').height() - 135);
+    $('#commitContentListId').equalHeight($('#menuId').height() - 135);
+});
+</script>

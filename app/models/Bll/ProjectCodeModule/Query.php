@@ -38,4 +38,27 @@ final class Bll_ProjectCodeModule_Query
         return $instance;
     }
     
+    /**
+     * 获取项目分支分页列表 - 根据项目代码ID数组
+     * 
+     * @param array $ids 项目代码ID数组
+     * @return ResultSet
+     */
+    public function getListByIds($ids)
+    {
+        $list = Dao_CodeManager_ProjectCode::getSelect()->where('id in(:id)', $ids)->where('status=:status', 0)->fetchAll();
+        return F_Result::build()->success($list->toArray());
+    }
+    
+    /**
+     * 获取项目分支分页列表
+     * 
+     * @return ResultSet
+     */
+    public function getListOfAll()
+    {
+        $list = Dao_CodeManager_ProjectCode::getSelect()->where('status=:status', 0)->fetchAll();
+        return F_Result::build()->success($list->toArray());
+    }
+    
 }

@@ -191,7 +191,7 @@ final class F_Git_Repo
 		} else {
 			$env = array_merge($_ENV, $this->envopts);
 		}
-		$cwd = $this->repo_path;
+		$cwd = $this->gitDirectoryPath();
 		$resource = proc_open($command, $descriptorspec, $pipes, $cwd, $env);
 
 		$stdout = stream_get_contents($pipes[1]);
@@ -563,7 +563,7 @@ final class F_Git_Repo
 	 */
 	public function setDescription($new) 
     {
-		$path = $this->git_directory_path();
+		$path = $this->gitDirectoryPath();
 		file_put_contents($path."/description", $new);
 	}
 
@@ -574,8 +574,83 @@ final class F_Git_Repo
 	 */
 	public function getDescription() 
     {
-		$path = $this->git_directory_path();
+		$path = $this->gitDirectoryPath();
 		return file_get_contents($path."/description");
+	}
+    
+    /**
+     * 查看所有本地分支信息
+     * 
+     * @return array
+     */
+    public function getBranchInfoOfLocal()
+    {
+        $output = $this->run("branch");
+        $output = trim($output);
+        $output = explode(PHP_EOL, $output);
+        $selected = '';
+        foreach ($output as &$o) {
+            $o = trim($o);
+            if (preg_match('%\*%i', $o)) {
+                $t = explode(' ', $o);
+                $o = $t[1];
+                $selected = $t[1];
+            }
+        }
+        rsort($output);
+        return array('selected' => $selected, 'branchList' => $output);
+    }
+    
+    /**
+	 * 获取分支最后提交的信息
+	 *
+	 * @return string
+	 */
+	public function getCommitInfo($hash = 'HEAD') 
+    {
+		$output = $this->run("rev-list --header --max-count=1 $hash");
+        $output = explode(PHP_EOL, $output);
+        $info   = array();
+        foreach ($output as $o) {
+            $o = trim($o);
+            if (empty($o)) {
+                continue;
+            }
+            $t = explode(' ', $o);
+            if (count($t) <= 1) {
+                if (preg_match('%^[0-9a-z]+$%i', $t[0])) {
+                    $info['commitHash'] = $t[0];
+                } else {
+                    $info['message'] = $t[0];
+                }
+            } else {
+                switch ($t[0]) {
+                    case 'tree':
+                        $info['treeHash'] = $t[1];
+                        break;
+                    case 'parent':
+                        $info['parentHash'] = $t[1];
+                        break;
+                    case 'author'://作者
+                        $info['author'] = array(
+                            'name' => $t[1],
+                            'mail' => $t[2],
+                            'date' => $t[3],
+                            'zone' => $t[4],
+                        );
+                        break;
+                    case 'committer'://提交者
+                        $info['committer'] = array(
+                            'name' => $t[1],
+                            'mail' => $t[2],
+                            'date' => $t[3],
+                            'zone' => $t[4],
+                        );
+                        break;
+                }
+            }
+        }
+        return $info;
 	}
 
 	/**
