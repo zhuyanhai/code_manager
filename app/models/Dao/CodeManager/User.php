@@ -35,19 +35,11 @@ final class Dao_CodeManager_User_Config
                 'expires' => null,
             ),
             'account' => array(
-<<<<<<< Updated upstream
                 'server'     => 'user',
                 'key'        => 'table_user_account_1_%s',
                 'field'      => 'account',
                 'saveFields' => array('userid'),
                 'expires'    => null,
-=======
-                'server'    => 'user',
-                'key'       => 'table_user_account_1_%s',
-                'field'     => 'account',
-                'savefield' => array('userid'),
-                'expires'   => null,
->>>>>>> Stashed changes
             ),
         ),
     );
