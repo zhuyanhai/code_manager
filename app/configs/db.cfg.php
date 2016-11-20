@@ -28,7 +28,7 @@ return array(
                 'password' => 'gm9QROY55=IPVF-l',
                 'charset'  => 'utf8mb4',
                 'collation' => 'utf8mb4_general_ci',
-            ),
+            )
         ),
         'code_manager' => array(
             'dbName' => 'db2_utan_code_manager',
