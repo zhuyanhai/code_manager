@@ -4,15 +4,15 @@
  * 
  * 访问权限 - 所有模块均可访问
  * 
- * 项目模块
+ * 项目仓库模块
  * 
- * 项目操作逻辑 - 处理接口
+ * 项目仓库操作逻辑 - 处理接口
  * 
  * @package Bll
- * @subpackage Bll_ProjectModule
+ * @subpackage Bll_ProjectRepoModule
  * @author allen <allen@yuorngcorp.com>
  */
-final class Bll_ProjectModule_Operation
+final class Bll_ProjectRepoModule_Operation
 {
     private function __construct()
     {
@@ -24,8 +24,8 @@ final class Bll_ProjectModule_Operation
      * 
      * 获取类的对象实例
      * 
-     * @staticvar Bll_ProjectModule_Operation $instance
-     * @return \Bll_ProjectModule_Operation
+     * @staticvar Bll_ProjectRepoModule_Operation $instance
+     * @return \Bll_ProjectRepoModule_Operation
      */
     public static function getInstance()
     {
@@ -39,7 +39,7 @@ final class Bll_ProjectModule_Operation
     }
     
     /**
-     * 添加项目
+     * 添加项目仓库
      * 
      * @param array $post
      * @return ResultSet
@@ -51,19 +51,41 @@ final class Bll_ProjectModule_Operation
             return $validateResult;
         }
         
-        Dao_CodeManager_Project::getManager()->insert(array(
+        F_Config::load('/configs/repo.cfg.php');
+        $repoRootPath = F_Config::get('repo.root');
+        clearstatcache();
+        if (!is_dir($repoRootPath) || !is_writable($repoRootPath)) {//目录不存在 或 不可写
+            return F_Result::build()->error('参考根目录未手动创建，请先创建“'.$repoRootPath.'”');
+        }
+        
+        $orgPath = rtrim($repoRootPath, '/') . '/' . $post['sOrgEname'];
+        Utils_File::dirCreate($orgPath);
+        $repoFilename = $post['sName'].'.git';
+        $repoPath = rtrim($orgPath, '/') . '/' . $repoFilename;
+        
+        $repoId = Dao_CodeManager_ProjectRepo::getManager()->insert(array(
             'name'        => $post['sName'],
             'intro'       => $post['sIntro'],
-            'orders'      => floor(microtime(true) * 1000),
+            'project_id'  => $post['iProjectId'],
+            'org_id'      => $post['iOrgId'],
+            'repo_path'   => $repoPath,
             'create_time' => time(),
             'update_time' => time(),
         ));
+        
+        if ($repoId) {//创建git仓库
+            try {
+                F_Git::create(true, $repoPath);
+            } catch(Exception $e) {
+                return F_Result::build()->error('仓库创建失败');
+            }
+        }
         
         return F_Result::build()->success();
     }
     
     /**
-     * 编辑项目
+     * 编辑项目仓库
      * 
      * @param array $post
      * @return ResultSet
@@ -79,24 +101,24 @@ final class Bll_ProjectModule_Operation
             return F_Result::build()->error('参数错误');
         }
         
-        $projectDao = Dao_CodeManager_Project::get($post['iId'], 'id');
-        if (empty($projectDao)) {
+        $repoDao = Dao_CodeManager_ProjectRepo::get($post['iId'], 'id');
+        if (empty($repoDao)) {
             return F_Result::build()->error('参数错误');
         }
         
-        Dao_CodeManager_Project::getManager()->update(array(
+        Dao_CodeManager_ProjectRepo::getManager()->update(array(
             'name'  => $post['sName'],
             'intro' => $post['sIntro'],
             'update_time' => time(),
-        ), 'id=:id', $projectDao->id);
+        ), 'id=:id', $repoDao->id);
         
         return F_Result::build()->success();
     }
     
     /**
-     * 删除项目
+     * 删除项目仓库
      * 
-     * @param int $id 项目ID
+     * @param int $id 项目仓库ID
      * @return ResultSet
      */
     public function del($id)
@@ -105,7 +127,7 @@ final class Bll_ProjectModule_Operation
             if (empty($id)) {
                 throw new Exception();
             }
-            Dao_CodeManager_Project::getManager()->update(array('status' => 1, 'update_time' => time()), 'id=:id', $id);
+            Dao_CodeManager_ProjectRepo::getManager()->update(array('status' => 1, 'update_time' => time()), 'id=:id', $id);
             return F_Result::build()->success();
         } catch(Exception $e) {
             return F_Result::build()->error('删除失败');
@@ -113,9 +135,9 @@ final class Bll_ProjectModule_Operation
     }
     
     /**
-     * 恢复项目
+     * 恢复项目仓库
      * 
-     * @param int $id 项目ID
+     * @param int $id 项目仓库ID
      * @return ResultSet
      */
     public function revert($id)
@@ -124,7 +146,7 @@ final class Bll_ProjectModule_Operation
             if (empty($id)) {
                 throw new Exception();
             }
-            Dao_CodeManager_Project::getManager()->update(array('status' => 0, 'update_time' => time()), 'id=:id', $id);
+            Dao_CodeManager_ProjectRepo::getManager()->update(array('status' => 0, 'update_time' => time()), 'id=:id', $id);
             return F_Result::build()->success();
         } catch(Exception $e) {
             return F_Result::build()->error('恢复失败');
@@ -143,22 +165,48 @@ final class Bll_ProjectModule_Operation
     private function _validate(&$post)
     {
         try{
-            //项目名字
+            //项目仓库名字
             $post['sName'] = Utils_Validation::verify('sName', $post)->required()->receive();
             $post['sName'] = Utils_Validation::filter($post['sName'])->removeHtml()->removeStr()->receive();
             
-            //项目描述
+            //项目仓库描述
             $post['sIntro'] = Utils_Validation::verify('sIntro', $post)->required()->receive();
             $post['sIntro'] = Utils_Validation::filter($post['sIntro'])->removeHtml()->removeStr()->receive();
+            
+            //项目ID
+            $post['iProjectId'] = Utils_Validation::verify('iProjectId', $post)->required()->int()->notZero()->receive();
+            
+            //项目仓库所属组织ID
+            $post['iOrgId'] = Utils_Validation::verify('iOrgId', $post)->required()->int()->notZero()->receive();
+            $orgResultSet   = Bll_AccountModule_Org::getInstance()->getById($post['iOrgId']);
+            if ($orgResultSet->isError()) {
+                throw new Utils_Validation_Exception('iOrgId');
+            }
+            $post['sOrgEname'] = $orgResultSet->ename;
+            
+            //检测仓库是否创建过
+            $repoResultSet = Bll_ProjectRepoModule_Query::getInstance()->getByProjectIdAndOrgId($post['iProjectId'], $post['iOrgId']);
+            if ($repoResultSet->isSuccess()) {
+                throw new Utils_Validation_Exception('repo'); 
+            }
 
             return F_Result::build()->success();
         } catch(Utils_Validation_Exception $e) {
             switch ($e->errorKey) {
                 case 'sName':
-                    $msg = '请录入项目名称';
+                    $msg = '请录入仓库名称';
                     break;
                 case 'sIntro':
-                    $msg = '请录入项目描述';
+                    $msg = '请录入仓库描述';
+                    break;
+                case 'iOrgId':
+                    $msg = '请选择所属组织';
+                    break;
+                case 'iProjectId':
+                    $msg = '项目不存在';
+                    break;
+                case 'repo':
+                    $msg = '参考已存在，请勿重复创建';
                     break;
                 default:
                     $msg = $e->errorKey.' | '.$e->errorMsg;

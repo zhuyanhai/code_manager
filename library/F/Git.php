@@ -39,13 +39,18 @@ final class F_Git
     /**
 	 * 创建一个Git创库
 	 *
+     * @param   bool    $isBare true=创建裸库 false=在工作区创建库
 	 * @param   string  $repoPath 仓库路径
 	 * @param   string  $source 
 	 * @return  F_Git_Repo
 	 */
-	public static function &create($repoPath, $source = null)
+	public static function &create($isBare, $repoPath, $source = null)
     {
-		return F_Git_Repo::createNew($repoPath, $source);
+        if ($isBare) {
+            return F_Git_Repo::createBareNew($repoPath);
+        } else {
+            return F_Git_Repo::createNew($repoPath, $source);
+        }
 	}
     
     /**

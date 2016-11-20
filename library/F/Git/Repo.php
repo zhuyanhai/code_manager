@@ -51,17 +51,37 @@ final class F_Git_Repo
 	}
     
     /**
+	 * 创建一个 裸的 git 代码库
+	 *
+	 * Accepts a creation path, and, optionally, a source path
+	 *
+	 * @access  public
+	 * @param   string  repository path
+	 * @return  GitRepo
+	 */
+	public static function &createBareNew($repoPath) 
+    {
+		if (is_dir($repoPath) && file_exists($repoPath."/.git") && is_dir($repoPath."/.git")) {
+			throw new Exception('"'.$repoPath.'" is already a git repository');
+		} else {
+			$repo = new self($repoPath, true, true, true);
+			return $repo;
+		}
+	}
+    
+    /**
 	 * 构造函数
 	 *
 	 * @access public
 	 * @param string $repoPath 仓库的本地目录路径
 	 * @param bool   $createNew true=如果不存在，就创建 false=忽略
+     * @param bool    $isBare true=创建裸库 false=在工作区创建库
 	 * @return void
 	 */
-	public function __construct($repoPath = null, $createNew = false, $init = true)
+	public function __construct($repoPath = null, $createNew = false, $init = true, $isBare = false)
     {
 		if (is_string($repoPath)) {
-			$this->setRepoPath($repoPath, $createNew, $init);
+			$this->setRepoPath($repoPath, $createNew, $init, $isBare);
 		}
 	}
     
@@ -74,9 +94,10 @@ final class F_Git_Repo
 	 * @param   string $repoPath 仓库的本地目录路径
 	 * @param   bool    create if not exists?
 	 * @param   bool    initialize new Git repo if not exists?
+     * @param   bool    $isBare true=创建裸库 false=在工作区创建库
 	 * @return  void
 	 */
-	public function setRepoPath($repoPath, $createNew = false, $init = true) 
+	public function setRepoPath($repoPath, $createNew = false, $init = true, $isBare = false) 
     {
 		if (is_string($repoPath)) {//是字符串
 			if ($newPath = realpath($repoPath)) {//返回规范化的绝对路径名
@@ -108,9 +129,16 @@ final class F_Git_Repo
 			} else {// $repoPath 目录不存在
 				if ($createNew) {
 					if ($parent = realpath(dirname($repoPath))) {
-						mkdir($repoPath);
+                        Utils_File::dirCreate($repoPath);
 						$this->repoPath = $repoPath;
-						if ($init) $this->run('init');//创建仓库
+						if ($init) {
+                            if ($isBare) {
+                                $this->bare = true;
+                                $this->run('init --bare');//创建裸仓库
+                            } else {
+                                $this->run('init');//在工作区创建仓库
+                            }
+                        }
 					} else {
 						throw new Exception('cannot create repository in non-existent directory');
 					}

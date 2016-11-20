@@ -33,7 +33,11 @@ abstract class Project_AbstractController extends AbstractController
         
         $projectResultSet = Bll_ProjectModule_Query::getInstance()->getById($id);
         if ($projectResultSet->isError() || $projectResultSet->isEmpty()) {
-            $this->_redirectorObj->gotoUrlAndExit('/');
+            if ($this->isAjax()) {
+                $this->error('项目ID参数丢失')->response();
+            } else {
+                $this->_redirectorObj->gotoUrlAndExit('/');
+            }
         }
         
         $this->projectInfo = $projectResultSet->getResult();

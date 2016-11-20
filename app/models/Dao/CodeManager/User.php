@@ -27,29 +27,21 @@ final class Dao_CodeManager_User_Config
          * - keyEncrypt key的加密方式，默认=无 例如：md5
          *
          */
-        'memcache' => array(
-            'userid' => array(
-                'server'  => 'user',
-                'key'     => 'table_user_userid_1_%d',
-                'field'   => 'userid',
-                'expires' => null,
-            ),
-            'account' => array(
-<<<<<<< Updated upstream
-                'server'     => 'user',
-                'key'        => 'table_user_account_1_%s',
-                'field'      => 'account',
-                'saveFields' => array('userid'),
-                'expires'    => null,
-=======
-                'server'    => 'user',
-                'key'       => 'table_user_account_1_%s',
-                'field'     => 'account',
-                'savefield' => array('userid'),
-                'expires'   => null,
->>>>>>> Stashed changes
-            ),
-        ),
+//        'memcache' => array(
+//            'userid' => array(
+//                'server'  => 'user',
+//                'key'     => 'table_user_userid_1_%d',
+//                'field'   => 'userid',
+//                'expires' => null,
+//            ),
+//            'account' => array(
+//                'server'     => 'user',
+//                'key'        => 'table_user_account_1_%s',
+//                'field'      => 'account',
+//                'saveFields' => array('userid'),
+//                'expires'    => null,
+//            ),
+//        ),
     );
 }
 

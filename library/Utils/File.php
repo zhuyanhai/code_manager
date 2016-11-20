@@ -78,4 +78,33 @@ final class Utils_File
                 break;
         }
     }
+    
+    /**
+	 * 创建目录
+	 *
+	 * @param string $filename 文件名
+	 * @return boolean
+	 */
+	public static function dirCreate($filename)
+    {
+		if (empty($filename)) {
+            return false;
+        }
+		$tmpary = explode('/',$filename);
+		$total  = count($tmpary);
+        $uid    = function_exists('posix_getuid') ? posix_getuid() : 0;
+        $dir    = '/';
+		for ($i = 0; $i < $total; ++$i) {
+			if ($tmpary[$i]) {
+				$dir .= $tmpary[$i].'/';
+				if (!is_dir($dir) && !is_file($dir)) {
+                    mkdir($dir);
+                    if($uid == 0){
+                        chmod($dir, 0777);
+                    }
+                }
+			}
+		}
+		return true;
+	}
 }

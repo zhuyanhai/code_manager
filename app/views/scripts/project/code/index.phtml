@@ -4,8 +4,9 @@
 <?php echo $this->render('project/_slot/nav')?>
 
 <!-- 可查阅分支 -->
-<div class="input-group-btn">
-    <button type="button" class="btn btn-noborder dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><?php echo $this->currentUseBranch?>&nbsp;<span class="caret"></span></button>
+<?php if($this->currentUseBranch !== 'Branch')://待初始化仓库?>
+<div class="btn-group">
+    <button type="button" class="btn dropdown-toggle btn-noborder" data-toggle="dropdown" aria-expanded="false"><?php echo $this->currentUseBranch?>&nbsp;<span class="caret"></span></button>
     <ul class="dropdown-menu dropdown-theme-gray arrow-up" role="menu">
       <?php foreach($this->branchList as $v):?>
         <?php 
@@ -20,24 +21,190 @@
         <li class="<?php echo $active?>">
             <a href="#">
                 <?php echo $v['___showType']?>
-                <span class="ml-10px mr-10px"><?php echo $v['name']?></span><i class="glyphicon glyphicon-ok" style="display:<?php echo $iconShow?>"></i>
+                <span class="ml-10px mr-10px"><?php echo $v['name']?></span><i class="glyphicon glyphicon-ok fr" style="display:<?php echo $iconShow?>"></i>
             </a>
         </li>
       <?php endforeach?>
     </ul>
 </div>
-
+<?php endif?>
+<?php if ($this->loginUserInfo['___isSuperAdmin'])://超级管理员?>
+<button type="button" id="createRepoBtnId" class="btn btn-success btn-theme-small ml-20px">创建仓库</button>
+<?php endif?>
 <hr/>
 
 <!-- 分支的内容 -->
+<?php if($this->currentUseBranch !== 'Branch')://待初始化仓库?>
 <div class="row">
   <div class="col-sm-3" id="commitListId">3</div>
   <div class="col-sm-7" id="commitContentListId">7</div>
 </div>
+<?php else:?>
+<div id="debugBoxId" class="panel panel-default">
+    <div class="panel-heading"><i class="icon-question-sign mr-5px"></i>快速帮助</div>
+    <div class="panel-body">
+        <div class="mb-10px">克隆当前仓库 不知道如何操作？访问 此处 查看帮助！</div>
+        <div>
+            <div class="input-group">
+                <span class="PROGRAM-repopath_switch input-group-addon blue-border" data-rp="<?php echo $this->repoInfo['___showHTTPPath']?>">HTTP</span>
+                <span class="PROGRAM-repopath_switch input-group-addon" data-rp="<?php echo $this->repoInfo['___showSSHPath']?>">SSH</span>
+                <input type="text" class="form-control" id="repoPath" value="<?php echo $this->repoInfo['___showHTTPPath']?>" />
+            </div>
+        </div>
+        <hr/>
+        <div>
+            从命令行创建一个新的仓库
+<pre class="mt-10px">
+touch README.md
+git init
+git add README.md
+git commit -m "first commit"
+<span class="PROGRAM-repopath_txt">git remote add origin <?php echo $this->repoInfo['___showHTTPPath']?></span>
+git push -u origin master
+</pre>
+        </div>
+        <hr/>
+        <div>
+            从命令行推送已经创建的仓库
+<pre class="mt-10px">
+<span class="PROGRAM-repopath_txt">git remote add origin <?php echo $this->repoInfo['___showHTTPPath']?></span>
+git push -u origin master
+</pre>
+        </div>
+    </div>
+</div>
+<?php endif?>
+
+<!-- 创建仓库 -->
+<div class="modal fade" id="createRepoBoxId" tabindex="-1" role="dialog" aria-labelledby="contextMenuModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">创建 <b>“<?php echo $this->projectInfo['name']?>”</b> 新仓库</h4>
+            </div>
+            <div class="modal-body">
+                <form id="repoFormId" class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="nameId" class="col-sm-1 control-label resetPadding padd-top-7 width-13">仓库名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="PROGRAM-txt form-control" name="name" id="nameId" placeholder="请输入仓库名称，仅允许英文+下划线，且尽量短而有意义">
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="introId" class="col-sm-1 control-label resetPadding padd-top-7 width-13">仓库描述</label>
+                        <div class="col-sm-10">
+                            <textarea id="introId" name="intro" class="PROGRAM-txt form-control" rows="3" placeholder="请输入仓库描述"></textarea>
+                            <span class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="orgId" class="col-sm-1 control-label resetPadding padd-top-7 width-13">所属组织</label>
+                        <div class="col-sm-10">
+                            <?php if(count($this->orgList) > 0):?>
+                                <?php foreach($this->orgList as $v):?>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="org" id="org<?php echo $v['id']?>" value="<?php echo $v['id']?>"> <?php echo $v['zname']?>
+                                    </label>
+                                <?php endforeach?>
+                            <?php else:?>
+                                请先创建组织
+                            <?php endif?>
+                            <span id="orgErrorId" class="PROGRAM-inputerror glyphicon glyphicon-remove form-control-feedback"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="repoCreateBtnId">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
+var projectId = <?php echo $this->projectInfo['id']?>;
 __wait(function(){
     $('#commitListId').equalHeight($('#menuId').height() - 135);
     $('#commitContentListId').equalHeight($('#menuId').height() - 135);
+    
+    $('.PROGRAM-repopath_switch').on('click', function(){
+        var repoPath = $(this).data('rp');
+        $('.PROGRAM-repopath_switch').removeClass('blue-border');
+        $(this).addClass('blue-border');
+        $('#repoPath').val(repoPath);
+        $('.PROGRAM-repopath_txt').html('git remote add origin '+repoPath);
+    });
+    
+    //创建仓库中的文本框自动聚焦
+    $('#createRepoBoxId').on('shown.bs.modal', function () 
+    {
+        $('#title', this).focus();
+    });
+    //显示创建仓库弹层
+    $('#createRepoBtnId').on('click', function(e) 
+    {
+        $('#repoFormId').get(0).reset();
+        var repoModalDom = $('#createRepoBoxId');
+        repoModalDom.modal('show');
+    });
+    //提交创建仓库
+    var formObj = {
+        'name' : $('#nameId'),
+        'intro' : $('#introId'),
+        'orgError' : $('#orgErrorId')
+    }
+    var isRepoClick = 0;
+    $('#repoCreateBtnId').on('click', function(e) 
+    {
+        if (isRepoClick === 1) {
+            return false;
+        }
+        isRepoClick = 1;
+        
+        var post = {};
+        
+        post['sName'] = $.trim($('#nameId').val());
+        if (post['sName'].length <= 0 || !/^[a-zA-Z_]+$/.test(post['sName'])) {
+            formObj['name'].parents('.form-group').addClass('has-error has-feedback');
+            formObj['name'].siblings('.PROGRAM-inputerror').show();
+            formObj['name'].focus();
+            isRepoClick = 0;
+            return false;
+        }
+        
+        post['sIntro'] = $.trim($('#introId').val());
+        if (post['sIntro'].length <= 0) {
+            formObj['intro'].parents('.form-group').addClass('has-error has-feedback');
+            formObj['intro'].siblings('.PROGRAM-inputerror').show();
+            formObj['intro'].focus();
+            isRepoClick = 0;
+            return false;
+        }
+        
+        post['iOrgId'] = $.trim($('input[name=org]:checked').val());
+        if (post['iOrgId'] == undefined || post['iOrgId'] == null || post['iOrgId'] == '') {
+            formObj['orgError'].parents('.form-group').addClass('has-error has-feedback');
+            formObj['orgError'].show();
+            isRepoClick = 0;
+            return false;
+        }
+        
+        $.post('/project/repo/add?iProjectId='+projectId, post, function(result)
+        {
+            if (parseInt(result.status) === 0) {
+                alert('仓库创建成功');
+                $('#createRepoBoxId').modal('hide');
+                $('#repoFormId').get(0).reset();
+            } else {
+                alert(result.msg);
+            }
+            isRepoClick = 0;
+        }, 'json');
+    });
+    
+    
 });
 </script>

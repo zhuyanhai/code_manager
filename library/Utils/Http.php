@@ -36,6 +36,16 @@ final class Utils_Http
     }
     
     /**
+     * 获取当前运行脚本所在的服务器的 IP 地址
+     * 
+     * @return string
+     */
+    public static function getServerIp()
+    {
+        return $_SERVER['SERVER_ADDR'];
+    }
+    
+    /**
      * 返回前一个请求页面地址
      * 
      * @param string $default 没有refer时的默认返回值
