@@ -1,0 +1,73 @@
+ul li:hover, .list-group-item.active:focus, .list-group-item.active:hover{
+    background: #eee;
+    cursor: pointer;
+}
+
+.list-group-item{
+    padding:5px;
+    border-bottom:1px solid #ddd;
+    margin-bottom:0px
+}
+
+.list-group-item.active{
+    background-color:#3998D6 !important; 
+    color:#000 !important;
+}
+
+hr{
+    margin:5px 0px;
+}
+
+.list-group-item .licon{
+    width:15%;
+    display: inline-block;
+    vertical-align: top;
+    height: 34px;
+    line-height: 34px;
+    margin-right:4px;
+}
+.list-group-item .rcon{
+    width:81%;
+    display: inline-block;
+}
+
+.code-pre{
+    margin:0px;
+    padding:0px;
+    border-radius: 0px;
+    background-color: #fff;
+}
+
+.code-init{
+    padding:1px 2px;
+    display: block;
+    background-color:#F8F8FF;
+}
+
+.removed-code{
+    padding:1px 2px;
+    display: block;
+    background-color:#FFDDDD;
+}
+.add-code{
+    padding:1px 2px;
+    display: block;
+    background-color:#DDFFDD;
+}
+.normal-code{
+    padding:1px 2px;
+    color:#666666;
+}
+.init-line{
+    background-color:#F8F8FF;
+}
+.removed-line{
+    background-color:#FFDDDD;
+}
+.add-line{
+    background-color:#DDFFDD;
+}
+.code-rborder{
+    border-right: 1px solid #F5F5F5;
+    color:#CFCFCF;
+}

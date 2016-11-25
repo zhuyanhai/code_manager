@@ -7,7 +7,8 @@
         <title><?php echo $this->headTitle('代码管理')?></title>
         <?php 
             echo $this->headMeta('代码管理', 'keywords')->headMeta('代码管理', 'description');
-            echo $this->headLink()->prependStylesheet($this->assetPath()->getCssOfModule('bootstrap/3.3.5/bootstrap.min.css,jquery/ui/base.min.css'));
+            $this->headLink()->prependStylesheet($this->assetPath()->getCssOfModule('bootstrap/3.3.5/bootstrap.min.css,jquery/ui/base.min.css'));
+            echo $this->headLink();
             echo $this->initPageNecessary();
         ?>
     </head>

@@ -6,6 +6,28 @@ class TestController extends AbstractController
 {
     public function indexAction()
     {
+        $output = <<<EOF
+@@ -1,3 +1,4 @@
++//hi
+ // 班级聊天类
+ (function()
+ {
+@@ -265,4 +266,4 @@
+         return new groupChatSocket(url, openCallback, closeCallback);
+     };
+ 
+-})();
+\ No newline at end of file
++})();            
+EOF;
+        $output = explode(PHP_EOL, $output);
+        foreach ($output as &$o) {
+            $o = preg_replace("%^-([^".PHP_EOL."]*)%i", '<code class="removed-code">-$1</code>', $o);
+            $o = preg_replace("%^\+([^".PHP_EOL."]*)%i", '<code class="add-code">+$1</code>', $o);
+        }
+        $output = implode(PHP_EOL, $output);
+        echo $output;
+        exit;
         F_Config::load('/configs/repo.cfg.php');
         $repoCfg = F_Config::get('repo.root');
         print_r($repoCfg);

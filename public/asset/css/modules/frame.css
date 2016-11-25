@@ -1,6 +1,10 @@
 body{
     font-size: 12px;
 }
+.plr-1px{
+    padding-left:1px;
+    padding-right:1px;
+}
 .mt-10px{
     margin-top: 10px;
 }
@@ -413,4 +417,37 @@ color: #666666;
 .blue-border{
     border: 1px solid #2185D0 !important;
     color: #2185D0 !important;
+}
+
+.list-noborder{
+    border: none;
+    border-radius: 0px !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+.greenBlock{
+    width:5px;
+    height:5px;
+    background:#00B83F;
+    display: inline-block;
+    margin-right:1px;
+}
+.redBlock{
+    width:5px;
+    height:5px;
+    background:#D20009;
+    display: inline-block;
+    margin-right:1px;
+}
+.grayBlock{
+    width:5px;
+    height:5px;
+    background:#ccc;
+    display: inline-block;
+    margin-right:1px;
+}
+
+.grayColor{
+    color:#B2B2B2;
 }

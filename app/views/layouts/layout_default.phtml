@@ -7,7 +7,8 @@
         <title><?php echo $this->headTitle('代码管理')?></title>
         <?php 
             echo $this->headMeta('代码管理', 'keywords')->headMeta('代码管理', 'description');
-            echo $this->headLink()->prependStylesheet($this->assetPath()->getCssOfModule('bootstrap/3.3.5/bootstrap.min.css,font-awesome.min.css,jquery/ui/base.min.css,frame.css'));
+            $this->headLink()->prependStylesheet($this->assetPath()->getCssOfModule('bootstrap/3.3.5/bootstrap.min.css,font-awesome.min.css,jquery/ui/base.min.css,frame.css'));
+            echo $this->headLink();
             echo $this->initPageNecessary();
         ?>
     </head>
@@ -101,7 +102,7 @@
             });
         </script>
         <?php
-        echo $this->script()->outputScript($this->assetPath()->getJsOfModule('lab/2.0.3/lab.js,jquery/1.11.1/jquery.min.js,bootstrap/3.3.5/bootstrap.min.js,jquery/ui/base.min.js,jquery/plugin/tablesorter/jquery.tablesorter.min.js,jquery/plugin/equalHeight/jquery.equalHeight.js,plugin/utility.js'))->lastWait(function() {
+        echo $this->script()->outputScript($this->assetPath()->getJsOfModule('lab/2.0.3/lab.js,jquery/1.11.1/jquery.min.js,bootstrap/3.3.5/bootstrap.min.js,jquery/ui/base.min.js,jquery/plugin/tablesorter/jquery.tablesorter.min.js,jquery/plugin/equalHeight/jquery.equalHeight.js,jquery/plugin/tmpl/jquery.tmpl.js,plugin/utility.js'))->lastWait(function() {
             //页面中所有JS加载完毕后才开始执行的
             return '__wait(false, true);';
         });

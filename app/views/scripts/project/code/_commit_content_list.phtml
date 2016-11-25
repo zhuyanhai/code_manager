@@ -1,0 +1,14 @@
+<?php if(count($this->commitContentList) > 0):?>
+    <?php foreach($this->commitContentList as $v):?>
+    <li class="list-group-item list-noborder" style="border-bottom:1px solid #ddd;margin-bottom:0px;line-height: 12px;display: block">
+        <i class="icon-caret-right mr-5px"></i>
+        <span style="display: -webkit-inline-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"><?php echo $v['name']?></span>
+        <span class="fr">
+            <?php echo $v['statistics']['total']?>
+            <?php for($i=0;$i<$v['statistics']['insertionsBlock'];$i++):?><b style="width:5px;height:5px;background:#00B83F;display: inline-block;"></b> <?php endfor?>
+            <?php for($i=0;$i<$v['statistics']['deletionBlock'];$i++):?><b style="width:5px;height:5px;background:#D20009;display: inline-block;"></b> <?php endfor?>
+            <?php for($i=0;$i<$v['statistics']['normalBlock'];$i++):?><b style="width:5px;height:5px;background:#ccc;display: inline-block;"></b> <?php endfor?>
+        </span>
+    </li>
+    <?php endforeach?>
+<?php endif?>

@@ -1,4 +1,7 @@
-<?php $this->breadcrumbs(array('title' => '项目管理', 'url' => ''), array('title' => $this->projectInfo['name'], 'url' => $this->projectInfo['pageUrl']), array('title' => '代码管理', 'url' => ''))?>
+<?php 
+$this->headLink()->appendStylesheet($this->assetPath()->getCssOfPage('project_code_index'));
+$this->breadcrumbs(array('title' => '项目管理', 'url' => ''), array('title' => $this->projectInfo['name'], 'url' => $this->projectInfo['pageUrl']), array('title' => '代码管理', 'url' => ''));
+?>
 
 <!-- 导航 -->
 <?php echo $this->render('project/_slot/nav')?>
@@ -36,8 +39,42 @@
 <!-- 分支的内容 -->
 <?php if($this->currentUseBranch !== 'Branch')://待初始化仓库?>
 <div class="row">
-  <div class="col-sm-3" id="commitListId">3</div>
-  <div class="col-sm-7" id="commitContentListId">7</div>
+    <div class="col-sm-3 plr-1px" id="commitListId" style="border-right:1px solid #ddd">
+        <?php if(count($this->history['list']) > 0):?>
+        <div><h4>History <span class="badge"><?php echo $this->history['total']?></span></h4><hr/></div>
+        <ul class="PROGRAM-commitbox list-group">
+            <?php foreach($this->history['list'] as $k=>$v):?>
+                <li class="PROGRAM-commitbtn list-group-item list-noborder <?php if($k===0):?>active<?php endif?>" data-cmid="<?php echo $v['commitId']?>">
+                    <div class="licon"><img src="<?php echo $this->assetPath()->getImage('common/default.jpg')?>" /></div>
+                    <div class="rcon">
+                        <span style="display: -webkit-inline-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"><?php echo $v['message']?></span>
+                        <br/>
+                        <span style="color:#ccc"><?php echo date('Y-m-d', $v['date'])?></span>
+                        <i>by</i>&nbsp;<?php echo $v['author']?>
+                    </div>
+                </li>
+            <?php endforeach?>
+        </ul>
+        <?php endif?>
+    </div>
+    <div class="col-sm-9 plr-1px" id="commitContentListId">
+        <?php if(count($this->commitContentList['list']) > 0):?>
+        <ul id="commitContentListBoxId" class="list-group">
+            <?php foreach($this->commitContentList['list'] as $v):?>
+                <li class="PROGRAM-commitconBtn list-group-item list-noborder" data-cmid="<?php echo $this->commitContentList['commitIdHash']?>" data-bl="<?php echo $v['statistics']['beginLineNum']?>" data-el="<?php echo $v['statistics']['endLineNum']?>" data-way="right">
+                    <span style="display: -webkit-inline-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"><i class="icon-caret-right mr-5px"></i><?php echo $v['name']?></span>
+                    <span class="fr">
+                        <?php echo $v['statistics']['total']?>
+                        <?php for($i=0;$i<$v['statistics']['insertionsBlock'];$i++):?><b style="width:5px;height:5px;background:#00B83F;display: inline-block;"></b> <?php endfor?>
+                        <?php for($i=0;$i<$v['statistics']['deletionBlock'];$i++):?><b style="width:5px;height:5px;background:#D20009;display: inline-block;"></b> <?php endfor?>
+                        <?php for($i=0;$i<$v['statistics']['normalBlock'];$i++):?><b style="width:5px;height:5px;background:#ccc;display: inline-block;"></b> <?php endfor?>
+                    </span>
+                    <div></div>
+                </li>
+            <?php endforeach?>
+        </ul>
+        <?php endif?>
+    </div>
 </div>
 <?php else:?>
 <div id="debugBoxId" class="panel panel-default">
@@ -74,6 +111,19 @@ git push -u origin master
     </div>
 </div>
 <?php endif?>
+
+<script id='commitContentListTmplId'  type='text/x-jquery-tmpl'>
+    {{each(i, cc) commitContentList}}
+    <li class="PROGRAM-commitconBtn list-group-item list-noborder" data-cmid="${commitIdHash}" data-bl="${cc.statistics.beginLineNum}" data-el="${cc.statistics.endLineNum}" data-way="right">
+        <span style="display: -webkit-inline-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"><i class="icon-caret-right mr-5px"></i>${cc.name}</span>
+        <span class="fr">
+            ${cc.statistics.total}
+            {{html cc.greenBlock}}{{html cc.redBlock}}{{html cc.grayBlock}}
+        </span>
+        <div></div>
+    </li>
+    {{/each}}
+</script>
 
 <!-- 创建仓库 -->
 <div class="modal fade" id="createRepoBoxId" tabindex="-1" role="dialog" aria-labelledby="contextMenuModalLabel">
@@ -204,7 +254,108 @@ __wait(function(){
             isRepoClick = 0;
         }, 'json');
     });
+    //获取某次提交的内容列表
+    var repoPath = '<?php echo $this->repoInfo['repoPath']?>';
+    var isCClick = 0;
+    var currentCommitId = '<?php echo $this->currentCommitId?>';
+    $('.PROGRAM-commitbtn').on('click', function()
+    {
+        if (isCClick === 1) {
+            return false;
+        }
+        isCClick = 1;
+        
+        var commitId = $(this).data('cmid');
+        if (currentCommitId === commitId) {
+            isCClick = 0;
+            return false;
+        }
+        
+        currentCommitId = commitId;
+        $('.PROGRAM-commitbtn').removeClass('active');
+        $(this).addClass('active');
+        
+        $.post('/project/code/getCommitContentList?iProjectId='+projectId, {sRepoPath:repoPath, sCommitIdHash:commitId}, function(result)
+        {
+            if (parseInt(result.status) === 0) {
+                $('#commitContentListBoxId').empty().html('');
+                var list = result.data.commitContentList['list'];
+                for (var k in list) {
+                    var insertionsBlock = '';
+                    if (list[k].statistics.insertionsBlock > 0) {
+                        for (var j = 0; j < list[k].statistics.insertionsBlock; j++) {
+                            insertionsBlock += '<b class="greenBlock"></b>';
+                        }
+                    }
+                    list[k]['greenBlock'] = insertionsBlock;
+                    var deletionBlock = '';
+                    if (list[k].statistics.deletionBlock > 0) {
+                        for (var j = 0; j < list[k].statistics.deletionBlock; j++) {
+                            deletionBlock += '<b class="redBlock"></b>';
+                        }
+                    }
+                    list[k]['redBlock'] = deletionBlock;
+                    var normalBlock = '';
+                    if (list[k].statistics.normalBlock > 0) {
+                        for (var j = 0; j < list[k].statistics.normalBlock; j++) {
+                            normalBlock += '<b class="grayBlock"></b>';
+                        }
+                    }
+                    list[k]['grayBlock'] = normalBlock;
+                }
+
+                $('#commitContentListTmplId').tmpl({commitIdHash:result.data.commitContentList['commitIdHash'],commitContentList:list}).appendTo('#commitContentListBoxId');
+            } else {
+                alert(result.msg);
+            }
+            isCClick = 0;
+        }, 'json');
+    });
     
-    
+    //查看具体内容
+    var isCCLClick = 0;
+    $('#commitContentListBoxId').on('click', '.PROGRAM-commitconBtn', function()
+    {
+        if (isCCLClick === 1) {
+            return false;
+        }
+        isCCLClick = 1;
+        
+        var self = $(this);
+        var isOpen = self.data('isOpen');
+        if (isOpen === undefined || isOpen === null || isOpen === '') {
+            isOpen = 0;
+        }
+        if (self.data('way') === 'right') {
+            self.data('way', 'down');
+            $('i', self).removeClass('icon-caret-right');
+            $('i', self).addClass('icon-caret-down');
+            
+            if (isOpen <= 0) {
+                var commitId = self.data('cmid');
+                var bl = self.data('bl');
+                var el = self.data('el');
+                $.post('/project/code/getCommitContentDiff?iProjectId='+projectId, {sRepoPath:repoPath, sCommitIdHash:commitId, iBl:bl, sEl:el}, function(result)
+                {
+                    if (parseInt(result.status) === 0) {
+                        $('div', self).html('<pre class="code-pre">'+result.data.diffContent+'</pre>');
+                    } else {
+                        alert(result.msg);
+                    }
+                    isCCLClick = 0;
+                }, 'json');
+            } else {
+                isCCLClick = 0;
+                $('div', self).show();
+            }
+        } else {
+            self.data('way', 'right');
+            $('i', self).removeClass('icon-caret-down');
+            $('i', self).addClass('icon-caret-right');
+            $('div', self).hide();
+            isCCLClick = 0;
+            self.data('isOpen', 1);
+        }
+    });
 });
 </script>

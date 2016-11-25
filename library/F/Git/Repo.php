@@ -634,22 +634,25 @@ final class F_Git_Repo
 	 *
 	 * @return string
 	 */
-	public function getCommitInfo($hash = 'HEAD') 
+	public function gitCommitInfo($hash = 'HEAD') 
     {
 		$output = $this->run("rev-list --header --max-count=1 $hash");
-        $output = explode(PHP_EOL, $output);
+        $output = explode(PHP_EOL, $output);  
         $info   = array();
         foreach ($output as $o) {
+            if (substr($o, 0, 4) === '    ') {//message
+                $info['message'] = trim($o);
+                continue;
+            }
             $o = trim($o);
             if (empty($o)) {
                 continue;
             }
+            
             $t = explode(' ', $o);
             if (count($t) <= 1) {
                 if (preg_match('%^[0-9a-z]+$%i', $t[0])) {
                     $info['commitHash'] = $t[0];
-                } else {
-                    $info['message'] = $t[0];
                 }
             } else {
                 switch ($t[0]) {
@@ -680,6 +683,293 @@ final class F_Git_Repo
         }
         return $info;
 	}
+    
+    /**
+     * 获取本地引用
+     * 
+     * @param boolean $tags
+     * @param boolean $heads
+     * @param boolean $remotes
+     * @return array
+     */
+    public function gitRefList($tags = true, $heads = true, $remotes = true)
+    {
+        $cmd = "show-ref --dereference";
+        if (!$remotes) {
+            if ($tags) { $cmd .= " --tags"; }
+            if ($heads) { $cmd .= " --heads"; }
+        }
+        
+        $result = array();
+        $output = $this->run($cmd);
+        $output = explode(PHP_EOL, $output);
+        foreach ($output as $line) {
+            $line = trim($line);
+            if (empty($line)) {
+                continue;
+            }
+            // <hash> <ref>
+            $parts = explode(' ', $line, 2);
+            $name = str_replace(array('refs/', '^{}'), array('', ''), $parts[1]);
+            $result[$parts[0]][] = $name;
+        }
+        return $result;
+    }
+    
+    /**
+     * 获取 版本范围
+     * 
+     * @param int $skip
+     * @param int $max_count
+     * @param string $start
+     * @return array
+     */
+    public function gitGetRevList($skip = 0, $max_count = null, $start = 'HEAD')
+    {
+        $cmd = "rev-list ";
+        if ($skip != 0) {
+            $cmd .= "--skip=$skip ";
+        }
+        if (!is_null($max_count)) {
+            $cmd .= "--max-count=$max_count ";
+        }
+        $cmd .= $start;
+        
+        $result = array();
+        $output = $this->run($cmd);
+        $output = explode(PHP_EOL, $output);
+        foreach ($output as $line) {
+            $line = trim($line);
+            if (empty($line)) {
+                continue;
+            }
+            $result[] = $line;
+        }
+        return $result;
+    }
+    
+    /**
+     * 获取某个分支节点的提交历史计数
+     * 
+     * @param string $hash
+     * return array
+     */
+    public function getCommitHistoryCount($hash = 'HEAD')
+    { 
+        $cmd = "rev-list --count {$hash}";
+        $output = $this->run($cmd);
+        $output = trim($output, PHP_EOL);
+        $output = trim($output);
+        return $output;
+    }
+    
+    /**
+     * 获取某个分支节点的提交历史 - 分页
+     * 
+     * @param int $page
+     * @param int $count
+     * @param string $hash
+     * return array
+     */
+    public function getCommitHistory($page, $count = 50, $hash = 'HEAD')
+    {
+        $refsByHash = $this->gitRefList();
+        $refsByHashKeyArray = array_keys($refsByHash);
+        $result  = array();
+        $revList = $this->gitGetRevList(($page-1) * $count, $count, $hash);
+        foreach ($revList as $rev) {
+            $info = $this->gitCommitInfo($rev);
+            $refs = array();
+            if (in_array($rev, $refsByHashKeyArray)) {
+                $refs = $refsByHash[$rev];
+            }
+
+            $result[] = array(
+                'author'    => $info['author']['name'],
+                'date'      => $info['author']['date'],
+                'message'   => $info['message'],
+                'commitId'  => $rev,
+                'tree'      => $info['treeHash'],
+                'refs'      => $refs,
+            );
+        }
+        $total = $this->getCommitHistoryCount($refsByHashKeyArray[0]);
+        return array('list' => $result, 'total' => $total);
+    }
+    
+    /**
+     * 获取某个提交节点的内容列表
+     * 
+     * @param string $hash
+     */
+    public function getCommitContentList($hash)
+    {
+        // git log -p --max-count=1 d373facd8a031a92456b0d87031e8833787824dc | awk '/^diff/{ print FNR "\t" $0 }'|sed 's/ /\t/g'|sed 's/diff\|--git\|a\///g'|awk '{print $1" "$2}'
+        
+        //获取指定 commit 的内容文件列表
+//        $cmd = "show --pretty=\"format:\" --name-only {$hash}";
+//        $affectedFiles = $this->run($cmd);
+//        $affectedFiles = trim($affectedFiles, PHP_EOL);
+//        $affectedFiles = trim($affectedFiles);
+//        $affectedFiles = explode(PHP_EOL, $affectedFiles);
+
+        //获取指定 commit 的内容文件列表和修改行号
+        $cmd = "log -p --max-count=1 {$hash} | awk '/^diff/{ print FNR \"\t\" $0 }'| sed 's/ /\t/g'| sed 's/diff\|--git\|a\///g'| awk '{print $1\" \"$2}'";
+        $affectedFiles = $this->run($cmd);
+        $affectedFiles = trim($affectedFiles, PHP_EOL);
+        $affectedFiles = trim($affectedFiles);
+        $affectedFiles = explode(PHP_EOL, $affectedFiles);
+        foreach ($affectedFiles as &$af) {
+            $af = explode(' ', $af);
+        }
+        
+        //获取指定 commit 的内容文件列表的每个文件的修改统计信息
+        //git log --stat --max-count=1 068a23cbfff0cbc530d6110ceb1ed49997b5e8d8
+        $cmd = "log --stat --max-count=1 --pretty=\"format:\" {$hash}";
+        $amendInfos = $this->run($cmd);
+        $amendInfos = trim($amendInfos, PHP_EOL);
+        $amendInfos = trim($amendInfos);
+        $amendInfos = explode(PHP_EOL, $amendInfos);
+        $amendFiles = array();
+        foreach ($amendInfos as $k=>$v) {
+            $v = trim($v);
+            $v = explode('|', $v);
+            try{
+                if (count($v) > 1) {
+                    $c = trim($v[1]);
+                    $c = explode(' ', $c);
+                    if (count($c) > 1) {
+                        if ($c[0] === 'Bin') {
+                            $c[0] = $c[1];
+                            $insertions = 0;
+                            $deletion   = 0;
+                        } else {
+                            $insertions = substr_count($c[1], '+');
+                            $deletion   = substr_count($c[1], '-');
+                        }
+                    } else {
+                        $insertions = 0;
+                        $deletion   = 0;
+                    }
+                    $t = $insertions + $deletion;
+                    $normalBlock = 5;
+                    $insertionsBlock = ($insertions > 0)?floor($insertions / $t * $normalBlock):0;
+                    $deletionBlock = ($deletion > 0)?floor($deletion / $t * $normalBlock):0;
+                    $amendFiles[trim($affectedFiles[$k][1])] = array(
+                        'total'           => trim($c[0]),
+                        'insertions'      => $insertions,
+                        'insertionsBlock' => $insertionsBlock,
+                        'deletion'        => $deletion,
+                        'deletionBlock'   => $deletionBlock,
+                        'normalBlock'     => $normalBlock - $insertionsBlock - $deletionBlock,
+                        'beginLineNum'    => $affectedFiles[$k][0],
+                        'endLineNum'      => (isset($affectedFiles[$k+1]))?($affectedFiles[$k+1][0]-1):null,
+                    );
+                }
+            } catch(Exception $e) {
+                print_r($v).PHP_EOL;
+                exit;
+            }
+        }
+
+        $result = array();
+        foreach ($affectedFiles as $file) {
+            // The format above contains a blank line; Skip it.
+            if ($file[1] == '') {
+                continue;
+            }
+            
+            //获取commit的内容列表中的每个文件的hash值
+//            $output = $this->run("ls-tree {$hash} {$file[1]}");
+//            $output = trim($output, PHP_EOL);
+//            $output = trim($output);
+//            if (empty($output)) {
+//                continue;
+//            }
+//
+//            $output = explode(PHP_EOL,$output);
+//            foreach ($output as $line) {
+//                try {
+//                    $parts = preg_split('/\s+/', $line, 4);
+//                    $result[] = array('name' => $parts[3], 'hash' => $parts[2], 'statistics' => $amendFiles[$parts[3]]);
+//                } catch(Exception $e) {
+//                    echo $line;
+//                    echo "ls-tree {$hash} {$file[1]}";
+//                    //print_r($amendFiles);
+//                    exit;
+//                }
+//            }
+            
+            $result[] = array('name' => $file[1], 'statistics' => $amendFiles[$file[1]]);
+        }
+        
+        //print_r($result);exit;
+        return array('commitIdHash' => $hash, 'list' => $result);
+    }
+    
+    /**
+     * 获取commit 的某个文件的 diff 内容
+     * 
+     * @param string $hash
+     * @param int $bl
+     * @param int $el
+     * @return string
+     */
+    public function getDiffOfNearest($hash, $bl, $el)
+    {
+        if (is_null($el)) {
+            $cmd = 'log -p --max-count=1 '.$hash.' | awk "NR>='.$bl.'{print}"';
+        } else {
+            $cmd = "log -p --max-count=1 {$hash} | sed -n {$bl},{$el}p";
+        }
+        
+        $output = $this->run($cmd);
+        $output = trim($output);
+        $output = substr($output, strpos($output, '@@'));
+        $output = explode(PHP_EOL, $output);
+        $html = '<table border="0" style="width:100%">';
+        $delColumnLine = 0;
+        $addColumnLine = 0; 
+        foreach ($output as $k=>&$o) {
+            $o = trim($o);
+            if (preg_match('%^@@([\s-\+0-9,]+)@@$%i', $o, $matches)) {
+                
+                $matches[1] = trim($matches[1]);
+                $matches[1] = explode(' ', $matches[1]);
+                
+                $matches[1][0] = ltrim($matches[1][0], '-');
+                $matches[1][0] = explode(',', $matches[1][0]);
+                $delColumnLine = $matches[1][0][0];
+                
+                $matches[1][1] = ltrim($matches[1][1], '+');
+                $matches[1][1] = explode(',', $matches[1][1]);
+                $addColumnLine = $matches[1][1][0];
+                
+                $html .= "<tr class=\"init-line\"><td class=\"code-rborder\">...</td><td class=\"code-rborder\">...</td><td>";
+                $html .= '<code class="code-init">'.$o.'</code>';
+            } else {
+                if (preg_match("%^-([^".PHP_EOL."]*)%i", $o)) {
+                    $html .= "<tr class=\"removed-line\"><td class=\"code-rborder\">{$delColumnLine}</td><td class=\"code-rborder\"></td><td>";
+                    $html .= '<code class="removed-code">'.$o.'</code>';
+                    $delColumnLine++;
+                } else if (preg_match("%^\+([^".PHP_EOL."]*)%i", $o)) {
+                    $html .= "<tr class=\"add-line\"><td class=\"code-rborder\"></td><td class=\"code-rborder\">$addColumnLine</td><td>";
+                    $html .= '<code class="add-code">'.$o.'</code>';
+                    $addColumnLine++;
+                } else {
+                    $html .= "<tr class=\"normal-code\"><td class=\"code-rborder\">$delColumnLine</td><td class=\"code-rborder\">$addColumnLine</td><td>";
+                    $html .= '<code class="normal-code">'.$o.'</code>';
+                    $delColumnLine++;
+                    $addColumnLine++;
+                } 
+            }
+
+            $html .= '</td></tr>';
+        }
+        $html .= '</table>';
+        unset($output);
+        return $html;
+    }
 
 	/**
 	 * Sets custom environment options for calling Git
