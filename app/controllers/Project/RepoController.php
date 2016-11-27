@@ -18,6 +18,13 @@ class Project_RepoController extends Project_AbstractController
             $post['iProjectId'] = $this->projectInfo['id'];
             $resultSet = Bll_ProjectRepoModule_Operation::getInstance()->add($post);
             if ($resultSet->isSuccess()) {
+                //仓库创建完毕,自动创建master分支
+                Bll_ProjectCodeModule_Operation::getInstance()->add(array(
+                    'iProjectId' => $post['iProjectId'],
+                    'iType'      => 1,
+                    'sName'      => '主分支',
+                    'sIntro'     => '主分支',
+                ));
                 $this->response();
             }
             $this->error($resultSet->getErrorInfo())->response();

@@ -37,28 +37,39 @@ class Project_CodeController extends Project_AbstractController
         }
         $this->view->repoInfo = $repoInfo->getResult();
         
-        //当前正在使用的分支
-        $repoObj = F_Git::open($this->view->repoInfo['repoPath']);
-        $result  = $repoObj->getBranchInfoOfLocal();
-        $this->view->currentUseBranch = $result['selected'];
-        if (empty($this->view->currentUseBranch)) {
-            $this->view->currentUseBranch = 'Branch';
-        }
-
         //组织列表
         $orgResultSet = Bll_AccountModule_Org::getInstance()->getListOfAll();
         $this->view->orgList = $orgResultSet->getResult();
         
-        //当前正在使用的分支的commit history 列表
-        $history = $repoObj->getCommitHistory(1, 50);
-        $this->view->history = $history;
+        $this->view->currentUseBranch = 'Branch';
+        $this->view->history = array();
+        $this->view->currentCommitId = null;
+
+        if (!empty($this->view->repoInfo)) {
+            //当前正在使用的分支
+            $repoObj = F_Git::open($this->view->repoInfo['repoPath']);
+            $result  = $repoObj->getBranchInfoOfLocal();
+            
+            if (!empty($result['selected'])) {
+                $this->view->currentUseBranch = $result['selected'];
+                if (empty($this->view->currentUseBranch)) {
+                    $this->view->currentUseBranch = 'Branch';
+                }
+
+                //当前正在使用的分支的commit history 列表
+                $history = $repoObj->getCommitHistory(1, 50);
+                $this->view->history = $history;
+
+                //最新提交的内容列表
+                $this->view->commitContentList = $repoObj->getCommitContentList($history['list'][0]['commitId']);
+                $this->view->currentCommitId = $history['list'][0]['commitId'];
+        //        print_r($this->view->commitContentList);exit;
+        //        print_r($history);
+        //        exit;
+            }
+
+        }
         
-        //最新提交的内容列表
-        $this->view->commitContentList = $repoObj->getCommitContentList($history['list'][0]['commitId']);
-        $this->view->currentCommitId = $history['list'][0]['commitId'];
-//        print_r($this->view->commitContentList);exit;
-//        print_r($history);
-//        exit;
     }
     
     /**

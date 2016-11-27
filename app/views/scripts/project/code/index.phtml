@@ -76,7 +76,7 @@ $this->breadcrumbs(array('title' => '项目管理', 'url' => ''), array('title' 
         <?php endif?>
     </div>
 </div>
-<?php else:?>
+<?php elseif(!empty($this->repoInfo)):?>
 <div id="debugBoxId" class="panel panel-default">
     <div class="panel-heading"><i class="icon-question-sign mr-5px"></i>快速帮助</div>
     <div class="panel-body">

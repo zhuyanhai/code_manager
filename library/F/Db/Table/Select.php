@@ -275,8 +275,9 @@ final class F_Db_Table_Select
         if (!empty($this->_queryConditions['where'])) {
             $sql .= " WHERE ";
             foreach ($this->_queryConditions['where'] as $_where) {
-                $sql .= " {$_where['expression']} ";
+                $sql .= " {$_where['expression']} AND ";
             }
+            $sql = rtrim($sql, 'AND ');
         }
         
         if (!empty($this->_queryConditions['order'])) {
